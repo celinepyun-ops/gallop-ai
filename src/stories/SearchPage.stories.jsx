@@ -7,6 +7,7 @@ import { Avatar } from './Avatar';
 import { Dropdown } from './Dropdown';
 import { Badge } from './Badge';
 import { Button } from './Button';
+import { Select } from './Select';
 import { Icons } from './icons';
 import './searchpage.css';
 
@@ -153,39 +154,51 @@ export const Default = {
 
           {/* Search Provider */}
           <div className="oai-search-card__field">
-            <label className="oai-search-card__label" htmlFor="search-provider">Search Provider</label>
-            <select className="oai-search-card__select" id="search-provider">
-              <option>Auto (Default)</option>
-              <option>Amazon US</option>
-              <option>Amazon UK</option>
-              <option>Amazon DE</option>
-              <option>Amazon JP</option>
-            </select>
+            <Select
+              label="Search Provider"
+              options={[
+                { value: 'auto', label: 'Auto (Default)' },
+                { value: 'us', label: 'Amazon US' },
+                { value: 'uk', label: 'Amazon UK' },
+                { value: 'de', label: 'Amazon DE' },
+                { value: 'jp', label: 'Amazon JP' },
+              ]}
+              value="auto"
+              onChange={fn()}
+            />
           </div>
 
           {/* Filters Row */}
           <div className="oai-search-card__filters">
             <div className="oai-search-card__field">
-              <label className="oai-search-card__label" htmlFor="filter-category">Category (Filter Results)</label>
-              <select className="oai-search-card__select" id="filter-category">
-                <option>All Categories</option>
-                <option>Beauty &amp; Personal Care</option>
-                <option>Health &amp; Household</option>
-                <option>Home &amp; Kitchen</option>
-                <option>Sports &amp; Outdoors</option>
-                <option>Electronics</option>
-                <option>Grocery &amp; Gourmet Food</option>
-              </select>
+              <Select
+                label="Category (Filter Results)"
+                options={[
+                  { value: 'all', label: 'All Categories' },
+                  { value: 'beauty', label: 'Beauty & Personal Care' },
+                  { value: 'health', label: 'Health & Household' },
+                  { value: 'home', label: 'Home & Kitchen' },
+                  { value: 'sports', label: 'Sports & Outdoors' },
+                  { value: 'electronics', label: 'Electronics' },
+                  { value: 'grocery', label: 'Grocery & Gourmet Food' },
+                ]}
+                value="all"
+                onChange={fn()}
+              />
             </div>
             <div className="oai-search-card__field">
-              <label className="oai-search-card__label" htmlFor="filter-rating">Min Rating (Filter Results)</label>
-              <select className="oai-search-card__select" id="filter-rating">
-                <option>Any Rating</option>
-                <option>4.5+ Stars</option>
-                <option>4.0+ Stars</option>
-                <option>3.5+ Stars</option>
-                <option>3.0+ Stars</option>
-              </select>
+              <Select
+                label="Min Rating (Filter Results)"
+                options={[
+                  { value: 'any', label: 'Any Rating' },
+                  { value: '4.5', label: '4.5+ Stars' },
+                  { value: '4.0', label: '4.0+ Stars' },
+                  { value: '3.5', label: '3.5+ Stars' },
+                  { value: '3.0', label: '3.0+ Stars' },
+                ]}
+                value="any"
+                onChange={fn()}
+              />
             </div>
           </div>
         </div>
