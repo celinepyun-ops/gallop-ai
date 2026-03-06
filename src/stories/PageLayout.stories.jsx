@@ -47,7 +47,7 @@ export const Default = {
     ),
     children: (
       <div style={{ padding: '8px' }}>
-        <h1 style={{ margin: '0 0 8px', fontFamily: 'var(--font-family-sans)' }}>Dashboard</h1>
+        <h1 style={{ margin: '0 0 8px' }}>Dashboard</h1>
         <p style={{ color: 'var(--color-text-secondary)', fontFamily: 'var(--font-family-sans)' }}>
           Welcome to Outreach AI. Select a section from the sidebar to get started.
         </p>

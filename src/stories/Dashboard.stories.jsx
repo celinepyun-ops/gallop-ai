@@ -117,7 +117,7 @@ const DashboardPage = () => {
         <Breadcrumbs items={[{ label: 'Home', href: '#' }, { label: 'Dashboard' }]} />
 
         <div style={{ marginTop: '16px', marginBottom: '24px' }}>
-          <h1 style={{ margin: '0 0 4px', fontFamily: 'var(--font-family-sans)', fontSize: '24px', fontWeight: 700, color: 'var(--color-text-primary)' }}>
+          <h1 style={{ margin: '0 0 4px', fontSize: '24px', fontWeight: 700, color: 'var(--color-text-primary)' }}>
             Dashboard
           </h1>
           <p style={{ margin: 0, fontFamily: 'var(--font-family-sans)', fontSize: '14px', color: 'var(--color-text-secondary)' }}>
