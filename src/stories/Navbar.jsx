@@ -7,7 +7,7 @@ export const Navbar = ({ brand, children, actions }) => {
   return (
     <header className="oai-navbar" role="banner">
       <div className="oai-navbar__brand">
-        <span className="oai-navbar__brand-icon" style={{ color: 'var(--color-primary-600)' }}>{Icons.logo(24)}</span>
+        <span className="oai-navbar__brand-icon" style={{ color: 'var(--color-primary-600)' }}>{Icons.logo(32)}</span>
         {brand || 'Outreach AI'}
       </div>
       {children && <div className="oai-navbar__center">{children}</div>}

@@ -57,7 +57,7 @@ export const Default = {
     activeItem: 'dashboard',
     header: (
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', width: '100%' }}>
-        <span style={{ color: 'var(--color-primary-600)', display: 'flex' }}>{Icons.logo(28)}</span>
+        <span style={{ color: 'var(--color-primary-600)', display: 'flex' }}>{Icons.logo(30)}</span>
         <span style={{ fontFamily: 'var(--font-family-serif)', fontWeight: 400, fontSize: '16px', color: 'var(--color-text-primary)' }}>Outreach AI</span>
         <span style={{ marginLeft: 'auto', display: 'flex', gap: '8px', color: 'var(--color-text-muted)' }}>
           {Icons.settings}
