@@ -48,7 +48,11 @@
 
 .oai-sidebar--collapsed .oai-sidebar__header {
   justify-content: center;
-  padding: var(--space-4) var(--space-2);
+  padding: var(--space-4) 0;
+}
+
+.oai-sidebar--collapsed .oai-sidebar__header > div {
+  justify-content: center;
 }
 
 .oai-sidebar--collapsed .oai-sidebar__header span:not(:first-child) {

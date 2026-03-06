@@ -59,7 +59,7 @@ const SidebarFooter = ({ darkMode, onToggleDark }) => (
 
 const sidebarHeader = (
   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', width: '100%' }}>
-    <span style={{ color: 'var(--color-primary-600)', display: 'flex' }}>{Icons.logo(30)}</span>
+    <span style={{ color: 'var(--color-primary-600)', display: 'flex' }}>{Icons.logo(34)}</span>
     <span style={{ fontFamily: 'var(--font-family-serif)', fontWeight: 400, fontSize: '20px', color: 'var(--color-text-primary)' }}>
       Outreach AI
     </span>
