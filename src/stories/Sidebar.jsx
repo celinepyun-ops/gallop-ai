@@ -2,10 +2,25 @@ import PropTypes from 'prop-types';
 import './sidebar.css';
 
 /** Clean sidebar navigation with collapsible sections */
-export const Sidebar = ({ items = [], collapsed = false, header, footer, activeItem }) => {
+export const Sidebar = ({ items = [], collapsed = false, header, footer, activeItem, onToggleCollapse }) => {
   return (
     <aside className={`oai-sidebar ${collapsed ? 'oai-sidebar--collapsed' : ''}`}>
       {header && <div className="oai-sidebar__header">{header}</div>}
+      {onToggleCollapse && (
+        <button
+          className="oai-sidebar__collapse-btn"
+          onClick={onToggleCollapse}
+          aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            {collapsed
+              ? <polyline points="9 18 15 12 9 6" />
+              : <polyline points="15 18 9 12 15 6" />
+            }
+          </svg>
+        </button>
+      )}
       <nav className="oai-sidebar__nav" aria-label="Main navigation">
         {items.map((section, sIdx) => (
           <div key={sIdx} className="oai-sidebar__section">
@@ -57,4 +72,6 @@ Sidebar.propTypes = {
   footer: PropTypes.node,
   /** Active item id */
   activeItem: PropTypes.string,
+  /** Callback to toggle collapsed state */
+  onToggleCollapse: PropTypes.func,
 };

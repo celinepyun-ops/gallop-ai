@@ -21,6 +21,35 @@
   padding: var(--space-4) var(--space-4);
 }
 
+/* ── Collapse Toggle ──────────────────────────────────────────────── */
+.oai-sidebar__collapse-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  margin: 0 var(--space-2) var(--space-1) auto;
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-card);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+.oai-sidebar__collapse-btn:hover {
+  background: var(--color-bg-hover);
+  color: var(--color-text-primary);
+}
+
+.oai-sidebar--collapsed .oai-sidebar__collapse-btn {
+  margin: 0 auto var(--space-1);
+}
+
+.oai-sidebar--collapsed .oai-sidebar__header {
+  justify-content: center;
+}
+
 .oai-sidebar__nav {
   flex: 1;
   overflow-y: auto;
@@ -147,6 +176,14 @@
 }
 
 .oai-sidebar--collapsed .oai-sidebar__section-title {
+  display: none;
+}
+
+.oai-sidebar--collapsed .oai-sidebar__footer {
+  padding: var(--space-2);
+}
+
+.oai-sidebar--collapsed .oai-sidebar__toggle {
   display: none;
 }
 

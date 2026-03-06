@@ -82,6 +82,7 @@ export default {
 
 const SearchPage = () => {
   const [darkMode, setDarkMode] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   return (
     <PageLayout
       sidebar={
@@ -90,6 +91,8 @@ const SearchPage = () => {
           activeItem="search-brands"
           header={sidebarHeader}
           footer={<SidebarFooter darkMode={darkMode} onToggleDark={(val) => { setDarkMode(val); document.documentElement.dataset.theme = val ? 'dark' : ''; }} />}
+          collapsed={sidebarCollapsed}
+          onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
         />
       }
       navbar={
