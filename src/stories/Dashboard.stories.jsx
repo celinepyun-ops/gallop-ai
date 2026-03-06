@@ -4,6 +4,7 @@ import { PageLayout } from './PageLayout';
 import { Sidebar } from './Sidebar';
 import { Navbar } from './Navbar';
 import { Search } from './Search';
+import { Avatar } from './Avatar';
 import { HelpButton } from './HelpButton';
 import { StatsCard } from './StatsCard';
 import { Table } from './Table';
