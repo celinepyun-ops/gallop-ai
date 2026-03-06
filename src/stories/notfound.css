@@ -1,0 +1,138 @@
+.oai-notfound {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--color-bg-page);
+  font-family: var(--font-family-sans);
+}
+
+/* ── Header ───────────────────────────────────────────────────────── */
+.oai-notfound__header {
+  display: flex;
+  align-items: center;
+  height: var(--navbar-height);
+  padding: 0 var(--space-8);
+  border-bottom: 1px solid var(--color-border-default);
+  background: var(--color-bg-card);
+}
+
+.oai-notfound__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.oai-notfound__logo {
+  display: flex;
+  color: var(--color-primary-600);
+}
+
+.oai-notfound__brand-name {
+  font-family: var(--font-family-serif);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-normal);
+  color: var(--color-text-primary);
+  letter-spacing: var(--tracking-tight);
+}
+
+/* ── Body ─────────────────────────────────────────────────────────── */
+.oai-notfound__body {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: var(--space-16) var(--space-8);
+}
+
+.oai-notfound__content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+/* ── 404 Digits ───────────────────────────────────────────────────── */
+.oai-notfound__digits {
+  display: flex;
+  gap: var(--space-4);
+  margin-bottom: var(--space-8);
+}
+
+.oai-notfound__digit {
+  font-family: var(--font-family-serif);
+  font-size: 180px;
+  font-weight: var(--font-weight-normal);
+  line-height: 1;
+  color: transparent;
+  background: repeating-linear-gradient(
+    0deg,
+    var(--color-primary-400) 0px,
+    var(--color-primary-400) 1px,
+    transparent 1px,
+    transparent 6px
+  ),
+  repeating-linear-gradient(
+    90deg,
+    var(--color-primary-400) 0px,
+    var(--color-primary-400) 1px,
+    transparent 1px,
+    transparent 6px
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  user-select: none;
+}
+
+/* ── Message ──────────────────────────────────────────────────────── */
+.oai-notfound__message {
+  font-size: var(--font-size-lg);
+  color: var(--color-text-secondary);
+  margin: 0 0 var(--space-6);
+  max-width: 400px;
+}
+
+.oai-notfound__action {
+  display: flex;
+}
+
+/* ── Decorative Crosses ───────────────────────────────────────────── */
+.oai-notfound__cross {
+  position: absolute;
+  font-size: 24px;
+  color: var(--color-text-muted);
+  user-select: none;
+  font-weight: var(--font-weight-normal);
+}
+
+.oai-notfound__cross--left {
+  left: var(--space-10);
+  top: 55%;
+}
+
+.oai-notfound__cross--right {
+  right: var(--space-10);
+  top: 55%;
+}
+
+/* ── Dark Mode ────────────────────────────────────────────────────── */
+[data-theme="dark"] .oai-notfound__digit {
+  background: repeating-linear-gradient(
+    0deg,
+    var(--color-primary-300) 0px,
+    var(--color-primary-300) 1px,
+    transparent 1px,
+    transparent 6px
+  ),
+  repeating-linear-gradient(
+    90deg,
+    var(--color-primary-300) 0px,
+    var(--color-primary-300) 1px,
+    transparent 1px,
+    transparent 6px
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
