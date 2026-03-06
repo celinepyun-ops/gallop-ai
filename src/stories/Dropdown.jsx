@@ -66,7 +66,7 @@ export const Dropdown = ({ trigger, items = [], align = 'left' }) => {
                     }}
                   >
                     <span className="oai-dropdown__item-left">
-                      {item.icon && <span>{item.icon}</span>}
+                      {item.icon && <span className="oai-dropdown__icon">{item.icon}</span>}
                       {item.label}
                     </span>
                     <span className={`oai-dropdown__toggle ${item.checked ? 'oai-dropdown__toggle--checked' : ''}`}>
@@ -87,7 +87,7 @@ export const Dropdown = ({ trigger, items = [], align = 'left' }) => {
                     setOpen(false);
                   }}
                 >
-                  {item.icon && <span>{item.icon}</span>}
+                  {item.icon && <span className="oai-dropdown__icon">{item.icon}</span>}
                   {item.label}
                 </button>
               </li>
