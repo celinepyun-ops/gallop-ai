@@ -153,8 +153,8 @@ export const Default = {
 
           {/* Search Provider */}
           <div className="oai-search-card__field">
-            <label className="oai-search-card__label">Search Provider</label>
-            <select className="oai-search-card__select">
+            <label className="oai-search-card__label" htmlFor="search-provider">Search Provider</label>
+            <select className="oai-search-card__select" id="search-provider">
               <option>Auto (Default)</option>
               <option>Amazon US</option>
               <option>Amazon UK</option>
@@ -166,8 +166,8 @@ export const Default = {
           {/* Filters Row */}
           <div className="oai-search-card__filters">
             <div className="oai-search-card__field">
-              <label className="oai-search-card__label">Category (Filter Results)</label>
-              <select className="oai-search-card__select">
+              <label className="oai-search-card__label" htmlFor="filter-category">Category (Filter Results)</label>
+              <select className="oai-search-card__select" id="filter-category">
                 <option>All Categories</option>
                 <option>Beauty &amp; Personal Care</option>
                 <option>Health &amp; Household</option>
@@ -178,8 +178,8 @@ export const Default = {
               </select>
             </div>
             <div className="oai-search-card__field">
-              <label className="oai-search-card__label">Min Rating (Filter Results)</label>
-              <select className="oai-search-card__select">
+              <label className="oai-search-card__label" htmlFor="filter-rating">Min Rating (Filter Results)</label>
+              <select className="oai-search-card__select" id="filter-rating">
                 <option>Any Rating</option>
                 <option>4.5+ Stars</option>
                 <option>4.0+ Stars</option>
