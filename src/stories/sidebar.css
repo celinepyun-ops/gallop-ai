@@ -216,7 +216,7 @@
 }
 
 .oai-sidebar__toggle--checked {
-  background: var(--color-primary-600);
+  background: var(--color-neutral-400);
 }
 
 .oai-sidebar__toggle-knob {
