@@ -40,10 +40,7 @@ const sidebarFooter = (
 
 const sidebarHeader = (
   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', width: '100%' }}>
-    <span style={{
-      width: 28, height: 28, borderRadius: 'var(--radius-md)', background: 'var(--color-primary-600)',
-      display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 700, fontSize: 13
-    }}>O</span>
+    <span style={{ color: 'var(--color-primary-600)', display: 'flex' }}>{Icons.logo(28)}</span>
     <span style={{ fontFamily: 'var(--font-family-serif)', fontWeight: 400, fontSize: '16px', color: 'var(--color-text-primary)' }}>
       Outreach AI
     </span>

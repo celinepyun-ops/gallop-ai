@@ -32,8 +32,8 @@ export const Default = {
         activeItem="dashboard"
         header={
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Avatar initials="OA" size="small" />
-            <span style={{ fontWeight: 600, fontSize: '14px', color: 'var(--oai-text-primary)' }}>Outreach AI</span>
+            <span style={{ color: 'var(--color-primary-600)', display: 'flex' }}>{Icons.logo(28)}</span>
+            <span style={{ fontFamily: 'var(--font-family-serif)', fontWeight: 400, fontSize: '16px', color: 'var(--color-text-primary)' }}>Outreach AI</span>
           </div>
         }
       />
@@ -47,8 +47,8 @@ export const Default = {
     ),
     children: (
       <div style={{ padding: '8px' }}>
-        <h1 style={{ margin: '0 0 8px', fontFamily: 'var(--oai-font-sans)' }}>Dashboard</h1>
-        <p style={{ color: 'var(--oai-text-secondary)', fontFamily: 'var(--oai-font-sans)' }}>
+        <h1 style={{ margin: '0 0 8px', fontFamily: 'var(--font-family-sans)' }}>Dashboard</h1>
+        <p style={{ color: 'var(--color-text-secondary)', fontFamily: 'var(--font-family-sans)' }}>
           Welcome to Outreach AI. Select a section from the sidebar to get started.
         </p>
       </div>
