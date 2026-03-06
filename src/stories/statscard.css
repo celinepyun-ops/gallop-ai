@@ -23,6 +23,11 @@
 
 .oai-stats-card__icon {
   font-size: var(--font-size-xl);
+  color: var(--color-text-secondary);
+}
+
+[data-theme="dark"] .oai-stats-card__icon {
+  color: var(--color-neutral-300);
 }
 
 .oai-stats-card__value {
