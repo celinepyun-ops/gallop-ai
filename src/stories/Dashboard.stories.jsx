@@ -60,7 +60,7 @@ const sidebarHeader = (
 const tableColumns = [
   { key: 'brand', label: 'Brand' },
   { key: 'contact', label: 'Contact' },
-  { key: 'status', label: 'Status', render: (val) => <Badge label={val} variant={val === 'Active' ? 'success' : val === 'Pending' ? 'warning' : 'info'} size="small" /> },
+  { key: 'status', label: 'Status', render: (val) => <Badge label={val} variant={val === 'Active' ? 'success' : val === 'Pending' ? 'warning' : val === 'Paused' ? 'error' : 'info'} size="small" /> },
   { key: 'sent', label: 'Sent' },
   { key: 'rate', label: 'Response Rate' },
 ];
