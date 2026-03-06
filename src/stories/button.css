@@ -32,12 +32,12 @@
 }
 
 .oai-button--secondary {
-  background-color: var(--color-secondary-600);
+  background-color: var(--color-secondary-700);
   color: var(--color-text-inverse);
 }
 
 .oai-button--secondary:hover:not(:disabled) {
-  background-color: var(--color-secondary-700);
+  background-color: var(--color-secondary-800);
 }
 
 .oai-button--outline {
