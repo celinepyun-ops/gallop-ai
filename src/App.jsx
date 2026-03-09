@@ -20,6 +20,8 @@ import { Breadcrumbs } from './stories/Breadcrumbs';
 import { Button } from './stories/Button';
 import { Select } from './stories/Select';
 import { NotFound } from './stories/NotFound';
+import { Login } from './stories/Login';
+import { SignUp } from './stories/SignUp';
 import { Icons } from './stories/icons';
 
 /* ── Page-specific CSS ───────────────────────────────────────────── */
@@ -244,7 +246,7 @@ const SearchBrandsContent = () => (
    App — root with page routing
    ══════════════════════════════════════════════════════════════════ */
 function App() {
-  const [page, setPage] = useState('dashboard');
+  const [page, setPage] = useState('login');
   const [darkMode, setDarkMode] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
@@ -252,6 +254,26 @@ function App() {
     setDarkMode(val);
     document.documentElement.dataset.theme = val ? 'dark' : '';
   };
+
+  /* ── Auth pages — full-screen, no layout chrome ────────────── */
+  if (page === 'login') {
+    return (
+      <Login
+        onLogin={() => setPage('dashboard')}
+        onSignUpClick={() => setPage('signup')}
+        onForgotPassword={noop}
+      />
+    );
+  }
+
+  if (page === 'signup') {
+    return (
+      <SignUp
+        onSignUp={() => setPage('dashboard')}
+        onLoginClick={() => setPage('login')}
+      />
+    );
+  }
 
   /* ── Sidebar nav items with page routing ─────────────────────── */
   const sidebarItems = [
