@@ -8,20 +8,21 @@ The Gallop AI design system uses CSS custom properties (tokens) for consistent s
 
 ---
 
-## Color — Brand Primary (Olive Green)
+## Color — Brand Primary (Dark Green)
 
 <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '24px' }}>
   {[
-    ['50', '#F4F6EC'],
-    ['100', '#E5EAD0'],
-    ['200', '#CCDA9F'],
-    ['300', '#ADBD6E'],
-    ['400', '#8B9B48'],
-    ['500', '#6B7A2F'],
-    ['600', '#556225'],
-    ['700', '#40491C'],
-    ['800', '#2D3312'],
-    ['900', '#1A1E0A'],
+    ['50', '#F0F7F0'],
+    ['100', '#D6EAD6'],
+    ['200', '#A8D5A8'],
+    ['300', '#72BA72'],
+    ['400', '#3D9E3D'],
+    ['500', '#1A8A1A'],
+    ['600', '#006400'],
+    ['700', '#005200'],
+    ['800', '#003D00'],
+    ['900', '#002900'],
+    ['950', '#001500'],
   ].map(([shade, hex]) => (
     <div key={shade} style={{ textAlign: 'center' }}>
       <div style={{ width: '64px', height: '64px', borderRadius: '8px', background: hex, border: '1px solid #E8E8E3' }} />
@@ -35,16 +36,17 @@ The Gallop AI design system uses CSS custom properties (tokens) for consistent s
 
 <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '24px' }}>
   {[
-    ['50', '#FEF3EC'],
-    ['100', '#FDE0CA'],
-    ['200', '#F9BC8E'],
-    ['300', '#F29857'],
-    ['400', '#EC8745'],
-    ['500', '#E67635'],
-    ['600', '#C5602A'],
-    ['700', '#9A4A20'],
-    ['800', '#6F3517'],
-    ['900', '#5C2E15'],
+    ['50', '#FFF7ED'],
+    ['100', '#FFEDD5'],
+    ['200', '#FED7AA'],
+    ['300', '#FDBA74'],
+    ['400', '#FB923C'],
+    ['500', '#F97316'],
+    ['600', '#E8760A'],
+    ['700', '#C2410C'],
+    ['800', '#9A3412'],
+    ['900', '#7C2D12'],
+    ['950', '#431407'],
   ].map(([shade, hex]) => (
     <div key={shade} style={{ textAlign: 'center' }}>
       <div style={{ width: '64px', height: '64px', borderRadius: '8px', background: hex, border: '1px solid #E8E8E3' }} />
@@ -68,6 +70,7 @@ The Gallop AI design system uses CSS custom properties (tokens) for consistent s
     ['700', '#3D3D37'],
     ['800', '#2A2A25'],
     ['900', '#1A1A17'],
+    ['950', '#0D0D0B'],
   ].map(([shade, hex]) => (
     <div key={shade} style={{ textAlign: 'center' }}>
       <div style={{ width: '64px', height: '64px', borderRadius: '8px', background: hex, border: '1px solid #E8E8E3' }} />
@@ -81,7 +84,7 @@ The Gallop AI design system uses CSS custom properties (tokens) for consistent s
 
 <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginBottom: '24px' }}>
   {[
-    ['Success', '#16A34A', '#ECFDF5'],
+    ['Success', '#16A34A', '#F0FDF4'],
     ['Warning', '#D97706', '#FFFBEB'],
     ['Error', '#DC2626', '#FEF2F2'],
     ['Info', '#2563EB', '#EFF6FF'],
@@ -97,12 +100,13 @@ The Gallop AI design system uses CSS custom properties (tokens) for consistent s
 
 <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginBottom: '24px' }}>
   {[
-    ['Primary', '#FFFFFF'],
-    ['Secondary', '#FAFAF7'],
-    ['Sidebar', '#1A1A2E'],
+    ['Page', '#FAFAF7'],
+    ['Card', '#FFFFFF'],
+    ['Sidebar', '#002900'],
+    ['Hover', '#F0F7F0'],
   ].map(([name, hex]) => (
     <div key={name} style={{ textAlign: 'center' }}>
-      <div style={{ width: '96px', height: '64px', borderRadius: '8px', background: hex, border: '1px solid #E8E8E3', display: 'flex', alignItems: 'center', justifyContent: 'center', color: hex === '#1A1A2E' ? '#fff' : '#1A1A17', fontSize: '11px', fontWeight: 600 }}>{name}</div>
+      <div style={{ width: '96px', height: '64px', borderRadius: '8px', background: hex, border: '1px solid #E8E8E3', display: 'flex', alignItems: 'center', justifyContent: 'center', color: hex === '#002900' ? '#fff' : '#1A1A17', fontSize: '11px', fontWeight: 600 }}>{name}</div>
       <div style={{ fontSize: '11px', color: '#6B6B63', marginTop: '4px' }}>{hex}</div>
     </div>
   ))}
@@ -112,29 +116,34 @@ The Gallop AI design system uses CSS custom properties (tokens) for consistent s
 
 ## Typography
 
-<div style={{ fontFamily: "'Nunito Sans', sans-serif", display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '24px' }}>
-  <div style={{ fontSize: '36px', fontWeight: 700 }}>4xl — 36px Bold</div>
-  <div style={{ fontSize: '30px', fontWeight: 700 }}>3xl — 30px Bold</div>
-  <div style={{ fontSize: '24px', fontWeight: 600 }}>2xl — 24px Semibold</div>
-  <div style={{ fontSize: '20px', fontWeight: 600 }}>xl — 20px Semibold</div>
-  <div style={{ fontSize: '18px', fontWeight: 500 }}>lg — 18px Medium</div>
-  <div style={{ fontSize: '16px', fontWeight: 500 }}>md — 16px Medium</div>
-  <div style={{ fontSize: '14px', fontWeight: 400 }}>base — 14px Regular</div>
-  <div style={{ fontSize: '13px', fontWeight: 400 }}>sm — 13px Regular</div>
-  <div style={{ fontSize: '12px', fontWeight: 400 }}>xs — 12px Regular</div>
+<div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '24px' }}>
+  <div style={{ fontFamily: "'Test Tiempos Text', Georgia, serif", fontSize: '36px', fontWeight: 400 }}>4xl — 36px Serif (Headings)</div>
+  <div style={{ fontFamily: "'Test Tiempos Text', Georgia, serif", fontSize: '30px', fontWeight: 400 }}>3xl — 30px Serif (Headings)</div>
+  <div style={{ fontFamily: "'Test Tiempos Text', Georgia, serif", fontSize: '24px', fontWeight: 400 }}>2xl — 24px Serif (Headings)</div>
+  <div style={{ fontFamily: "'Test Tiempos Text', Georgia, serif", fontSize: '20px', fontWeight: 400 }}>xl — 20px Serif (Sidebar logo)</div>
+  <div style={{ fontFamily: "'Uncut Sans', sans-serif", fontSize: '18px', fontWeight: 500 }}>lg — 18px Sans Medium</div>
+  <div style={{ fontFamily: "'Uncut Sans', sans-serif", fontSize: '16px', fontWeight: 500 }}>md — 16px Sans Medium</div>
+  <div style={{ fontFamily: "'Uncut Sans', sans-serif", fontSize: '14px', fontWeight: 400 }}>base — 14px Sans Regular (Body)</div>
+  <div style={{ fontFamily: "'Uncut Sans', sans-serif", fontSize: '13px', fontWeight: 400 }}>sm — 13px Sans Regular</div>
+  <div style={{ fontFamily: "'Uncut Sans', sans-serif", fontSize: '12px', fontWeight: 400 }}>xs — 12px Sans Regular</div>
 </div>
+
+**Font Families:**
+- **Headings:** Test Tiempos Text (serif, weight 400)
+- **Body:** Uncut Sans (sans-serif)
+- **Code:** SF Mono (monospace)
 
 ---
 
-## Spacing Scale
+## Spacing Scale (4px base)
 
 <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-end', flexWrap: 'wrap', marginBottom: '24px' }}>
   {[
     ['1', 4], ['2', 8], ['3', 12], ['4', 16], ['5', 20], ['6', 24], ['8', 32], ['10', 40], ['12', 48], ['16', 64],
   ].map(([name, px]) => (
     <div key={name} style={{ textAlign: 'center' }}>
-      <div style={{ width: '40px', height: `${px}px`, background: '#6B7A2F', borderRadius: '4px', minHeight: '4px' }} />
-      <div style={{ fontSize: '11px', fontWeight: 600, marginTop: '4px' }}>{name}</div>
+      <div style={{ width: '40px', height: `${px}px`, background: '#006400', borderRadius: '4px', minHeight: '4px' }} />
+      <div style={{ fontSize: '11px', fontWeight: 600, marginTop: '4px' }}>--space-{name}</div>
       <div style={{ fontSize: '10px', color: '#6B6B63' }}>{px}px</div>
     </div>
   ))}
@@ -147,13 +156,13 @@ The Gallop AI design system uses CSS custom properties (tokens) for consistent s
 <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginBottom: '24px' }}>
   {[
     ['sm', '4px'],
-    ['md', '6px'],
-    ['lg', '8px'],
-    ['xl', '12px'],
+    ['md', '8px'],
+    ['lg', '12px'],
+    ['xl', '16px'],
     ['full', '9999px'],
   ].map(([name, value]) => (
     <div key={name} style={{ textAlign: 'center' }}>
-      <div style={{ width: '64px', height: '64px', borderRadius: value, background: '#E5EAD0', border: '2px solid #6B7A2F' }} />
+      <div style={{ width: '64px', height: '64px', borderRadius: value, background: '#D6EAD6', border: '2px solid #006400' }} />
       <div style={{ fontSize: '12px', fontWeight: 600, marginTop: '4px' }}>{name}</div>
       <div style={{ fontSize: '11px', color: '#6B6B63' }}>{value}</div>
     </div>
@@ -166,11 +175,10 @@ The Gallop AI design system uses CSS custom properties (tokens) for consistent s
 
 <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap', marginBottom: '24px' }}>
   {[
-    ['xs', '0 1px 2px rgba(0,0,0,0.05)'],
-    ['sm', '0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04)'],
-    ['md', '0 4px 6px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.04)'],
-    ['lg', '0 10px 15px rgba(0,0,0,0.08), 0 4px 6px rgba(0,0,0,0.04)'],
-    ['xl', '0 20px 25px rgba(0,0,0,0.1), 0 8px 10px rgba(0,0,0,0.04)'],
+    ['sm', '0 1px 2px rgba(26,26,23,0.05)'],
+    ['md', '0 1px 3px rgba(26,26,23,0.08), 0 4px 12px rgba(26,26,23,0.04)'],
+    ['lg', '0 4px 6px rgba(26,26,23,0.05), 0 10px 24px rgba(26,26,23,0.08)'],
+    ['xl', '0 8px 16px rgba(26,26,23,0.06), 0 20px 40px rgba(26,26,23,0.12)'],
   ].map(([name, value]) => (
     <div key={name} style={{ textAlign: 'center' }}>
       <div style={{ width: '80px', height: '80px', borderRadius: '8px', background: '#FFFFFF', boxShadow: value }} />
@@ -181,11 +189,11 @@ The Gallop AI design system uses CSS custom properties (tokens) for consistent s
 
 <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
   {[
-    ['focus', '0 0 0 3px rgba(107,122,47,0.3)'],
+    ['focus', '0 0 0 3px rgba(0,100,0,0.3)'],
     ['error', '0 0 0 3px rgba(220,38,38,0.2)'],
   ].map(([name, value]) => (
     <div key={name} style={{ textAlign: 'center' }}>
-      <div style={{ width: '80px', height: '80px', borderRadius: '8px', background: '#FFFFFF', boxShadow: value, border: name === 'error' ? '1px solid #DC2626' : '1px solid #6B7A2F' }} />
+      <div style={{ width: '80px', height: '80px', borderRadius: '8px', background: '#FFFFFF', boxShadow: value, border: name === 'error' ? '1px solid #DC2626' : '1px solid #006400' }} />
       <div style={{ fontSize: '12px', fontWeight: 600, marginTop: '8px' }}>{name} ring</div>
     </div>
   ))}
