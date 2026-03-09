@@ -22,6 +22,7 @@ import { Select } from './stories/Select';
 import { NotFound } from './stories/NotFound';
 import { Login } from './stories/Login';
 import { SignUp } from './stories/SignUp';
+import { Settings } from './stories/Settings';
 import { Icons } from './stories/icons';
 
 /* ── Page-specific CSS ───────────────────────────────────────────── */
@@ -33,7 +34,7 @@ const noop = () => {};
 /* ══════════════════════════════════════════════════════════════════
    Sidebar footer — shared across pages
    ══════════════════════════════════════════════════════════════════ */
-const SidebarFooter = ({ darkMode, onToggleDark }) => (
+const SidebarFooter = ({ darkMode, onToggleDark, onProfileClick, onSettingsClick }) => (
   <ul className="oai-sidebar__list">
     <li>
       <button className="oai-sidebar__item" onClick={noop}>
@@ -42,7 +43,7 @@ const SidebarFooter = ({ darkMode, onToggleDark }) => (
       </button>
     </li>
     <li>
-      <button className="oai-sidebar__item" onClick={noop}>
+      <button className="oai-sidebar__item" onClick={onSettingsClick}>
         <span className="oai-sidebar__icon">{Icons.settings}</span>
         <span className="oai-sidebar__label">Settings</span>
       </button>
@@ -62,7 +63,7 @@ const SidebarFooter = ({ darkMode, onToggleDark }) => (
       </button>
     </li>
     <li>
-      <button className="oai-sidebar__item" onClick={noop}>
+      <button className="oai-sidebar__item" onClick={onProfileClick}>
         <span className="oai-sidebar__icon"><Avatar initials="JD" size="small" /></span>
         <span className="oai-sidebar__label">Jane Doe</span>
       </button>
@@ -300,6 +301,13 @@ function App() {
         return <DashboardContent />;
       case 'search-brands':
         return <SearchBrandsContent />;
+      case 'settings':
+        return (
+          <Settings
+            onLogout={() => setPage('login')}
+            onSave={noop}
+          />
+        );
       default:
         return <NotFound onBackClick={() => setPage('dashboard')} />;
     }
@@ -312,7 +320,14 @@ function App() {
           items={sidebarItems}
           activeItem={page}
           header={sidebarHeader}
-          footer={<SidebarFooter darkMode={darkMode} onToggleDark={toggleDark} />}
+          footer={
+            <SidebarFooter
+              darkMode={darkMode}
+              onToggleDark={toggleDark}
+              onProfileClick={() => setPage('settings')}
+              onSettingsClick={() => setPage('settings')}
+            />
+          }
           collapsed={sidebarCollapsed}
           onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
         />

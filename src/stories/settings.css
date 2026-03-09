@@ -1,0 +1,439 @@
+/* ==========================================================================
+   Settings Page
+   ========================================================================== */
+
+.oai-settings {
+  display: flex;
+  gap: var(--space-8);
+  max-width: 900px;
+}
+
+/* ── Left Nav ─────────────────────────────────────────────────────── */
+.oai-settings__nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 180px;
+  flex-shrink: 0;
+}
+
+.oai-settings__nav-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-base);
+  color: var(--color-text-secondary);
+  background: none;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  text-align: left;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.oai-settings__nav-item:hover {
+  background: var(--color-bg-hover);
+  color: var(--color-text-primary);
+}
+
+.oai-settings__nav-item--active {
+  background: var(--color-primary-50);
+  color: var(--color-primary-600);
+  font-weight: var(--font-weight-medium);
+}
+
+[data-theme="dark"] .oai-settings__nav-item--active {
+  background: var(--color-neutral-700);
+  color: var(--color-primary-400);
+}
+
+.oai-settings__nav-icon {
+  display: flex;
+  align-items: center;
+  color: inherit;
+  flex-shrink: 0;
+}
+
+.oai-settings__nav-item--danger {
+  color: var(--color-error);
+  margin-top: var(--space-4);
+  border-top: 1px solid var(--color-border-default);
+  padding-top: var(--space-4);
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+}
+
+.oai-settings__nav-item--danger:hover {
+  background: var(--color-error-bg);
+  color: var(--color-error);
+}
+
+/* ── Content ──────────────────────────────────────────────────────── */
+.oai-settings__content {
+  flex: 1;
+  min-width: 0;
+}
+
+.oai-settings__section-title {
+  font-family: var(--font-family-serif);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-normal);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--space-1);
+}
+
+.oai-settings__section-desc {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin: 0 0 var(--space-6);
+}
+
+.oai-settings__divider {
+  height: 1px;
+  background: var(--color-border-default);
+  margin: var(--space-6) 0;
+}
+
+/* ── Profile Photo ────────────────────────────────────────────────── */
+.oai-settings__photo-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+
+.oai-settings__photo {
+  width: 72px;
+  height: 72px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary-600);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-medium);
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.oai-settings__photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.oai-settings__photo-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.oai-settings__photo-btn {
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-primary-600);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: var(--space-1) 0;
+  text-align: left;
+}
+
+.oai-settings__photo-btn:hover {
+  text-decoration: underline;
+}
+
+.oai-settings__photo-btn--remove {
+  color: var(--color-error);
+}
+
+/* ── Form Fields ──────────────────────────────────────────────────── */
+.oai-settings__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.oai-settings__row {
+  display: flex;
+  gap: var(--space-4);
+}
+
+.oai-settings__row > .oai-settings__field {
+  flex: 1;
+}
+
+.oai-settings__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.oai-settings__label {
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}
+
+.oai-settings__input {
+  padding: var(--space-2) var(--space-3);
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-base);
+  color: var(--color-text-primary);
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  outline: none;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.oai-settings__input:focus {
+  border-color: var(--color-primary-600);
+  box-shadow: var(--shadow-focus);
+}
+
+.oai-settings__input:disabled {
+  background: var(--color-neutral-100);
+  color: var(--color-text-muted);
+  cursor: not-allowed;
+}
+
+[data-theme="dark"] .oai-settings__input:disabled {
+  background: var(--color-neutral-800);
+}
+
+.oai-settings__actions {
+  display: flex;
+  gap: var(--space-3);
+  margin-top: var(--space-2);
+}
+
+/* ── Plan Card ────────────────────────────────────────────────────── */
+.oai-settings__plan-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4) var(--space-5);
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--space-4);
+}
+
+.oai-settings__plan-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.oai-settings__plan-label {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.oai-settings__plan-name {
+  font-family: var(--font-family-serif);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-normal);
+  color: var(--color-text-primary);
+}
+
+.oai-settings__plan-btn {
+  padding: var(--space-2) var(--space-4);
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-inverse);
+  background: var(--color-neutral-900);
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.oai-settings__plan-btn:hover {
+  background: var(--color-neutral-800);
+}
+
+[data-theme="dark"] .oai-settings__plan-btn {
+  background: var(--color-neutral-200);
+  color: var(--color-neutral-900);
+}
+
+.oai-settings__trial-msg {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-4);
+}
+
+.oai-settings__activate-btn {
+  padding: var(--space-2) var(--space-5);
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  color: #FFFFFF;
+  background: var(--color-primary-600);
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.oai-settings__activate-btn:hover {
+  background: var(--color-primary-700);
+}
+
+/* ── Toggle Row ───────────────────────────────────────────────────── */
+.oai-settings__toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4) 0;
+  border-bottom: 1px solid var(--color-border-default);
+}
+
+.oai-settings__toggle-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.oai-settings__toggle-label {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}
+
+.oai-settings__toggle-desc {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.oai-settings__toggle {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  background: var(--color-neutral-300);
+  border-radius: var(--radius-full);
+  border: none;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.oai-settings__toggle--checked {
+  background: var(--color-primary-600);
+}
+
+.oai-settings__toggle-knob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  background: #FFFFFF;
+  border-radius: var(--radius-full);
+  transition: transform var(--transition-fast);
+  box-shadow: var(--shadow-sm);
+}
+
+.oai-settings__toggle--checked .oai-settings__toggle-knob {
+  transform: translateX(20px);
+}
+
+/* ── Payment Card ─────────────────────────────────────────────────── */
+.oai-settings__card-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4);
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-lg);
+  margin-top: var(--space-4);
+}
+
+.oai-settings__card-info {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.oai-settings__card-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 28px;
+  background: var(--color-neutral-100);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-secondary);
+}
+
+[data-theme="dark"] .oai-settings__card-icon {
+  background: var(--color-neutral-700);
+}
+
+.oai-settings__card-details {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.oai-settings__card-number {
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+}
+
+.oai-settings__card-expiry {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.oai-settings__card-edit {
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-primary-600);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: var(--space-1) var(--space-2);
+}
+
+.oai-settings__card-edit:hover {
+  text-decoration: underline;
+}
+
+/* ── Footer ───────────────────────────────────────────────────────── */
+.oai-settings__footer {
+  display: flex;
+  gap: var(--space-4);
+  margin-top: var(--space-8);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-border-default);
+}
+
+.oai-settings__footer-link {
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  text-decoration: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.oai-settings__footer-link:hover {
+  color: var(--color-text-secondary);
+  text-decoration: underline;
+}
