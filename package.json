@@ -5,7 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:marketing": "vite --config vite.marketing.config.js",
+    "dev:app": "vite --config vite.app.config.js",
     "build": "vite build",
+    "build:marketing": "vite build --config vite.marketing.config.js",
+    "build:app": "vite build --config vite.app.config.js",
     "lint": "eslint .",
     "preview": "vite preview",
     "storybook": "storybook dev -p 6006",
