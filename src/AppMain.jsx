@@ -454,6 +454,208 @@ const EmailsContent = () => {
   );
 };
 
+/* ── People mock data ────────────────────────────────────────────── */
+const brandsInList = [
+  { brand: 'Arbonne', company: 'Arbonne International, LLC', domain: 'arbonne.com', country: 'United States', state: 'California', city: 'Irvine' },
+  { brand: 'The Ordinary', company: 'Deciem Beauty Group Inc.', domain: 'theordinary.com', country: 'Canada', state: 'Ontario', city: 'Toronto' },
+  { brand: 'Dr.Althea', company: 'Dr.Althea Co., Ltd.', domain: 'dralthea.com', country: 'South Korea', state: '—', city: 'Seoul' },
+  { brand: 'SimplyVital', company: 'SimplyVital Health, Inc.', domain: 'simplyvitalhealth.com', country: 'United States', state: 'Connecticut', city: 'New Haven' },
+  { brand: 'Vanicream', company: 'Vanicream, LLC', domain: 'vanicream.com', country: 'United States', state: 'Illinois', city: 'Chicago' },
+  { brand: 'OUPEICHARM', company: 'OUPEICHARM', domain: 'oupeicharm.com', country: 'China', state: '—', city: '—' },
+];
+
+const peopleData = [
+  { name: 'Hannah Weaver', title: 'Senior Vendor Manager, Premium Beauty', company: 'Amazon', location: 'New York, New York', initials: 'HW', match: 'BULLSEYE', tags: ['Category Decision-Maker', 'Amazon Investing in Beauty'] },
+  { name: 'David Lee', title: 'Category Leader, Mass Beauty & Groomi...', company: 'Amazon', location: 'Seattle, Washington', initials: 'DL', match: 'BULLSEYE', tags: ['Mass Beauty Category Leader', 'Amazon Vendor Management Experience'] },
+  { name: 'Brynn Kemper', title: 'Senior Manager Business Development a...', company: 'Amazon', location: 'Seattle, Washington', initials: 'BK', match: 'BULLSEYE', tags: ['Senior Manager, Premium Beauty', 'Premium Beauty & Luxury Focus'] },
+  { name: 'Molly Ayers', title: 'TikTok Shop Category Manager - Beauty', company: 'TikTok', location: 'Seattle, Washington', initials: 'MA', match: 'BULLSEYE', tags: ['Beauty Category Owner', 'Experienced Buyer & Vendor Lead'] },
+  { name: 'Asia Jenkins', title: 'Category Manager, Beauty @ TikTok Shop', company: 'TikTok', location: 'New York, New York', initials: 'AJ', match: 'BULLSEYE', tags: ['Category Manager — Decision-Maker', 'Buying/Purchasing Background'] },
+  { name: 'Nikki Hardison', title: 'Senior Business Development Manager -...', company: 'Amazon', location: 'New York, New York', initials: 'NH', match: 'BULLSEYE', tags: ['Premium Beauty BD Lead', 'Recent LinkedIn Engagement'] },
+  { name: 'Daniela Kretschmar', title: 'Sr. Vendor Manager, Beauty, Skin Care', company: 'Amazon', location: 'Miami, Florida', initials: 'DK', match: 'BULLSEYE', tags: ['Senior Vendor Manager — Mass Beauty', 'Category & Assortment Owner'] },
+];
+
+/* ── Page: People / Contacts ─────────────────────────────────────── */
+const PeopleContent = () => {
+  const [selected, setSelected] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [jobTitles, setJobTitles] = useState(['ceo']);
+  const [titleInput, setTitleInput] = useState('');
+  const [hasSearched, setHasSearched] = useState(false);
+
+  const addTitle = () => {
+    if (titleInput.trim() && !jobTitles.includes(titleInput.trim().toLowerCase())) {
+      setJobTitles([...jobTitles, titleInput.trim().toLowerCase()]);
+      setTitleInput('');
+    }
+  };
+
+  const removeTitle = (t) => setJobTitles(jobTitles.filter((j) => j !== t));
+
+  const toggleSelect = (name) => {
+    setSelected((prev) => prev.includes(name) ? prev.filter((n) => n !== name) : [...prev, name]);
+  };
+
+  const toggleAll = () => {
+    selected.length === peopleData.length ? setSelected([]) : setSelected(peopleData.map((p) => p.name));
+  };
+
+  return (
+    <div style={{ maxWidth: '1200px' }}>
+      <Breadcrumbs items={[{ label: 'Campaigns', href: '#' }, { label: 'People' }]} />
+
+      <div style={{ marginTop: '16px', marginBottom: '24px' }}>
+        <h1 style={{ margin: '0 0 4px', fontSize: '24px', fontWeight: 400, color: 'var(--color-text-primary)' }}>People</h1>
+        <p style={{ margin: 0, fontFamily: 'var(--font-family-sans)', fontSize: '14px', color: 'var(--color-text-secondary)' }}>Find the right contact person at the brands you've selected.</p>
+      </div>
+
+      {/* Find Decision Makers card */}
+      <div className="oai-people__finder">
+        <h2 className="oai-people__finder-title">{Icons.contacts} Find Decision Makers</h2>
+        <div className="oai-people__finder-input-row">
+          <input
+            className="oai-people__finder-input"
+            type="text"
+            placeholder="Enter job title (e.g., CEO, Director of Purchasing)"
+            value={titleInput}
+            onChange={(e) => setTitleInput(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && addTitle()}
+          />
+        </div>
+        <div className="oai-people__finder-tags">
+          {jobTitles.map((t) => (
+            <span key={t} className="oai-people__finder-tag">
+              {t}
+              <button className="oai-people__finder-tag-remove" onClick={() => removeTitle(t)}>✕</button>
+            </span>
+          ))}
+        </div>
+        <button className="oai-people__finder-search-btn" onClick={() => setHasSearched(true)}>
+          Find Contacts for All {brandsInList.length} Brands
+        </button>
+      </div>
+
+      {/* Brands in This List table */}
+      <div className="oai-people__brands">
+        <h2 className="oai-people__brands-title">
+          Brands in This List
+          <span className="oai-people__brands-count">{brandsInList.length}</span>
+        </h2>
+        <div className="oai-people__brands-table-wrap">
+          <table className="oai-people__brands-table">
+            <thead>
+              <tr>
+                <th>Brand Name</th>
+                <th>Company Name</th>
+                <th>Domain</th>
+                <th>Country</th>
+                <th>State</th>
+                <th>City</th>
+              </tr>
+            </thead>
+            <tbody>
+              {brandsInList.map((b) => (
+                <tr key={b.brand}>
+                  <td className="oai-people__brands-td--bold">{b.brand}</td>
+                  <td>{b.company}</td>
+                  <td>{b.domain}</td>
+                  <td>{b.country}</td>
+                  <td>{b.state}</td>
+                  <td>{b.city}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Results section — shown after search */}
+      {hasSearched && (
+        <>
+          {/* Results header */}
+          <div className="oai-people__header">
+            <div className="oai-people__header-left" />
+            <div className="oai-people__header-actions">
+              <div className="oai-people__stat-box">
+                <div className="oai-people__stat-num">{selected.length}</div>
+                <div className="oai-people__stat-lbl">SAVED</div>
+              </div>
+              <div className="oai-people__stat-box">
+                <div className="oai-people__stat-num">0</div>
+                <div className="oai-people__stat-lbl">EMAILS</div>
+              </div>
+              <button className="oai-people__find-btn" onClick={noop}>{Icons.contacts} Find More</button>
+              <button className="oai-people__export-btn" onClick={noop}>Export ▾</button>
+              <button className="oai-people__outbound-btn" onClick={noop}>{Icons.campaigns} Outbound</button>
+            </div>
+          </div>
+
+          {/* Filters toolbar */}
+          <div className="oai-people__toolbar">
+            <div className="oai-people__filters">
+              <div className="oai-people__search-input">
+                <Search placeholder="Search leads..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
+              </div>
+              <button className="oai-people__filter-btn">Company ▾</button>
+              <button className="oai-people__filter-btn">Location ▾</button>
+              <button className="oai-people__filter-btn">Title ▾</button>
+            </div>
+            <div className="oai-people__filters-right">
+              <button className="oai-people__filter-btn">Sort: Intent ▾</button>
+              <label className="oai-people__select-all">
+                <input type="checkbox" checked={selected.length === peopleData.length} onChange={toggleAll} />
+                Select all
+              </label>
+            </div>
+          </div>
+
+          {/* Date + count */}
+          <div className="oai-people__date-row">
+            <span className="oai-people__date">Mar 5</span>
+            <span className="oai-people__lead-count">{peopleData.length} leads</span>
+          </div>
+
+          {/* People list */}
+          <div className="oai-people__list">
+            {peopleData.map((person) => (
+              <div key={person.name} className={`oai-people__row ${selected.includes(person.name) ? 'oai-people__row--selected' : ''}`}>
+                <div className="oai-people__row-check">
+                  <input type="checkbox" checked={selected.includes(person.name)} onChange={() => toggleSelect(person.name)} />
+                </div>
+                <div className="oai-people__row-avatar">
+                  <Avatar initials={person.initials} size="medium" />
+                </div>
+                <div className="oai-people__row-info">
+                  <div className="oai-people__row-name">{person.name}</div>
+                  <div className="oai-people__row-title">{person.title}</div>
+                  <div className="oai-people__row-company">{person.company} · {person.location}</div>
+                </div>
+                <div className="oai-people__row-tags">
+                  <Badge label={person.match} variant="success" size="small" />
+                  {person.tags.map((tag) => (
+                    <span key={tag} className="oai-people__tag">{tag}</span>
+                  ))}
+                </div>
+                <div className="oai-people__row-actions">
+                  <button className="oai-people__icon-btn" title="LinkedIn" onClick={noop}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.5 2h-17A1.5 1.5 0 002 3.5v17A1.5 1.5 0 003.5 22h17a1.5 1.5 0 001.5-1.5v-17A1.5 1.5 0 0020.5 2zM8 19H5v-9h3zM6.5 8.25A1.75 1.75 0 118.3 6.5a1.78 1.78 0 01-1.8 1.75zM19 19h-3v-4.74c0-1.42-.6-1.93-1.38-1.93A1.74 1.74 0 0013 14.19a.66.66 0 000 .14V19h-3v-9h2.9v1.3a3.11 3.11 0 012.7-1.4c1.55 0 3.36.86 3.36 3.66z"/></svg>
+                  </button>
+                  <button className="oai-people__icon-btn" title="Email" onClick={noop}>{Icons.campaigns}</button>
+                  <button className="oai-people__icon-btn" title="View" onClick={noop}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  </button>
+                  <button className="oai-people__icon-btn" title="Save" onClick={noop}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+};
+
 /* ── App with simple path-based routing ──────────────────────────── */
 function AppMain() {
   const [page, setPage] = useState(() => {
@@ -512,6 +714,7 @@ function AppMain() {
         { id: 'dashboard', label: 'Dashboard', icon: Icons.dashboard, onClick: () => navigate('dashboard') },
         { id: 'search-brands', label: 'Search Brands', icon: Icons.search, onClick: () => navigate('search-brands') },
         { id: 'brands', label: 'Brands', icon: Icons.brands, onClick: () => navigate('brands') },
+        { id: 'people', label: 'People', icon: Icons.contacts, onClick: () => navigate('people') },
         { id: 'emails', label: 'Emails', icon: Icons.campaigns, onClick: () => navigate('emails') },
         { id: 'templates', label: 'Templates', icon: Icons.templates, onClick: () => navigate('templates') },
         { id: 'campaigns', label: 'Campaigns', icon: Icons.campaigns, onClick: () => navigate('campaigns') },
@@ -528,6 +731,7 @@ function AppMain() {
     switch (page) {
       case 'dashboard': return <DashboardContent />;
       case 'search-brands': return <SearchBrandsContent />;
+      case 'people': return <PeopleContent />;
       case 'emails': return <EmailsContent />;
       case 'templates': return <TemplatesContent />;
       default: return <NotFound onBackClick={() => navigate('dashboard')} />;

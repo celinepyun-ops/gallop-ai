@@ -1085,3 +1085,451 @@
 .oai-emails__approve-all:hover {
   color: var(--color-text-primary);
 }
+
+/* ==========================================================================
+   People / Contacts Page
+   ========================================================================== */
+
+/* Find Decision Makers card */
+.oai-people__finder {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  margin-bottom: var(--space-6);
+  font-family: var(--font-family-sans);
+}
+
+.oai-people__finder-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-family-serif);
+  font-weight: var(--font-weight-normal);
+  font-size: var(--font-size-lg);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--space-4);
+}
+
+.oai-people__finder-input-row {
+  margin-bottom: var(--space-3);
+}
+
+.oai-people__finder-input {
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
+  font-family: var(--font-family-sans);
+  color: var(--color-text-primary);
+  background: var(--color-bg-card);
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.oai-people__finder-input:focus {
+  border-color: var(--color-border-focus);
+  box-shadow: var(--shadow-focus);
+}
+
+.oai-people__finder-input::placeholder {
+  color: var(--color-text-muted);
+}
+
+.oai-people__finder-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+
+.oai-people__finder-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-3);
+  background: var(--color-primary-600);
+  color: #FFFFFF;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+}
+
+.oai-people__finder-tag-remove {
+  background: none;
+  border: none;
+  color: #FFFFFF;
+  cursor: pointer;
+  font-size: 12px;
+  padding: 0;
+  margin-left: 2px;
+  opacity: 0.8;
+}
+
+.oai-people__finder-tag-remove:hover {
+  opacity: 1;
+}
+
+.oai-people__finder-search-btn {
+  width: 100%;
+  padding: var(--space-3);
+  background: var(--color-primary-600);
+  color: #FFFFFF;
+  border: none;
+  border-radius: var(--radius-md);
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.oai-people__finder-search-btn:hover {
+  background: var(--color-primary-700);
+}
+
+/* Brands in This List */
+.oai-people__brands {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--space-8);
+  overflow: hidden;
+}
+
+.oai-people__brands-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-family-serif);
+  font-weight: var(--font-weight-normal);
+  font-size: var(--font-size-lg);
+  color: var(--color-text-primary);
+  padding: var(--space-5) var(--space-6);
+  border-bottom: 1px solid var(--color-border-default);
+  margin: 0;
+}
+
+.oai-people__brands-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  background: var(--color-primary-600);
+  color: #FFFFFF;
+  border-radius: var(--radius-full);
+  font-family: var(--font-family-sans);
+  font-size: 12px;
+  font-weight: var(--font-weight-semibold);
+}
+
+.oai-people__brands-table-wrap {
+  overflow-x: auto;
+}
+
+.oai-people__brands-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-sm);
+}
+
+.oai-people__brands-table th {
+  text-align: left;
+  padding: var(--space-3) var(--space-4);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+  border-bottom: 1px solid var(--color-border-default);
+  white-space: nowrap;
+}
+
+.oai-people__brands-table td {
+  padding: var(--space-3) var(--space-4);
+  color: var(--color-text-primary);
+  border-bottom: 1px solid var(--color-border-default);
+  white-space: nowrap;
+}
+
+.oai-people__brands-table tr:last-child td {
+  border-bottom: none;
+}
+
+.oai-people__brands-td--bold {
+  font-weight: var(--font-weight-semibold);
+}
+
+/* Results header */
+.oai-people__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+}
+
+.oai-people__header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.oai-people__stat-box {
+  text-align: center;
+  padding: 0 var(--space-3);
+}
+
+.oai-people__stat-num {
+  font-family: var(--font-family-serif);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-normal);
+  color: var(--color-text-primary);
+}
+
+.oai-people__stat-lbl {
+  font-family: var(--font-family-sans);
+  font-size: 10px;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+}
+
+.oai-people__find-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  cursor: pointer;
+}
+
+.oai-people__find-btn:hover {
+  background: var(--color-neutral-50);
+}
+
+.oai-people__export-btn {
+  padding: var(--space-2) var(--space-4);
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  cursor: pointer;
+}
+
+.oai-people__export-btn:hover {
+  background: var(--color-neutral-50);
+}
+
+.oai-people__outbound-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-5);
+  background: var(--color-text-primary);
+  color: #FFFFFF;
+  border: none;
+  border-radius: var(--radius-md);
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+}
+
+.oai-people__outbound-btn:hover {
+  opacity: 0.85;
+}
+
+/* Toolbar */
+.oai-people__toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+  gap: var(--space-4);
+}
+
+.oai-people__filters {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.oai-people__search-input .oai-search {
+  max-width: 240px;
+}
+
+.oai-people__filter-btn {
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.oai-people__filter-btn:hover {
+  background: var(--color-neutral-50);
+}
+
+.oai-people__filters-right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.oai-people__select-all {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+}
+
+/* Date row */
+.oai-people__date-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-2) 0;
+  margin-bottom: var(--space-2);
+}
+
+.oai-people__date {
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.oai-people__lead-count {
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+/* People list */
+.oai-people__list {
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-card);
+  overflow: hidden;
+}
+
+.oai-people__row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--color-border-default);
+  transition: background var(--transition-fast);
+}
+
+.oai-people__row:last-child {
+  border-bottom: none;
+}
+
+.oai-people__row:hover {
+  background: var(--color-neutral-50);
+}
+
+.oai-people__row--selected {
+  background: var(--color-primary-50);
+}
+
+.oai-people__row-check {
+  flex-shrink: 0;
+}
+
+.oai-people__row-avatar {
+  flex-shrink: 0;
+}
+
+.oai-people__row-info {
+  min-width: 200px;
+  flex-shrink: 0;
+}
+
+.oai-people__row-name {
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+
+.oai-people__row-title {
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 280px;
+}
+
+.oai-people__row-company {
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.oai-people__row-tags {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex: 1;
+  flex-wrap: wrap;
+}
+
+.oai-people__tag {
+  display: inline-block;
+  padding: 2px var(--space-3);
+  background: var(--color-neutral-100);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+
+.oai-people__row-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+.oai-people__icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: none;
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.oai-people__icon-btn:hover {
+  background: var(--color-neutral-50);
+  color: var(--color-text-primary);
+}
