@@ -250,6 +250,7 @@ function App() {
   const [page, setPage] = useState('login');
   const [darkMode, setDarkMode] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   const toggleDark = (val) => {
     setDarkMode(val);
@@ -301,13 +302,6 @@ function App() {
         return <DashboardContent />;
       case 'search-brands':
         return <SearchBrandsContent />;
-      case 'settings':
-        return (
-          <Settings
-            onLogout={() => setPage('login')}
-            onSave={noop}
-          />
-        );
       default:
         return <NotFound onBackClick={() => setPage('dashboard')} />;
     }
@@ -324,8 +318,8 @@ function App() {
             <SidebarFooter
               darkMode={darkMode}
               onToggleDark={toggleDark}
-              onProfileClick={() => setPage('settings')}
-              onSettingsClick={() => setPage('settings')}
+              onProfileClick={() => setSettingsOpen(true)}
+              onSettingsClick={() => setSettingsOpen(true)}
             />
           }
           collapsed={sidebarCollapsed}
@@ -340,6 +334,13 @@ function App() {
     >
       {renderContent()}
       <HelpButton onSubmit={noop} />
+      {settingsOpen && (
+        <Settings
+          onClose={() => setSettingsOpen(false)}
+          onLogout={() => { setSettingsOpen(false); setPage('login'); }}
+          onSave={noop}
+        />
+      )}
     </PageLayout>
   );
 }

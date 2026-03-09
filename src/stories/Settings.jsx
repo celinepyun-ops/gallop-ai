@@ -198,8 +198,8 @@ const PreferencesTab = () => {
   );
 };
 
-/* ── Settings Page ────────────────────────────────────────────────── */
-export const Settings = ({ onLogout, onSave, initialTab = 'account' }) => {
+/* ── Settings Modal ───────────────────────────────────────────────── */
+export const Settings = ({ onClose, onLogout, onSave, initialTab = 'account' }) => {
   const [activeTab, setActiveTab] = useState(initialTab);
 
   const renderContent = () => {
@@ -215,37 +215,51 @@ export const Settings = ({ onLogout, onSave, initialTab = 'account' }) => {
   };
 
   return (
-    <div className="oai-settings">
-      <nav className="oai-settings__nav">
-        {navItems.map((item) => (
-          <button
-            key={item.id}
-            className={`oai-settings__nav-item ${activeTab === item.id ? 'oai-settings__nav-item--active' : ''}`}
-            onClick={() => setActiveTab(item.id)}
-            type="button"
-          >
-            <span className="oai-settings__nav-icon">{item.icon}</span>
-            {item.label}
+    <div className="oai-settings-overlay" onClick={(e) => { if (e.target === e.currentTarget) onClose?.(); }}>
+      <div className="oai-settings-modal" role="dialog" aria-label="Settings">
+        <div className="oai-settings-modal__header">
+          <h2 className="oai-settings-modal__title">Settings</h2>
+          <button className="oai-settings-modal__close" onClick={onClose} aria-label="Close">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
           </button>
-        ))}
-        <button
-          className="oai-settings__nav-item oai-settings__nav-item--danger"
-          onClick={onLogout}
-          type="button"
-        >
-          <span className="oai-settings__nav-icon">{Icons.signout}</span>
-          Log out
-        </button>
-      </nav>
+        </div>
+        <div className="oai-settings-modal__body">
+          <nav className="oai-settings__nav">
+            {navItems.map((item) => (
+              <button
+                key={item.id}
+                className={`oai-settings__nav-item ${activeTab === item.id ? 'oai-settings__nav-item--active' : ''}`}
+                onClick={() => setActiveTab(item.id)}
+                type="button"
+              >
+                <span className="oai-settings__nav-icon">{item.icon}</span>
+                {item.label}
+              </button>
+            ))}
+            <button
+              className="oai-settings__nav-item oai-settings__nav-item--danger"
+              onClick={onLogout}
+              type="button"
+            >
+              <span className="oai-settings__nav-icon">{Icons.signout}</span>
+              Log out
+            </button>
+          </nav>
 
-      <div className="oai-settings__content">
-        {renderContent()}
+          <div className="oai-settings-modal__body-content">
+            {renderContent()}
+          </div>
+        </div>
       </div>
     </div>
   );
 };
 
 Settings.propTypes = {
+  /** Close the modal */
+  onClose: PropTypes.func,
   /** Callback when user logs out */
   onLogout: PropTypes.func,
   /** Callback when profile is saved */

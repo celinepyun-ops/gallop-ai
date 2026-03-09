@@ -1,11 +1,101 @@
 /* ==========================================================================
-   Settings Page
+   Settings Modal
    ========================================================================== */
 
+/* ── Overlay ──────────────────────────────────────────────────────── */
+.oai-settings-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--color-bg-overlay);
+  z-index: var(--z-modal-backdrop);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: oai-settings-fade-in 200ms ease;
+}
+
+@keyframes oai-settings-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ── Card ─────────────────────────────────────────────────────────── */
+.oai-settings-modal {
+  background: var(--color-bg-card);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xl);
+  width: 720px;
+  max-width: calc(100vw - 48px);
+  max-height: calc(100vh - 96px);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  z-index: var(--z-modal);
+  animation: oai-settings-slide-up 200ms ease;
+}
+
+@keyframes oai-settings-slide-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.oai-settings-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4) var(--space-6);
+  border-bottom: 1px solid var(--color-border-default);
+  flex-shrink: 0;
+}
+
+.oai-settings-modal__title {
+  font-family: var(--font-family-serif);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-normal);
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.oai-settings-modal__close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: none;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  color: var(--color-text-muted);
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.oai-settings-modal__close:hover {
+  background: var(--color-neutral-100);
+  color: var(--color-text-primary);
+}
+
+[data-theme="dark"] .oai-settings-modal__close:hover {
+  background: var(--color-neutral-700);
+}
+
+.oai-settings-modal__body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.oai-settings-modal__body-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-6);
+}
+
+/* ── Inner Layout ─────────────────────────────────────────────────── */
 .oai-settings {
   display: flex;
-  gap: var(--space-8);
-  max-width: 900px;
+  gap: 0;
+  width: 100%;
 }
 
 /* ── Left Nav ─────────────────────────────────────────────────────── */
@@ -15,6 +105,8 @@
   gap: var(--space-1);
   min-width: 180px;
   flex-shrink: 0;
+  padding: var(--space-6) var(--space-4);
+  border-right: 1px solid var(--color-border-default);
 }
 
 .oai-settings__nav-item {
