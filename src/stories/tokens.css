@@ -84,7 +84,7 @@
   --color-border-focus:   var(--color-primary-500);
 
   /* ── Typography ────────────────────────────────────────────────────── */
-  --font-family-sans:  'Uncut Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-family-sans:  'Geist', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   --font-family-serif: 'Test Tiempos Text', Georgia, 'Times New Roman', serif;
   --font-family-mono:  'SF Mono', 'Fira Code', 'Fira Mono', 'Roboto Mono', monospace;
 
