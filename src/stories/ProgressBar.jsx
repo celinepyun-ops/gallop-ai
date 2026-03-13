@@ -23,7 +23,6 @@ export const ProgressBar = ({ value = 0, max = 100, variant = 'primary', size = 
     </div>
   );
 };
-
 ProgressBar.propTypes = {
   /** Current value */
   value: PropTypes.number,

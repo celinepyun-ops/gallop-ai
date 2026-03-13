@@ -22,12 +22,12 @@
   white-space: nowrap;
 }
 
-.oai-table th--sortable {
+.oai-table__th--sortable {
   cursor: pointer;
   user-select: none;
 }
 
-.oai-table th--sortable:hover {
+.oai-table__th--sortable:hover {
   color: var(--color-text-primary);
 }
 
@@ -72,8 +72,3 @@
   cursor: pointer;
 }
 
-.oai-table__empty {
-  text-align: center;
-  padding: var(--space-12) var(--space-4);
-  color: var(--color-text-secondary);
-}

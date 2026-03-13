@@ -103,7 +103,7 @@ export const Table = ({
             {columns.map((col) => (
               <th
                 key={col.key}
-                className={sortable ? 'oai-table th--sortable' : undefined}
+                className={sortable ? 'oai-table__th--sortable' : undefined}
                 onClick={() => handleSort(col.key)}
                 aria-sort={sortKey === col.key ? (sortDir === 'asc' ? 'ascending' : 'descending') : undefined}
               >
