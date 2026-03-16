@@ -550,6 +550,100 @@
   color: #FFFFFF;
 }
 
+/* ── Info Tooltip ────────────────────────────────────────────────── */
+.oai-info-tooltip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.oai-info-tooltip__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  margin-left: var(--space-1);
+  font-size: 11px;
+  font-style: normal;
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-full);
+  cursor: help;
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+
+.oai-info-tooltip__content {
+  display: none;
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  min-width: 200px;
+  max-width: 260px;
+  padding: var(--space-3);
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-normal);
+  color: var(--color-text-secondary);
+  line-height: var(--leading-relaxed);
+  z-index: 50;
+  white-space: normal;
+  text-align: left;
+  cursor: default;
+}
+
+.oai-info-tooltip__content--wide {
+  min-width: 220px;
+}
+
+.oai-info-tooltip__content strong {
+  display: block;
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--space-1);
+}
+
+.oai-info-tooltip:hover .oai-info-tooltip__content {
+  display: block;
+}
+
+.oai-info-tooltip__content::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: var(--color-border-default);
+}
+
+/* Per-row score breakdown rows */
+.oai-info-tooltip__row {
+  display: flex;
+  justify-content: space-between;
+  padding: 2px 0;
+  font-size: 11px;
+  color: var(--color-text-secondary);
+}
+
+.oai-info-tooltip__row--total {
+  border-top: 1px solid var(--color-border-default);
+  margin-top: var(--space-1);
+  padding-top: var(--space-1);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+
+[data-theme="dark"] .oai-info-tooltip__content {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
 /* ── Bulk Actions ────────────────────────────────────────────────── */
 .oai-results__list-actions {
   display: flex;

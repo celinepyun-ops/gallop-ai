@@ -135,12 +135,32 @@ const TrendArrow = ({ value, suffix = '%' }) => {
   return <span className={`oai-results__trend oai-results__trend--${isPositive ? 'up' : 'down'}`}>{isPositive ? '▲' : '▼'} {Math.abs(value)}{suffix}</span>;
 };
 
-const ScoreBadge = ({ score }) => {
+const InfoTooltip = ({ children }) => (
+  <span className="oai-info-tooltip">
+    <span className="oai-info-tooltip__icon" aria-label="More info">ℹ</span>
+    <span className="oai-info-tooltip__content">{children}</span>
+  </span>
+);
+
+const ScoreBadge = ({ score, product }) => {
   if (score === null || score === undefined) return null;
   let variant = 'low';
   if (score >= 80) variant = 'high';
   else if (score >= 60) variant = 'medium';
-  return <span className={`oai-results__score oai-results__score--${variant}`}>{score}</span>;
+  if (!product) return <span className={`oai-results__score oai-results__score--${variant}`}>{score}</span>;
+  return (
+    <span className="oai-info-tooltip">
+      <span className={`oai-results__score oai-results__score--${variant}`}>{score}</span>
+      <span className="oai-info-tooltip__content oai-info-tooltip__content--wide">
+        <strong>Score Breakdown</strong>
+        <span className="oai-info-tooltip__row">Revenue Growth {product.revenueGrowth > 30 ? '+20' : product.revenueGrowth > 10 ? '+10' : product.revenueGrowth < -10 ? '−15' : '0'}</span>
+        <span className="oai-info-tooltip__row">Sales Rank Fit {product.salesRank >= 5000 && product.salesRank <= 50000 ? '+15' : '−10'}</span>
+        <span className="oai-info-tooltip__row">Price Stability {product.priceStability === 'stable' ? '+5' : '0'}</span>
+        <span className="oai-info-tooltip__row">Review Velocity {product.reviewVelocity > 10 ? '+10' : '0'}</span>
+        <span className="oai-info-tooltip__row oai-info-tooltip__row--total">Base 50 → Total {score}</span>
+      </span>
+    </span>
+  );
 };
 
 const StageBadge = ({ stage }) => {
@@ -289,12 +309,12 @@ const SearchBrandsContent = ({ onNavigate }) => {
                       <input type="checkbox" aria-label="Select all products" checked={selected.length === sortedResults.length && sortedResults.length > 0} onChange={toggleAll} />
                     </th>
                     <th className="oai-results__th oai-results__th--title">Brand / Product</th>
-                    <SortHeader label="Score" field="partnershipScore" />
+                    <SortHeader label={<>Score <InfoTooltip><strong>Partnership Score (0–100)</strong><br/>Weighted from: revenue growth, sales rank fit, price stability, and review velocity. Higher = better manufacturing partner fit.</InfoTooltip></>} field="partnershipScore" />
                     <SortHeader label="Rev. Growth" field="revenueGrowth" />
                     <SortHeader label="Est. Sales/mo" field="estimatedMonthlySales" />
                     <SortHeader label="Rating" field="rating" />
                     <SortHeader label="Reviews" field="reviews" />
-                    <th className="oai-results__th">Stage</th>
+                    <th className="oai-results__th">Stage <InfoTooltip><strong>Brand Stage</strong><br/>Early: rank &gt;50K<br/>Sweet Spot: 5K–50K (ideal)<br/>Established: 1K–5K<br/>Enterprise: &lt;1K (too big)</InfoTooltip></th>
                     <th className="oai-results__th">Action</th>
                   </tr>
                 </thead>
@@ -308,7 +328,7 @@ const SearchBrandsContent = ({ onNavigate }) => {
                         <div className="oai-results__product-title">{product.brand}</div>
                         <div className="oai-results__product-asin">{product.title}</div>
                       </td>
-                      <td className="oai-results__td oai-results__td--score"><ScoreBadge score={product.partnershipScore} /></td>
+                      <td className="oai-results__td oai-results__td--score"><ScoreBadge score={product.partnershipScore} product={product} /></td>
                       <td className="oai-results__td"><TrendArrow value={product.revenueGrowth} /></td>
                       <td className="oai-results__td">{product.estimatedMonthlySales ? product.estimatedMonthlySales.toLocaleString() : '—'}</td>
                       <td className="oai-results__td"><span className="oai-results__rating">★ {product.rating}</span></td>
