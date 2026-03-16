@@ -172,6 +172,112 @@ const StageBadge = ({ stage }) => {
 const countryOptions = [['US', '🇺🇸 United States'], ['UK', '🇬🇧 United Kingdom'], ['DE', '🇩🇪 Germany'], ['JP', '🇯🇵 Japan'], ['CA', '🇨🇦 Canada']];
 const categoryOptions = [['Beauty & Personal Care', 'Beauty & Personal Care'], ['Skin Care', 'Skin Care'], ['Sun Protection', 'Sun Protection'], ['Face Moisturizers', 'Face Moisturizers']];
 
+/* ── Mock leads per brand ──────────────────────────────────────── */
+const mockLeads = {
+  'EcoGlow Naturals': [
+    { id: 'l1', name: 'Sarah Chen', role: 'Founder & CEO', email: 'sarah@ecoglownaturals.com', linkedin: 'linkedin.com/in/sarahchen', confidence: 'high' },
+    { id: 'l2', name: 'David Park', role: 'Head of Supply Chain', email: 'david@ecoglownaturals.com', linkedin: 'linkedin.com/in/davidpark', confidence: 'high' },
+    { id: 'l3', name: 'Lisa Nguyen', role: 'Product Manager', email: 'lisa@ecoglownaturals.com', linkedin: '', confidence: 'medium' },
+  ],
+  'SunShield Pro': [
+    { id: 'l4', name: 'Maria Santos', role: 'Co-Founder', email: 'maria@sunshieldpro.com', linkedin: 'linkedin.com/in/mariasantos', confidence: 'high' },
+    { id: 'l5', name: 'James Liu', role: 'Operations Director', email: 'james@sunshieldpro.com', linkedin: 'linkedin.com/in/jamesliu', confidence: 'medium' },
+  ],
+  'AquaVeil': [
+    { id: 'l6', name: 'Priya Sharma', role: 'Founder', email: 'priya@aquaveil.com', linkedin: 'linkedin.com/in/priyasharma', confidence: 'high' },
+    { id: 'l7', name: 'Tom Bradley', role: 'VP of Manufacturing', email: 'tom@aquaveil.com', linkedin: '', confidence: 'medium' },
+  ],
+  'PureRadiance': [
+    { id: 'l8', name: 'Kevin Wright', role: 'CEO', email: 'kevin@pureradiance.com', linkedin: 'linkedin.com/in/kevinwright', confidence: 'high' },
+    { id: 'l9', name: 'Nina Patel', role: 'Procurement Lead', email: 'nina@pureradiance.com', linkedin: 'linkedin.com/in/ninapatel', confidence: 'high' },
+  ],
+  'BotaniShield': [
+    { id: 'l10', name: 'Rachel Kim', role: 'Founder', email: 'rachel@botanishield.com', linkedin: 'linkedin.com/in/rachelkim', confidence: 'high' },
+  ],
+  'GlowUp Skin': [
+    { id: 'l11', name: 'Alex Rivera', role: 'Co-Founder & COO', email: 'alex@glowupskin.com', linkedin: 'linkedin.com/in/alexrivera', confidence: 'high' },
+    { id: 'l12', name: 'Jenny Zhao', role: 'Brand Manager', email: 'jenny@glowupskin.com', linkedin: '', confidence: 'medium' },
+  ],
+  'Derma Botanics': [
+    { id: 'l13', name: 'Emma Liu', role: 'Head of Product', email: 'emma@dermabotanics.com', linkedin: 'linkedin.com/in/emmaliu', confidence: 'high' },
+    { id: 'l14', name: 'Carlos Mendez', role: 'Supply Chain Manager', email: 'carlos@dermabotanics.com', linkedin: 'linkedin.com/in/carlosmendez', confidence: 'medium' },
+  ],
+  'FreshFace Co': [
+    { id: 'l15', name: 'Amanda Brooks', role: 'Founder', email: 'amanda@freshfaceco.com', linkedin: 'linkedin.com/in/amandabrooks', confidence: 'medium' },
+  ],
+  'La Roche-Posay': [
+    { id: 'l16', name: 'Corporate Partnerships', role: "L'Oréal Group", email: 'partnerships@loreal.com', linkedin: '', confidence: 'medium' },
+  ],
+  'CeraVe': [
+    { id: 'l17', name: 'Corporate Partnerships', role: "L'Oréal Group", email: 'partnerships@loreal.com', linkedin: '', confidence: 'medium' },
+  ],
+};
+
+const LeadDrawer = ({ brand, product, onClose, onAddToContacts }) => {
+  const leads = mockLeads[brand] || [];
+  const [selectedLeads, setSelectedLeads] = useState([]);
+  const toggleLead = (id) => setSelectedLeads((prev) => prev.includes(id) ? prev.filter((l) => l !== id) : [...prev, id]);
+  const toggleAllLeads = () => setSelectedLeads(selectedLeads.length === leads.length ? [] : leads.map((l) => l.id));
+
+  return (
+    <>
+      <div className="oai-lead-drawer__overlay" onClick={onClose} />
+      <aside className="oai-lead-drawer" role="dialog" aria-label={`Leads for ${brand}`}>
+        <div className="oai-lead-drawer__header">
+          <h2 className="oai-lead-drawer__title">Brand Leads</h2>
+          <button className="oai-lead-drawer__close" onClick={onClose} aria-label="Close panel">✕</button>
+        </div>
+        <div className="oai-lead-drawer__body">
+          <div className="oai-lead-drawer__brand-summary">
+            <div className="oai-lead-drawer__brand-info">
+              <div className="oai-lead-drawer__brand-name">{brand}</div>
+              <div className="oai-lead-drawer__brand-meta">
+                Score: {product.partnershipScore} · {product.brandStage === 'sweet-spot' ? 'Sweet Spot' : product.brandStage} · ▲ {product.revenueGrowth}% growth
+              </div>
+            </div>
+            <ScoreBadge score={product.partnershipScore} product={product} />
+          </div>
+          <div className="oai-lead-drawer__section-label">
+            Decision Makers ({leads.length})
+            {leads.length > 0 && (
+              <span style={{ float: 'right', cursor: 'pointer', color: 'var(--color-primary-600)', textTransform: 'none', letterSpacing: 'normal', fontWeight: 'var(--font-weight-normal)' }} onClick={toggleAllLeads}>
+                {selectedLeads.length === leads.length ? 'Deselect All' : 'Select All'}
+              </span>
+            )}
+          </div>
+          {leads.length === 0 ? (
+            <div className="oai-lead-drawer__empty">No leads found for this brand yet.</div>
+          ) : (
+            leads.map((lead) => (
+              <div key={lead.id} className={`oai-lead-drawer__contact ${selectedLeads.includes(lead.id) ? 'oai-lead-drawer__contact--selected' : ''}`}>
+                <input type="checkbox" className="oai-lead-drawer__contact-check" checked={selectedLeads.includes(lead.id)} onChange={() => toggleLead(lead.id)} aria-label={`Select ${lead.name}`} />
+                <div className="oai-lead-drawer__contact-body">
+                  <div className="oai-lead-drawer__contact-name">{lead.name}</div>
+                  <div className="oai-lead-drawer__contact-role">{lead.role}</div>
+                  <div className="oai-lead-drawer__contact-details">
+                    <span>{lead.email}</span>
+                    {lead.linkedin && <a href={`https://${lead.linkedin}`} target="_blank" rel="noopener noreferrer">LinkedIn</a>}
+                  </div>
+                  <div className="oai-lead-drawer__contact-confidence">
+                    <span className={`oai-lead-drawer__confidence-dot oai-lead-drawer__confidence-dot--${lead.confidence}`} />
+                    {lead.confidence === 'high' ? 'High' : 'Medium'} confidence
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+        <div className="oai-lead-drawer__footer">
+          <span className="oai-lead-drawer__selected-count">{selectedLeads.length > 0 ? `${selectedLeads.length} selected` : 'Select contacts to add'}</span>
+          <button className="oai-lead-drawer__btn oai-lead-drawer__btn--primary" disabled={selectedLeads.length === 0} onClick={() => { onAddToContacts(leads.filter((l) => selectedLeads.includes(l.id))); }}>
+            Add to People ({selectedLeads.length})
+          </button>
+        </div>
+      </aside>
+    </>
+  );
+};
+
 /* ── Page: Search Brands ─────────────────────────────────────────── */
 const SearchBrandsContent = ({ onNavigate }) => {
   const [keyword, setKeyword] = useState('sunscreen');
@@ -187,6 +293,7 @@ const SearchBrandsContent = ({ onNavigate }) => {
   const [selected, setSelected] = useState([]);
   const [sortBy, setSortBy] = useState('partnershipScore');
   const [sortDir, setSortDir] = useState('desc');
+  const [drawerProduct, setDrawerProduct] = useState(null);
 
   const handleSearch = useCallback(() => {
     setLoading(true);
@@ -335,7 +442,7 @@ const SearchBrandsContent = ({ onNavigate }) => {
                       <td className="oai-results__td">{product.reviews.toLocaleString()}</td>
                       <td className="oai-results__td"><StageBadge stage={product.brandStage} /></td>
                       <td className="oai-results__td">
-                        <button className="oai-results__action-btn" onClick={() => onNavigate?.('people')} title="Find decision maker">View Lead →</button>
+                        <button className="oai-results__action-btn" onClick={() => setDrawerProduct(product)} title="View brand leads">View Lead →</button>
                       </td>
                     </tr>
                   ))}
@@ -365,6 +472,18 @@ const SearchBrandsContent = ({ onNavigate }) => {
             </div>
           )}
         </div>
+      )}
+
+      {drawerProduct && (
+        <LeadDrawer
+          brand={drawerProduct.brand}
+          product={drawerProduct}
+          onClose={() => setDrawerProduct(null)}
+          onAddToContacts={(contacts) => {
+            setDrawerProduct(null);
+            onNavigate?.('people');
+          }}
+        />
       )}
     </div>
   );
