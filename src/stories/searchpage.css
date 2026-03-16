@@ -593,12 +593,9 @@
   vertical-align: middle;
 }
 
-.oai-info-tooltip__content {
-  display: none;
-  position: absolute;
-  top: calc(100% + 8px);
-  left: 50%;
-  transform: translateX(-50%);
+/* Fixed-position portal tooltip (rendered via JS) */
+.oai-info-tooltip__portal {
+  position: fixed;
   min-width: 200px;
   max-width: 260px;
   padding: var(--space-3);
@@ -611,28 +608,30 @@
   font-weight: var(--font-weight-normal);
   color: var(--color-text-secondary);
   line-height: var(--leading-relaxed);
-  z-index: 100;
+  z-index: 9999;
   white-space: normal;
   text-align: left;
-  cursor: default;
+  pointer-events: none;
+  animation: oai-tooltipFadeIn 0.15s ease;
 }
 
-.oai-info-tooltip__content--wide {
+@keyframes oai-tooltipFadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.oai-info-tooltip__portal--wide {
   min-width: 220px;
 }
 
-.oai-info-tooltip__content strong {
+.oai-info-tooltip__portal strong {
   display: block;
   color: var(--color-text-primary);
   font-size: var(--font-size-sm);
   margin-bottom: var(--space-1);
 }
 
-.oai-info-tooltip:hover .oai-info-tooltip__content {
-  display: block;
-}
-
-.oai-info-tooltip__content::after {
+.oai-info-tooltip__portal::before {
   content: '';
   position: absolute;
   bottom: 100%;
@@ -659,7 +658,7 @@
   color: var(--color-text-primary);
 }
 
-[data-theme="dark"] .oai-info-tooltip__content {
+[data-theme="dark"] .oai-info-tooltip__portal {
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
 }
 

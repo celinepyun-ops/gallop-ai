@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import './App.css';
 import './stories/tokens.css';
 import './stories/fonts.css';
@@ -135,30 +136,58 @@ const TrendArrow = ({ value, suffix = '%' }) => {
   return <span className={`oai-results__trend oai-results__trend--${isPositive ? 'up' : 'down'}`}>{isPositive ? '▲' : '▼'} {Math.abs(value)}{suffix}</span>;
 };
 
-const InfoTooltip = ({ children }) => (
-  <span className="oai-info-tooltip">
-    <span className="oai-info-tooltip__icon" aria-label="More info">ℹ</span>
-    <span className="oai-info-tooltip__content">{children}</span>
-  </span>
-);
+const InfoTooltip = ({ children, wide }) => {
+  const [show, setShow] = useState(false);
+  const [pos, setPos] = useState({ top: 0, left: 0 });
+  const iconRef = useRef(null);
+  const handleEnter = () => {
+    const rect = iconRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    setPos({ top: rect.bottom + 8, left: rect.left + rect.width / 2 });
+    setShow(true);
+  };
+  return (
+    <span className="oai-info-tooltip" onMouseEnter={handleEnter} onMouseLeave={() => setShow(false)}>
+      <span className="oai-info-tooltip__icon" ref={iconRef} aria-label="More info">ℹ</span>
+      {show && createPortal(
+        <div className={`oai-info-tooltip__portal ${wide ? 'oai-info-tooltip__portal--wide' : ''}`} style={{ top: pos.top, left: pos.left, transform: 'translateX(-50%)' }}>
+          {children}
+        </div>,
+        document.body
+      )}
+    </span>
+  );
+};
 
 const ScoreBadge = ({ score, product }) => {
   if (score === null || score === undefined) return null;
+  const [show, setShow] = useState(false);
+  const [pos, setPos] = useState({ top: 0, left: 0 });
+  const ref = useRef(null);
   let variant = 'low';
   if (score >= 80) variant = 'high';
   else if (score >= 60) variant = 'medium';
   if (!product) return <span className={`oai-results__score oai-results__score--${variant}`}>{score}</span>;
+  const handleEnter = () => {
+    const rect = ref.current?.getBoundingClientRect();
+    if (!rect) return;
+    setPos({ top: rect.bottom + 8, left: rect.left + rect.width / 2 });
+    setShow(true);
+  };
   return (
-    <span className="oai-info-tooltip">
+    <span className="oai-info-tooltip" onMouseEnter={handleEnter} onMouseLeave={() => setShow(false)} ref={ref}>
       <span className={`oai-results__score oai-results__score--${variant}`}>{score}</span>
-      <span className="oai-info-tooltip__content oai-info-tooltip__content--wide">
-        <strong>Score Breakdown</strong>
-        <span className="oai-info-tooltip__row">Revenue Growth {product.revenueGrowth > 30 ? '+20' : product.revenueGrowth > 10 ? '+10' : product.revenueGrowth < -10 ? '−15' : '0'}</span>
-        <span className="oai-info-tooltip__row">Sales Rank Fit {product.salesRank >= 5000 && product.salesRank <= 50000 ? '+15' : '−10'}</span>
-        <span className="oai-info-tooltip__row">Price Stability {product.priceStability === 'stable' ? '+5' : '0'}</span>
-        <span className="oai-info-tooltip__row">Review Velocity {product.reviewVelocity > 10 ? '+10' : '0'}</span>
-        <span className="oai-info-tooltip__row oai-info-tooltip__row--total">Base 50 → Total {score}</span>
-      </span>
+      {show && createPortal(
+        <div className="oai-info-tooltip__portal oai-info-tooltip__portal--wide" style={{ top: pos.top, left: pos.left, transform: 'translateX(-50%)' }}>
+          <strong>Score Breakdown</strong>
+          <span className="oai-info-tooltip__row">Revenue Growth {product.revenueGrowth > 30 ? '+20' : product.revenueGrowth > 10 ? '+10' : product.revenueGrowth < -10 ? '−15' : '0'}</span>
+          <span className="oai-info-tooltip__row">Sales Rank Fit {product.salesRank >= 5000 && product.salesRank <= 50000 ? '+15' : '−10'}</span>
+          <span className="oai-info-tooltip__row">Price Stability {product.priceStability === 'stable' ? '+5' : '0'}</span>
+          <span className="oai-info-tooltip__row">Review Velocity {product.reviewVelocity > 10 ? '+10' : '0'}</span>
+          <span className="oai-info-tooltip__row oai-info-tooltip__row--total">Base 50 → Total {score}</span>
+        </div>,
+        document.body
+      )}
     </span>
   );
 };
