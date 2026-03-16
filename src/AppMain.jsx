@@ -740,6 +740,26 @@ const PeopleContent = () => {
               </div>
             ))}
           </div>
+
+          {/* Selection action bar */}
+          {selected.length > 0 && (
+            <div className="oai-people__action-bar">
+              <span className="oai-people__action-bar-count">
+                {selected.length} {selected.length === 1 ? 'lead' : 'leads'} selected
+              </span>
+              <div className="oai-people__action-bar-btns">
+                <button className="oai-people__action-bar-btn oai-people__action-bar-btn--primary" onClick={noop}>
+                  <span aria-hidden="true">{Icons.campaigns}</span> Add to Email Queue
+                </button>
+                <button className="oai-people__action-bar-btn" onClick={noop}>
+                  Export CSV
+                </button>
+                <button className="oai-people__action-bar-btn oai-people__action-bar-btn--danger" onClick={() => setSelected([])}>
+                  Deselect All
+                </button>
+              </div>
+            </div>
+          )}
         </>
       )}
     </div>
