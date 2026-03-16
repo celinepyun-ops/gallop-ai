@@ -770,21 +770,63 @@ const peopleData = [
 ];
 
 /* ── Page: People / Contacts ─────────────────────────────────────── */
+const peopleSuggestedRoles = [
+  { label: 'CEO / Founder', category: 'Leadership' },
+  { label: 'COO', category: 'Leadership' },
+  { label: 'VP of Operations', category: 'Leadership' },
+  { label: 'Head of Partnerships', category: 'Partnerships' },
+  { label: 'Director of Business Development', category: 'Partnerships' },
+  { label: 'Vendor Manager', category: 'Partnerships' },
+  { label: 'Head of Supply Chain', category: 'Operations' },
+  { label: 'Director of Purchasing', category: 'Operations' },
+  { label: 'Procurement Manager', category: 'Operations' },
+  { label: 'Category Manager', category: 'Operations' },
+  { label: 'Director of Product Development', category: 'Product' },
+  { label: 'Brand Manager', category: 'Product' },
+  { label: 'Product Manager', category: 'Product' },
+  { label: 'Head of Marketing', category: 'Marketing' },
+  { label: 'Buyer', category: 'Retail' },
+  { label: 'Retail Account Manager', category: 'Retail' },
+];
+
 const PeopleContent = ({ onNavigate }) => {
   const [selected, setSelected] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [jobTitles, setJobTitles] = useState(['ceo']);
   const [titleInput, setTitleInput] = useState('');
   const [hasSearched, setHasSearched] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [focusedSuggestion, setFocusedSuggestion] = useState(-1);
+  const inputWrapRef = useRef(null);
 
-  const addTitle = () => {
-    if (titleInput.trim() && !jobTitles.includes(titleInput.trim().toLowerCase())) {
-      setJobTitles([...jobTitles, titleInput.trim().toLowerCase()]);
-      setTitleInput('');
+  const filteredSuggestions = peopleSuggestedRoles.filter(
+    (r) => !jobTitles.includes(r.label.toLowerCase()) && (titleInput === '' || r.label.toLowerCase().includes(titleInput.toLowerCase()))
+  );
+  const groupedSuggestions = filteredSuggestions.reduce((acc, r) => {
+    if (!acc[r.category]) acc[r.category] = [];
+    acc[r.category].push(r);
+    return acc;
+  }, {});
+
+  const addTitle = (label) => {
+    const val = (label || titleInput).trim().toLowerCase();
+    if (val && !jobTitles.includes(val)) {
+      setJobTitles([...jobTitles, val]);
     }
+    setTitleInput('');
+    setShowSuggestions(false);
+    setFocusedSuggestion(-1);
   };
 
   const removeTitle = (t) => setJobTitles(jobTitles.filter((j) => j !== t));
+
+  useEffect(() => {
+    const handleClick = (e) => {
+      if (inputWrapRef.current && !inputWrapRef.current.contains(e.target)) setShowSuggestions(false);
+    };
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, []);
 
   const toggleSelect = (name) => {
     setSelected((prev) => prev.includes(name) ? prev.filter((n) => n !== name) : [...prev, name]);
@@ -807,14 +849,61 @@ const PeopleContent = ({ onNavigate }) => {
       <div className="oai-people__finder">
         <h2 className="oai-people__finder-title">{Icons.contacts} Find Decision Makers</h2>
         <div className="oai-people__finder-input-row">
-          <input
-            className="oai-people__finder-input"
-            type="text"
-            placeholder="Enter job title (e.g., CEO, Director of Purchasing)"
-            value={titleInput}
-            onChange={(e) => setTitleInput(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && addTitle()}
-          />
+          <div className="oai-people__finder-input-wrap" ref={inputWrapRef}>
+            <input
+              className="oai-people__finder-input"
+              type="text"
+              placeholder="Type a job title or select from suggestions..."
+              aria-label="Job title filter"
+              aria-autocomplete="list"
+              value={titleInput}
+              onChange={(e) => { setTitleInput(e.target.value); setShowSuggestions(true); setFocusedSuggestion(-1); }}
+              onFocus={() => setShowSuggestions(true)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  if (focusedSuggestion >= 0 && filteredSuggestions[focusedSuggestion]) {
+                    addTitle(filteredSuggestions[focusedSuggestion].label);
+                  } else {
+                    addTitle();
+                  }
+                } else if (e.key === 'ArrowDown') {
+                  e.preventDefault();
+                  setShowSuggestions(true);
+                  setFocusedSuggestion((i) => (i + 1) % filteredSuggestions.length);
+                } else if (e.key === 'ArrowUp') {
+                  e.preventDefault();
+                  setFocusedSuggestion((i) => (i - 1 + filteredSuggestions.length) % filteredSuggestions.length);
+                } else if (e.key === 'Escape') {
+                  setShowSuggestions(false);
+                }
+              }}
+            />
+            {showSuggestions && filteredSuggestions.length > 0 && (
+              <ul className="oai-people__autocomplete" role="listbox">
+                {Object.entries(groupedSuggestions).map(([cat, roles]) => (
+                  <li key={cat} role="presentation">
+                    <div className="oai-people__autocomplete-section">{cat}</div>
+                    {roles.map((r) => {
+                      const idx = filteredSuggestions.indexOf(r);
+                      return (
+                        <div
+                          key={r.label}
+                          className={`oai-people__autocomplete-item ${idx === focusedSuggestion ? 'oai-people__autocomplete-item--focused' : ''}`}
+                          role="option"
+                          aria-selected={idx === focusedSuggestion}
+                          onClick={() => addTitle(r.label)}
+                          onMouseEnter={() => setFocusedSuggestion(idx)}
+                        >
+                          {r.label}
+                        </div>
+                      );
+                    })}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
         </div>
         <div className="oai-people__finder-tags">
           {jobTitles.map((t) => (
@@ -866,20 +955,17 @@ const PeopleContent = ({ onNavigate }) => {
         <>
           {/* Results header */}
           <div className="oai-people__header">
-            <div className="oai-people__header-left" />
-            <div className="oai-people__header-actions">
-              <div className="oai-people__stat-box">
-                <div className="oai-people__stat-num">{selected.length}</div>
-                <div className="oai-people__stat-lbl">SAVED</div>
-              </div>
-              <div className="oai-people__stat-box">
-                <div className="oai-people__stat-num">0</div>
-                <div className="oai-people__stat-lbl">EMAILS</div>
-              </div>
-              <button className="oai-people__find-btn" onClick={noop}>{Icons.contacts} Find More</button>
-              <button className="oai-people__export-btn" onClick={noop}>Export ▾</button>
-              <button className="oai-people__outbound-btn" onClick={() => onNavigate?.('emails')}>{Icons.campaigns} Outbound</button>
+            <div className="oai-people__stat-box">
+              <div className="oai-people__stat-num">{selected.length}</div>
+              <div className="oai-people__stat-lbl">SAVED</div>
             </div>
+            <div className="oai-people__stat-box">
+              <div className="oai-people__stat-num">0</div>
+              <div className="oai-people__stat-lbl">EMAILS</div>
+            </div>
+            <button className="oai-people__find-btn" onClick={noop}>{Icons.contacts} Find More</button>
+            <button className="oai-people__export-btn" onClick={noop}>Export ▾</button>
+            <button className="oai-people__outbound-btn" onClick={() => onNavigate?.('emails')}>{Icons.campaigns} Outbound</button>
           </div>
 
           {/* Filters toolbar */}

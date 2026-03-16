@@ -1565,6 +1565,70 @@
   color: var(--color-text-muted);
 }
 
+/* Autocomplete suggestions */
+.oai-people__finder-input-wrap {
+  position: relative;
+}
+
+.oai-people__autocomplete {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  max-height: 240px;
+  overflow-y: auto;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  z-index: var(--z-dropdown);
+  padding: var(--space-1) 0;
+  margin: 0;
+  list-style: none;
+}
+
+.oai-people__autocomplete-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-2) var(--space-3);
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.oai-people__autocomplete-item:hover,
+.oai-people__autocomplete-item--focused {
+  background: var(--color-primary-50);
+}
+
+.oai-people__autocomplete-item--selected {
+  color: var(--color-primary-600);
+  font-weight: var(--font-weight-medium);
+}
+
+.oai-people__autocomplete-check {
+  color: var(--color-primary-600);
+  flex-shrink: 0;
+}
+
+.oai-people__autocomplete-hint {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.oai-people__autocomplete-section {
+  padding: var(--space-1) var(--space-3);
+  font-size: 10px;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: var(--space-1);
+}
+
 .oai-people__finder-tags {
   display: flex;
   flex-wrap: wrap;
@@ -1694,7 +1758,8 @@
 .oai-people__header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
+  gap: var(--space-4);
   margin-bottom: var(--space-4);
 }
 

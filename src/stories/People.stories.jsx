@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { fn } from 'storybook/test';
 import { PageLayout } from './PageLayout';
 import { Sidebar } from './Sidebar';
@@ -70,6 +70,25 @@ const sidebarHeader = (
 );
 
 /* ── Mock data ─────────────────────────────────────────────────────── */
+
+const suggestedRoles = [
+  { label: 'CEO / Founder', category: 'Leadership' },
+  { label: 'COO', category: 'Leadership' },
+  { label: 'VP of Operations', category: 'Leadership' },
+  { label: 'Head of Partnerships', category: 'Partnerships' },
+  { label: 'Director of Business Development', category: 'Partnerships' },
+  { label: 'Vendor Manager', category: 'Partnerships' },
+  { label: 'Head of Supply Chain', category: 'Operations' },
+  { label: 'Director of Purchasing', category: 'Operations' },
+  { label: 'Procurement Manager', category: 'Operations' },
+  { label: 'Category Manager', category: 'Operations' },
+  { label: 'Director of Product Development', category: 'Product' },
+  { label: 'Brand Manager', category: 'Product' },
+  { label: 'Product Manager', category: 'Product' },
+  { label: 'Head of Marketing', category: 'Marketing' },
+  { label: 'Buyer', category: 'Retail' },
+  { label: 'Retail Account Manager', category: 'Retail' },
+];
 
 const defaultTags = [
   'Vendor Manager',
@@ -147,17 +166,68 @@ const PeoplePage = () => {
   const [showResults, setShowResults] = useState(false);
   const [selectedPeople, setSelectedPeople] = useState([]);
   const [selectAll, setSelectAll] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [focusedSuggestion, setFocusedSuggestion] = useState(-1);
+  const inputWrapRef = useRef(null);
+
+  // Filter suggestions based on input and already-selected tags
+  const filteredSuggestions = suggestedRoles.filter(
+    (r) => !titleTags.includes(r.label) && (titleInput === '' || r.label.toLowerCase().includes(titleInput.toLowerCase()))
+  );
+
+  // Group by category
+  const groupedSuggestions = filteredSuggestions.reduce((acc, r) => {
+    if (!acc[r.category]) acc[r.category] = [];
+    acc[r.category].push(r);
+    return acc;
+  }, {});
+
+  // Flat list for keyboard nav
+  const flatSuggestions = filteredSuggestions;
+
+  const addTag = (label) => {
+    if (!titleTags.includes(label)) {
+      setTitleTags([...titleTags, label]);
+    }
+    setTitleInput('');
+    setShowSuggestions(false);
+    setFocusedSuggestion(-1);
+  };
 
   const handleAddTag = (e) => {
-    if (e.key === 'Enter' && titleInput.trim()) {
-      setTitleTags([...titleTags, titleInput.trim()]);
-      setTitleInput('');
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      if (focusedSuggestion >= 0 && flatSuggestions[focusedSuggestion]) {
+        addTag(flatSuggestions[focusedSuggestion].label);
+      } else if (titleInput.trim()) {
+        addTag(titleInput.trim());
+      }
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setShowSuggestions(true);
+      setFocusedSuggestion((i) => (i + 1) % flatSuggestions.length);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setFocusedSuggestion((i) => (i - 1 + flatSuggestions.length) % flatSuggestions.length);
+    } else if (e.key === 'Escape') {
+      setShowSuggestions(false);
     }
   };
 
   const handleRemoveTag = (index) => {
     setTitleTags(titleTags.filter((_, i) => i !== index));
   };
+
+  // Close suggestions on click outside
+  useEffect(() => {
+    const handleClick = (e) => {
+      if (inputWrapRef.current && !inputWrapRef.current.contains(e.target)) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, []);
 
   const handleSearch = () => {
     setShowResults(true);
@@ -202,15 +272,46 @@ const PeoplePage = () => {
           <h2 className="oai-people__finder-title"><span aria-hidden="true">{Icons.contacts}</span> Find Decision Makers</h2>
 
           <div className="oai-people__finder-input-row">
-            <input
-              className="oai-people__finder-input"
-              type="text"
-              placeholder="Type a job title and press Enter..."
-              aria-label="Job title filter"
-              value={titleInput}
-              onChange={(e) => setTitleInput(e.target.value)}
-              onKeyDown={handleAddTag}
-            />
+            <div className="oai-people__finder-input-wrap" ref={inputWrapRef}>
+              <input
+                className="oai-people__finder-input"
+                type="text"
+                placeholder="Type a job title or select from suggestions..."
+                aria-label="Job title filter"
+                aria-autocomplete="list"
+                value={titleInput}
+                onChange={(e) => { setTitleInput(e.target.value); setShowSuggestions(true); setFocusedSuggestion(-1); }}
+                onFocus={() => setShowSuggestions(true)}
+                onKeyDown={handleAddTag}
+              />
+              {showSuggestions && flatSuggestions.length > 0 && (
+                <ul className="oai-people__autocomplete" role="listbox">
+                  {Object.entries(groupedSuggestions).map(([cat, roles]) => (
+                    <li key={cat} role="presentation">
+                      <div className="oai-people__autocomplete-section">{cat}</div>
+                      {roles.map((r) => {
+                        const idx = flatSuggestions.indexOf(r);
+                        return (
+                          <div
+                            key={r.label}
+                            className={[
+                              'oai-people__autocomplete-item',
+                              idx === focusedSuggestion && 'oai-people__autocomplete-item--focused',
+                            ].filter(Boolean).join(' ')}
+                            role="option"
+                            aria-selected={idx === focusedSuggestion}
+                            onClick={() => addTag(r.label)}
+                            onMouseEnter={() => setFocusedSuggestion(idx)}
+                          >
+                            {r.label}
+                          </div>
+                        );
+                      })}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
           </div>
 
           {titleTags.length > 0 && (
@@ -265,21 +366,17 @@ const PeoplePage = () => {
           <>
             {/* Results header with stats and actions */}
             <div className="oai-people__header">
-              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-5)' }}>
-                <div className="oai-people__stat-box">
-                  <div className="oai-people__stat-num">7</div>
-                  <div className="oai-people__stat-lbl">Saved</div>
-                </div>
-                <div className="oai-people__stat-box">
-                  <div className="oai-people__stat-num">0</div>
-                  <div className="oai-people__stat-lbl">Emails</div>
-                </div>
+              <div className="oai-people__stat-box">
+                <div className="oai-people__stat-num">{selectedPeople.length}</div>
+                <div className="oai-people__stat-lbl">Saved</div>
               </div>
-              <div className="oai-people__header-actions">
-                <button className="oai-people__find-btn" onClick={fn()}><span aria-hidden="true">{Icons.search}</span> Find More</button>
-                <button className="oai-people__export-btn" onClick={fn()}>Export Contacts</button>
-                <button className="oai-people__outbound-btn" onClick={fn()}><span aria-hidden="true">{Icons.campaigns}</span> Outbound</button>
+              <div className="oai-people__stat-box">
+                <div className="oai-people__stat-num">0</div>
+                <div className="oai-people__stat-lbl">Emails</div>
               </div>
+              <button className="oai-people__find-btn" onClick={fn()}><span aria-hidden="true">{Icons.contacts}</span> Find More</button>
+              <button className="oai-people__export-btn" onClick={fn()}>Export ▾</button>
+              <button className="oai-people__outbound-btn" onClick={fn()}><span aria-hidden="true">{Icons.campaigns}</span> Outbound</button>
             </div>
 
             {/* Filter toolbar */}
