@@ -169,8 +169,22 @@ const StageBadge = ({ stage }) => {
   return <span className={`oai-results__stage oai-results__stage--${variants[stage] || 'muted'}`}>{labels[stage] || stage}</span>;
 };
 
-const countryOptions = [['US', '🇺🇸 United States'], ['UK', '🇬🇧 United Kingdom'], ['DE', '🇩🇪 Germany'], ['JP', '🇯🇵 Japan'], ['CA', '🇨🇦 Canada']];
-const categoryOptions = [['Beauty & Personal Care', 'Beauty & Personal Care'], ['Skin Care', 'Skin Care'], ['Sun Protection', 'Sun Protection'], ['Face Moisturizers', 'Face Moisturizers']];
+const countryOptions = [
+  { value: 'US', label: '🇺🇸 United States' }, { value: 'UK', label: '🇬🇧 United Kingdom' },
+  { value: 'DE', label: '🇩🇪 Germany' }, { value: 'JP', label: '🇯🇵 Japan' },
+  { value: 'CA', label: '🇨🇦 Canada' }, { value: 'FR', label: '🇫🇷 France' },
+];
+const appCategories = {
+  'Cosmetics & Beauty': ['Sun Protection', 'Skin Care', 'Hair Care', 'Makeup', 'Beauty Tools', 'Fragrance', 'Nail Care', 'Body Lotions'],
+  'Electronics': ['Smart Home', 'Audio & Headphones', 'Phone Accessories', 'Wearables', 'Cameras', 'Computer Accessories', 'Portable Chargers'],
+  'Supplements & Health': ['Vitamins', 'Protein & Fitness', 'Probiotics', 'Herbal Supplements', 'Collagen', 'Sleep & Relaxation', 'Immune Support'],
+  'Home & Kitchen': ['Kitchen Gadgets', 'Home Organization', 'Bedding', 'Cleaning Supplies', 'Candles & Fragrances', 'Small Appliances'],
+  'Sports & Outdoors': ['Fitness Equipment', 'Yoga & Pilates', 'Camping & Hiking', 'Water Sports', 'Cycling', 'Running'],
+  'Baby & Kids': ['Baby Care', 'Feeding', 'Toys & Games', 'Kids Clothing', 'Safety', 'Nursery'],
+  'Pet Supplies': ['Dog Supplies', 'Cat Supplies', 'Pet Grooming', 'Pet Health', 'Fish & Aquarium', 'Pet Toys'],
+};
+const categoryOptions = Object.keys(appCategories).map((n) => ({ value: n, label: n }));
+const getSubcategoryOptions = (cat) => (appCategories[cat] || []).map((s) => ({ value: s, label: s }));
 
 /* ── Mock leads per brand ──────────────────────────────────────── */
 const mockLeads = {
@@ -282,7 +296,8 @@ const LeadDrawer = ({ brand, product, onClose, onAddToContacts }) => {
 const SearchBrandsContent = ({ onNavigate }) => {
   const [keyword, setKeyword] = useState('sunscreen');
   const [country, setCountry] = useState('US');
-  const [category, setCategory] = useState('Sun Protection');
+  const [category, setCategory] = useState('Cosmetics & Beauty');
+  const [subcategory, setSubcategory] = useState('Sun Protection');
   const [minRating, setMinRating] = useState('3.5');
   const [rankMin, setRankMin] = useState('1000');
   const [rankMax, setRankMax] = useState('50000');
@@ -337,22 +352,19 @@ const SearchBrandsContent = ({ onNavigate }) => {
       </div>
 
       <div className="oai-search-card">
-        <div className="oai-search-card__form-grid">
+        <div className="oai-search-card__form-grid oai-search-card__form-grid--4col">
           <div className="oai-search-card__field oai-search-card__field--keyword">
             <label className="oai-search-card__label" htmlFor="search-keyword">Keyword</label>
             <input id="search-keyword" className="oai-search-card__text-input" type="text" value={keyword} onChange={(e) => setKeyword(e.target.value)} placeholder="e.g. sunscreen, facial cream, serum" />
           </div>
           <div className="oai-search-card__field">
-            <label className="oai-search-card__label" htmlFor="search-country">Country</label>
-            <select id="search-country" className="oai-search-card__text-input" value={country} onChange={(e) => setCountry(e.target.value)}>
-              {countryOptions.map(([code, label]) => <option key={code} value={code}>{label}</option>)}
-            </select>
+            <Select label="Country" options={countryOptions} value={country} onChange={(e) => setCountry(e.target.value)} id="search-country" />
           </div>
           <div className="oai-search-card__field">
-            <label className="oai-search-card__label" htmlFor="search-category">Category</label>
-            <select id="search-category" className="oai-search-card__text-input" value={category} onChange={(e) => setCategory(e.target.value)}>
-              {categoryOptions.map(([name]) => <option key={name} value={name}>{name}</option>)}
-            </select>
+            <Select label="Category" options={categoryOptions} value={category} onChange={(e) => { setCategory(e.target.value); setSubcategory(''); }} id="search-category" />
+          </div>
+          <div className="oai-search-card__field">
+            <Select label="Sub-Category" placeholder="All sub-categories" options={getSubcategoryOptions(category)} value={subcategory} onChange={(e) => setSubcategory(e.target.value)} id="search-subcategory" />
           </div>
         </div>
 
@@ -363,14 +375,19 @@ const SearchBrandsContent = ({ onNavigate }) => {
         {showAdvanced && (
           <div className="oai-search-card__form-grid oai-search-card__form-grid--advanced">
             <div className="oai-search-card__field">
-              <label className="oai-search-card__label" htmlFor="search-min-rating">Min Rating</label>
-              <select id="search-min-rating" className="oai-search-card__text-input" value={minRating} onChange={(e) => setMinRating(e.target.value)}>
-                <option value="">Any</option>
-                <option value="3.0">3.0+</option>
-                <option value="3.5">3.5+</option>
-                <option value="4.0">4.0+</option>
-                <option value="4.5">4.5+</option>
-              </select>
+              <Select
+                label="Min Rating"
+                options={[
+                  { value: '', label: 'Any' },
+                  { value: '3.0', label: '3.0+' },
+                  { value: '3.5', label: '3.5+' },
+                  { value: '4.0', label: '4.0+' },
+                  { value: '4.5', label: '4.5+' },
+                ]}
+                value={minRating}
+                onChange={(e) => setMinRating(e.target.value)}
+                id="search-min-rating"
+              />
             </div>
             <div className="oai-search-card__field">
               <label className="oai-search-card__label" htmlFor="search-rank-min">Sales Rank Min</label>

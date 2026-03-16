@@ -203,6 +203,25 @@
   margin-bottom: var(--space-4);
 }
 
+.oai-search-card__form-grid--4col {
+  grid-template-columns: 1fr 180px 200px 200px;
+}
+
+@media (max-width: 900px) {
+  .oai-search-card__form-grid--4col {
+    grid-template-columns: 1fr 1fr;
+  }
+  .oai-search-card__form-grid--4col .oai-search-card__field--keyword {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 560px) {
+  .oai-search-card__form-grid--4col {
+    grid-template-columns: 1fr;
+  }
+}
+
 .oai-search-card__form-grid--advanced {
   grid-template-columns: 1fr 1fr 1fr;
   padding-top: var(--space-4);

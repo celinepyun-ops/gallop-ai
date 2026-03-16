@@ -4,10 +4,11 @@ import { PageLayout } from './PageLayout';
 import { Sidebar } from './Sidebar';
 import { Navbar } from './Navbar';
 import { Search } from './Search';
+import { Select } from './Select';
 import { Avatar } from './Avatar';
 import { HelpButton } from './HelpButton';
 import { Icons } from './icons';
-import { DOMAIN_LABELS, BEAUTY_CATEGORIES } from '../services/keepaApi';
+import { DOMAIN_LABELS, PRODUCT_CATEGORIES } from '../services/keepaApi';
 import './searchpage.css';
 
 const sidebarItems = [
@@ -338,8 +339,10 @@ const StageBadge = ({ stage }) => {
   return <span className={`oai-results__stage oai-results__stage--${variants[stage] || 'muted'}`}>{labels[stage] || stage}</span>;
 };
 
-const countryOptions = Object.entries(DOMAIN_LABELS);
-const categoryOptions = Object.entries(BEAUTY_CATEGORIES.US);
+const countryOptions = Object.entries(DOMAIN_LABELS).map(([code, label]) => ({ value: code, label }));
+const categoryOptions = Object.keys(PRODUCT_CATEGORIES).map((name) => ({ value: name, label: name }));
+const getSubcategoryOptions = (cat) =>
+  (PRODUCT_CATEGORIES[cat]?.subcategories || []).map((s) => ({ value: s, label: s }));
 
 /* ── Main Component ─────────────────────────────────────────────── */
 const SearchBrandsPage = () => {
@@ -349,7 +352,8 @@ const SearchBrandsPage = () => {
   // Search filters
   const [keyword, setKeyword] = useState('sunscreen');
   const [country, setCountry] = useState('US');
-  const [category, setCategory] = useState('Sun Protection');
+  const [category, setCategory] = useState('Cosmetics & Beauty');
+  const [subcategory, setSubcategory] = useState('Sun Protection');
   const [minRating, setMinRating] = useState('3.5');
   const [rankMin, setRankMin] = useState('1000');
   const [rankMax, setRankMax] = useState('50000');
@@ -444,26 +448,38 @@ const SearchBrandsPage = () => {
 
         {/* ── Search Card ──────────────────────────────────────── */}
         <div className="oai-search-card">
-          <div className="oai-search-card__form-grid">
+          <div className="oai-search-card__form-grid oai-search-card__form-grid--4col">
             <div className="oai-search-card__field oai-search-card__field--keyword">
               <label className="oai-search-card__label" htmlFor="search-keyword">Keyword</label>
               <input id="search-keyword" className="oai-search-card__text-input" type="text" value={keyword} onChange={(e) => setKeyword(e.target.value)} placeholder="e.g. sunscreen, facial cream, serum" />
             </div>
             <div className="oai-search-card__field">
-              <label className="oai-search-card__label" htmlFor="search-country">Country</label>
-              <select id="search-country" className="oai-search-card__text-input" value={country} onChange={(e) => setCountry(e.target.value)}>
-                {countryOptions.map(([code, label]) => (
-                  <option key={code} value={code}>{label}</option>
-                ))}
-              </select>
+              <Select
+                label="Country"
+                options={countryOptions}
+                value={country}
+                onChange={(e) => setCountry(e.target.value)}
+                id="search-country"
+              />
             </div>
             <div className="oai-search-card__field">
-              <label className="oai-search-card__label" htmlFor="search-category">Category</label>
-              <select id="search-category" className="oai-search-card__text-input" value={category} onChange={(e) => setCategory(e.target.value)}>
-                {categoryOptions.map(([name]) => (
-                  <option key={name} value={name}>{name}</option>
-                ))}
-              </select>
+              <Select
+                label="Category"
+                options={categoryOptions}
+                value={category}
+                onChange={(e) => { setCategory(e.target.value); setSubcategory(''); }}
+                id="search-category"
+              />
+            </div>
+            <div className="oai-search-card__field">
+              <Select
+                label="Sub-Category"
+                placeholder="All sub-categories"
+                options={getSubcategoryOptions(category)}
+                value={subcategory}
+                onChange={(e) => setSubcategory(e.target.value)}
+                id="search-subcategory"
+              />
             </div>
           </div>
 
@@ -480,14 +496,19 @@ const SearchBrandsPage = () => {
           {showAdvanced && (
             <div className="oai-search-card__form-grid oai-search-card__form-grid--advanced">
               <div className="oai-search-card__field">
-                <label className="oai-search-card__label" htmlFor="search-min-rating">Min Rating</label>
-                <select id="search-min-rating" className="oai-search-card__text-input" value={minRating} onChange={(e) => setMinRating(e.target.value)}>
-                  <option value="">Any</option>
-                  <option value="3.0">3.0+</option>
-                  <option value="3.5">3.5+</option>
-                  <option value="4.0">4.0+</option>
-                  <option value="4.5">4.5+</option>
-                </select>
+                <Select
+                  label="Min Rating"
+                  options={[
+                    { value: '', label: 'Any' },
+                    { value: '3.0', label: '3.0+' },
+                    { value: '3.5', label: '3.5+' },
+                    { value: '4.0', label: '4.0+' },
+                    { value: '4.5', label: '4.5+' },
+                  ]}
+                  value={minRating}
+                  onChange={(e) => setMinRating(e.target.value)}
+                  id="search-min-rating"
+                />
               </div>
               <div className="oai-search-card__field">
                 <label className="oai-search-card__label" htmlFor="search-rank-min">Sales Rank Min</label>

@@ -37,7 +37,32 @@ export const DOMAIN_LABELS = {
   MX: '🇲🇽 Mexico',
 };
 
-// Beauty & Personal Care category IDs per domain
+// Top-level product categories with subcategories
+export const PRODUCT_CATEGORIES = {
+  'Cosmetics & Beauty': {
+    subcategories: ['Sun Protection', 'Skin Care', 'Hair Care', 'Makeup', 'Beauty Tools', 'Fragrance', 'Nail Care', 'Body Lotions'],
+  },
+  'Electronics': {
+    subcategories: ['Smart Home', 'Audio & Headphones', 'Phone Accessories', 'Wearables', 'Cameras', 'Computer Accessories', 'Portable Chargers'],
+  },
+  'Supplements & Health': {
+    subcategories: ['Vitamins', 'Protein & Fitness', 'Probiotics', 'Herbal Supplements', 'Collagen', 'Sleep & Relaxation', 'Immune Support'],
+  },
+  'Home & Kitchen': {
+    subcategories: ['Kitchen Gadgets', 'Home Organization', 'Bedding', 'Cleaning Supplies', 'Candles & Fragrances', 'Small Appliances'],
+  },
+  'Sports & Outdoors': {
+    subcategories: ['Fitness Equipment', 'Yoga & Pilates', 'Camping & Hiking', 'Water Sports', 'Cycling', 'Running'],
+  },
+  'Baby & Kids': {
+    subcategories: ['Baby Care', 'Feeding', 'Toys & Games', 'Kids Clothing', 'Safety', 'Nursery'],
+  },
+  'Pet Supplies': {
+    subcategories: ['Dog Supplies', 'Cat Supplies', 'Pet Grooming', 'Pet Health', 'Fish & Aquarium', 'Pet Toys'],
+  },
+};
+
+// Legacy alias for backward compatibility
 export const BEAUTY_CATEGORIES = {
   US: {
     'Beauty & Personal Care': 3760911,
