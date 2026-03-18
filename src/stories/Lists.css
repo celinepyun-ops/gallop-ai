@@ -1,0 +1,422 @@
+/* ==========================================================================
+   Lists Page — Organize saved products/brands into custom lists
+   ========================================================================== */
+
+/* ── Page Header ──────────────────────────────────────────────────────── */
+.oai-lists__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-6);
+}
+
+.oai-lists__title {
+  margin: 0 0 var(--space-1);
+  font-size: var(--font-size-2xl);
+}
+
+.oai-lists__subtitle {
+  margin: 0;
+  font-size: var(--font-size-base);
+  color: var(--color-text-secondary);
+  font-family: var(--font-family-sans);
+  line-height: var(--leading-normal);
+}
+
+.oai-lists__new-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--font-size-base);
+  font-family: var(--font-family-sans);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-inverse);
+  background: var(--color-primary-600);
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+  white-space: nowrap;
+}
+
+.oai-lists__new-btn:hover {
+  background: var(--color-primary-700);
+}
+
+.oai-lists__new-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus);
+}
+
+/* ── Empty State ──────────────────────────────────────────────────────── */
+.oai-lists__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-16) var(--space-6);
+  text-align: center;
+}
+
+.oai-lists__empty-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  margin-bottom: var(--space-4);
+  color: var(--color-text-muted);
+  background: var(--color-neutral-100);
+  border-radius: var(--radius-full);
+}
+
+[data-theme="dark"] .oai-lists__empty-icon {
+  background: var(--color-neutral-700);
+}
+
+.oai-lists__empty-title {
+  margin: 0 0 var(--space-2);
+  font-size: var(--font-size-lg);
+  color: var(--color-text-primary);
+}
+
+.oai-lists__empty-desc {
+  margin: 0 0 var(--space-6);
+  font-size: var(--font-size-base);
+  font-family: var(--font-family-sans);
+  color: var(--color-text-secondary);
+  max-width: 400px;
+  line-height: var(--leading-normal);
+}
+
+.oai-lists__create-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-5);
+  font-size: var(--font-size-base);
+  font-family: var(--font-family-sans);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-inverse);
+  background: var(--color-primary-600);
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.oai-lists__create-btn:hover {
+  background: var(--color-primary-700);
+}
+
+.oai-lists__create-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus);
+}
+
+/* ── List Grid ────────────────────────────────────────────────────────── */
+.oai-lists__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: var(--space-4);
+}
+
+/* ── List Card ────────────────────────────────────────────────────────── */
+.oai-lists__card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  font-family: var(--font-family-sans);
+}
+
+.oai-lists__card:hover {
+  border-color: var(--color-border-strong);
+  box-shadow: var(--shadow-md);
+}
+
+.oai-lists__card:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus);
+}
+
+.oai-lists__card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.oai-lists__card-name {
+  margin: 0;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  font-family: var(--font-family-sans);
+}
+
+.oai-lists__card-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.oai-lists__card-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.oai-lists__card-desc {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  line-height: var(--leading-normal);
+}
+
+/* ── Three-dot Menu ───────────────────────────────────────────────────── */
+.oai-lists__menu-wrapper {
+  position: relative;
+}
+
+.oai-lists__menu-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  color: var(--color-text-muted);
+  background: none;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.oai-lists__menu-btn:hover {
+  background: var(--color-bg-hover);
+  color: var(--color-text-primary);
+}
+
+.oai-lists__menu-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus);
+}
+
+.oai-lists__menu-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: var(--z-dropdown);
+  min-width: 160px;
+  margin-top: var(--space-1);
+  padding: var(--space-1) 0;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  list-style: none;
+}
+
+.oai-lists__menu-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--font-size-sm);
+  font-family: var(--font-family-sans);
+  color: var(--color-text-primary);
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+  text-align: left;
+}
+
+.oai-lists__menu-item:hover {
+  background: var(--color-bg-hover);
+}
+
+.oai-lists__menu-item--danger {
+  color: var(--color-error-text);
+}
+
+.oai-lists__menu-item--danger:hover {
+  background: var(--color-error-bg);
+}
+
+/* ── Detail View Header ──────────────────────────────────────────────── */
+.oai-lists__detail-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-6);
+}
+
+.oai-lists__back-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  color: var(--color-text-secondary);
+  background: none;
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.oai-lists__back-btn:hover {
+  background: var(--color-bg-hover);
+  color: var(--color-text-primary);
+}
+
+.oai-lists__back-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus);
+}
+
+.oai-lists__detail-info {
+  flex: 1;
+}
+
+.oai-lists__detail-name {
+  margin: 0;
+  font-size: var(--font-size-xl);
+  color: var(--color-text-primary);
+}
+
+.oai-lists__detail-meta {
+  margin: var(--space-1) 0 0;
+  font-size: var(--font-size-sm);
+  font-family: var(--font-family-sans);
+  color: var(--color-text-secondary);
+}
+
+/* ── Create List Modal Form ──────────────────────────────────────────── */
+.oai-lists__form-group {
+  margin-bottom: var(--space-4);
+}
+
+.oai-lists__form-label {
+  display: block;
+  margin-bottom: var(--space-1);
+  font-size: var(--font-size-sm);
+  font-family: var(--font-family-sans);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}
+
+.oai-lists__form-input {
+  display: block;
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--font-size-base);
+  font-family: var(--font-family-sans);
+  color: var(--color-text-primary);
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  box-sizing: border-box;
+}
+
+.oai-lists__form-input:focus {
+  outline: none;
+  border-color: var(--color-border-focus);
+  box-shadow: var(--shadow-focus);
+}
+
+.oai-lists__form-input::placeholder {
+  color: var(--color-text-muted);
+}
+
+.oai-lists__form-textarea {
+  display: block;
+  width: 100%;
+  min-height: 80px;
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--font-size-base);
+  font-family: var(--font-family-sans);
+  color: var(--color-text-primary);
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  resize: vertical;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  box-sizing: border-box;
+}
+
+.oai-lists__form-textarea:focus {
+  outline: none;
+  border-color: var(--color-border-focus);
+  box-shadow: var(--shadow-focus);
+}
+
+.oai-lists__form-textarea::placeholder {
+  color: var(--color-text-muted);
+}
+
+/* ── Modal Footer Buttons ─────────────────────────────────────────────── */
+.oai-lists__modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3);
+}
+
+.oai-lists__cancel-btn {
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--font-size-base);
+  font-family: var(--font-family-sans);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  background: none;
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.oai-lists__cancel-btn:hover {
+  background: var(--color-bg-hover);
+}
+
+.oai-lists__cancel-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus);
+}
+
+.oai-lists__save-btn {
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--font-size-base);
+  font-family: var(--font-family-sans);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-inverse);
+  background: var(--color-primary-600);
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.oai-lists__save-btn:hover {
+  background: var(--color-primary-700);
+}
+
+.oai-lists__save-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus);
+}
