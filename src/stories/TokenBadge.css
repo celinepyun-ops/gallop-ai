@@ -1,0 +1,292 @@
+/* ==========================================================================
+   Token Badge — Small pill showing token cost or balance
+   BEM: oai-token-badge
+   ========================================================================== */
+
+/* ── Token cost badge (inline, next to reveal buttons) ───────────── */
+.oai-token-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-full);
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--leading-tight);
+  white-space: nowrap;
+}
+
+.oai-token-badge--cost {
+  background: var(--color-secondary-50);
+  color: var(--color-secondary-700);
+  border: 1px solid var(--color-secondary-200);
+}
+
+.oai-token-badge--balance {
+  background: var(--color-primary-50);
+  color: var(--color-primary-700);
+  border: 1px solid var(--color-primary-200);
+}
+
+.oai-token-badge--balance-low {
+  background: var(--color-warning-bg);
+  color: var(--color-warning-text);
+  border: 1px solid var(--color-warning-border);
+}
+
+.oai-token-badge__icon {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+/* ── Contact field row (email/linkedin availability) ─────────────── */
+.oai-contact-field {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) 0;
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-xs);
+  min-height: 28px;
+}
+
+.oai-contact-field__status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  flex: 1;
+  min-width: 0;
+}
+
+.oai-contact-field__status--available {
+  color: var(--color-success-text);
+}
+
+.oai-contact-field__status--unavailable {
+  color: var(--color-text-muted);
+}
+
+.oai-contact-field__status-icon {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  border-radius: var(--radius-full);
+  justify-content: center;
+  font-size: 10px;
+  font-weight: var(--font-weight-bold);
+}
+
+.oai-contact-field__status--available .oai-contact-field__status-icon {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+  border: 1px solid var(--color-success-border);
+}
+
+.oai-contact-field__status--unavailable .oai-contact-field__status-icon {
+  background: var(--color-neutral-100);
+  color: var(--color-neutral-400);
+  border: 1px solid var(--color-neutral-200);
+}
+
+.oai-contact-field__label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.oai-contact-field__revealed {
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-medium);
+}
+
+.oai-contact-field__revealed a {
+  color: var(--color-primary-600);
+  text-decoration: none;
+}
+
+.oai-contact-field__revealed a:hover {
+  text-decoration: underline;
+}
+
+/* ── Reveal button ───────────────────────────────────────────────── */
+.oai-reveal-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 2px var(--space-2);
+  border: 1px solid var(--color-primary-200);
+  border-radius: var(--radius-sm);
+  background: var(--color-primary-50);
+  color: var(--color-primary-700);
+  font-family: var(--font-family-sans);
+  font-size: 11px;
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.oai-reveal-btn:hover {
+  background: var(--color-primary-100);
+  border-color: var(--color-primary-300);
+}
+
+.oai-reveal-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus);
+}
+
+.oai-reveal-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── Token balance pill (sidebar footer) ─────────────────────────── */
+.oai-token-balance {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  margin: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  background: rgba(0, 100, 0, 0.08);
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-xs);
+  color: var(--color-primary-200);
+  cursor: default;
+}
+
+.oai-token-balance__icon {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  color: var(--color-primary-400);
+}
+
+.oai-token-balance__count {
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary-100);
+}
+
+.oai-token-balance__label {
+  color: var(--color-primary-300);
+}
+
+/* ── Confirm reveal dialog (within drawer) ───────────────────────── */
+.oai-reveal-confirm {
+  padding: var(--space-4);
+  background: var(--color-info-bg);
+  border: 1px solid var(--color-info-border);
+  border-radius: var(--radius-md);
+  margin-top: var(--space-2);
+  font-family: var(--font-family-sans);
+}
+
+.oai-reveal-confirm__text {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--space-3);
+  line-height: var(--leading-normal);
+}
+
+.oai-reveal-confirm__cost {
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-secondary-700);
+}
+
+.oai-reveal-confirm__balance {
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+}
+
+.oai-reveal-confirm__actions {
+  display: flex;
+  gap: var(--space-2);
+  justify-content: flex-end;
+}
+
+.oai-reveal-confirm__btn {
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+  border: 1px solid var(--color-border-default);
+  background: var(--color-bg-card);
+  color: var(--color-text-primary);
+}
+
+.oai-reveal-confirm__btn:hover {
+  background: var(--color-neutral-100);
+}
+
+.oai-reveal-confirm__btn--primary {
+  background: var(--color-primary-600);
+  color: #FFFFFF;
+  border-color: var(--color-primary-600);
+}
+
+.oai-reveal-confirm__btn--primary:hover {
+  background: var(--color-primary-700);
+}
+
+.oai-reveal-confirm__btn:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus);
+}
+
+/* ── Dark mode overrides ─────────────────────────────────────────── */
+[data-theme="dark"] .oai-token-badge--cost {
+  background: rgba(194, 65, 12, 0.15);
+  border-color: var(--color-secondary-800);
+  color: var(--color-secondary-300);
+}
+
+[data-theme="dark"] .oai-token-badge--balance {
+  background: rgba(0, 100, 0, 0.15);
+  border-color: var(--color-primary-700);
+  color: var(--color-primary-300);
+}
+
+[data-theme="dark"] .oai-reveal-btn {
+  background: rgba(0, 100, 0, 0.12);
+  border-color: var(--color-primary-700);
+  color: var(--color-primary-300);
+}
+
+[data-theme="dark"] .oai-reveal-btn:hover {
+  background: rgba(0, 100, 0, 0.2);
+  border-color: var(--color-primary-600);
+}
+
+[data-theme="dark"] .oai-contact-field__status--available {
+  color: var(--color-success-text);
+}
+
+[data-theme="dark"] .oai-contact-field__status--unavailable {
+  color: var(--color-neutral-400);
+}
+
+[data-theme="dark"] .oai-contact-field__revealed a {
+  color: var(--color-primary-400);
+}
+
+[data-theme="dark"] .oai-token-balance {
+  background: rgba(0, 100, 0, 0.12);
+}
+
+[data-theme="dark"] .oai-reveal-confirm {
+  background: var(--color-info-bg);
+  border-color: var(--color-info-border);
+}
+
+[data-theme="dark"] .oai-reveal-confirm__cost {
+  color: var(--color-secondary-300);
+}

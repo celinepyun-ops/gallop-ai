@@ -24,12 +24,17 @@ import { LandingPage } from './stories/LandingPage';
 import { PricingPage } from './stories/PricingPage';
 import { ProductPage } from './stories/ProductPage';
 import { Icons } from './stories/icons';
+import { TokenBadge, TokenBalance, LeadContactCard } from './stories/TokenReveal';
 import './stories/searchpage.css';
+import './stories/TokenBadge.css';
 const noop = () => {};
 
 /* ── Sidebar footer ──────────────────────────────────────────────── */
 const SidebarFooter = ({ darkMode, onToggleDark, onProfileClick, onSettingsClick }) => (
   <ul className="oai-sidebar__list">
+    <li>
+      <TokenBalance balance={48} />
+    </li>
     <li>
       <button className="oai-sidebar__item" onClick={noop}>
         <span className="oai-sidebar__icon">{Icons.contacts}</span>
@@ -215,59 +220,68 @@ const appCategories = {
 const categoryOptions = Object.keys(appCategories).map((n) => ({ value: n, label: n }));
 const getSubcategoryOptions = (cat) => (appCategories[cat] || []).map((s) => ({ value: s, label: s }));
 
-/* ── Mock leads per brand ──────────────────────────────────────── */
+/* ── Mock leads per brand (token-gated contact reveal) ─────────── */
 const mockLeads = {
   'EcoGlow Naturals': [
-    { id: 'l1', name: 'Sarah Chen', role: 'Founder & CEO', email: 'sarah@ecoglownaturals.com', linkedin: 'linkedin.com/in/sarahchen', confidence: 'high' },
-    { id: 'l2', name: 'David Park', role: 'Head of Supply Chain', email: 'david@ecoglownaturals.com', linkedin: 'linkedin.com/in/davidpark', confidence: 'high' },
-    { id: 'l3', name: 'Lisa Nguyen', role: 'Product Manager', email: 'lisa@ecoglownaturals.com', linkedin: '', confidence: 'medium' },
+    { id: 'l1', name: 'Sarah Chen', role: 'Founder & CEO', email: 'sarah@ecoglownaturals.com', linkedin: 'linkedin.com/in/sarahchen', hasEmail: true, hasLinkedin: true, emailRevealed: false, linkedinRevealed: false, confidence: 'high' },
+    { id: 'l2', name: 'David Park', role: 'Head of Supply Chain', email: 'david@ecoglownaturals.com', linkedin: 'linkedin.com/in/davidpark', hasEmail: true, hasLinkedin: true, emailRevealed: false, linkedinRevealed: false, confidence: 'high' },
+    { id: 'l3', name: 'Lisa Nguyen', role: 'Product Manager', email: 'lisa@ecoglownaturals.com', linkedin: '', hasEmail: true, hasLinkedin: false, emailRevealed: false, linkedinRevealed: false, confidence: 'medium' },
   ],
   'SunShield Pro': [
-    { id: 'l4', name: 'Maria Santos', role: 'Co-Founder', email: 'maria@sunshieldpro.com', linkedin: 'linkedin.com/in/mariasantos', confidence: 'high' },
-    { id: 'l5', name: 'James Liu', role: 'Operations Director', email: 'james@sunshieldpro.com', linkedin: 'linkedin.com/in/jamesliu', confidence: 'medium' },
+    { id: 'l4', name: 'Maria Santos', role: 'Co-Founder', email: 'maria@sunshieldpro.com', linkedin: 'linkedin.com/in/mariasantos', hasEmail: true, hasLinkedin: true, emailRevealed: false, linkedinRevealed: false, confidence: 'high' },
+    { id: 'l5', name: 'James Liu', role: 'Operations Director', email: 'james@sunshieldpro.com', linkedin: 'linkedin.com/in/jamesliu', hasEmail: true, hasLinkedin: true, emailRevealed: false, linkedinRevealed: false, confidence: 'medium' },
   ],
   'AquaVeil': [
-    { id: 'l6', name: 'Priya Sharma', role: 'Founder', email: 'priya@aquaveil.com', linkedin: 'linkedin.com/in/priyasharma', confidence: 'high' },
-    { id: 'l7', name: 'Tom Bradley', role: 'VP of Manufacturing', email: 'tom@aquaveil.com', linkedin: '', confidence: 'medium' },
+    { id: 'l6', name: 'Priya Sharma', role: 'Founder', email: 'priya@aquaveil.com', linkedin: 'linkedin.com/in/priyasharma', hasEmail: true, hasLinkedin: true, emailRevealed: false, linkedinRevealed: false, confidence: 'high' },
+    { id: 'l7', name: 'Tom Bradley', role: 'VP of Manufacturing', email: 'tom@aquaveil.com', linkedin: '', hasEmail: true, hasLinkedin: false, emailRevealed: false, linkedinRevealed: false, confidence: 'medium' },
   ],
   'PureRadiance': [
-    { id: 'l8', name: 'Kevin Wright', role: 'CEO', email: 'kevin@pureradiance.com', linkedin: 'linkedin.com/in/kevinwright', confidence: 'high' },
-    { id: 'l9', name: 'Nina Patel', role: 'Procurement Lead', email: 'nina@pureradiance.com', linkedin: 'linkedin.com/in/ninapatel', confidence: 'high' },
+    { id: 'l8', name: 'Kevin Wright', role: 'CEO', email: 'kevin@pureradiance.com', linkedin: 'linkedin.com/in/kevinwright', hasEmail: true, hasLinkedin: true, emailRevealed: false, linkedinRevealed: false, confidence: 'high' },
+    { id: 'l9', name: 'Nina Patel', role: 'Procurement Lead', email: 'nina@pureradiance.com', linkedin: 'linkedin.com/in/ninapatel', hasEmail: true, hasLinkedin: true, emailRevealed: false, linkedinRevealed: false, confidence: 'high' },
   ],
   'BotaniShield': [
-    { id: 'l10', name: 'Rachel Kim', role: 'Founder', email: 'rachel@botanishield.com', linkedin: 'linkedin.com/in/rachelkim', confidence: 'high' },
+    { id: 'l10', name: 'Rachel Kim', role: 'Founder', email: 'rachel@botanishield.com', linkedin: 'linkedin.com/in/rachelkim', hasEmail: true, hasLinkedin: true, emailRevealed: false, linkedinRevealed: false, confidence: 'high' },
   ],
   'GlowUp Skin': [
-    { id: 'l11', name: 'Alex Rivera', role: 'Co-Founder & COO', email: 'alex@glowupskin.com', linkedin: 'linkedin.com/in/alexrivera', confidence: 'high' },
-    { id: 'l12', name: 'Jenny Zhao', role: 'Brand Manager', email: 'jenny@glowupskin.com', linkedin: '', confidence: 'medium' },
+    { id: 'l11', name: 'Alex Rivera', role: 'Co-Founder & COO', email: 'alex@glowupskin.com', linkedin: 'linkedin.com/in/alexrivera', hasEmail: true, hasLinkedin: true, emailRevealed: false, linkedinRevealed: false, confidence: 'high' },
+    { id: 'l12', name: 'Jenny Zhao', role: 'Brand Manager', email: 'jenny@glowupskin.com', linkedin: '', hasEmail: true, hasLinkedin: false, emailRevealed: false, linkedinRevealed: false, confidence: 'medium' },
   ],
   'Derma Botanics': [
-    { id: 'l13', name: 'Emma Liu', role: 'Head of Product', email: 'emma@dermabotanics.com', linkedin: 'linkedin.com/in/emmaliu', confidence: 'high' },
-    { id: 'l14', name: 'Carlos Mendez', role: 'Supply Chain Manager', email: 'carlos@dermabotanics.com', linkedin: 'linkedin.com/in/carlosmendez', confidence: 'medium' },
+    { id: 'l13', name: 'Emma Liu', role: 'Head of Product', email: 'emma@dermabotanics.com', linkedin: 'linkedin.com/in/emmaliu', hasEmail: true, hasLinkedin: true, emailRevealed: false, linkedinRevealed: false, confidence: 'high' },
+    { id: 'l14', name: 'Carlos Mendez', role: 'Supply Chain Manager', email: 'carlos@dermabotanics.com', linkedin: 'linkedin.com/in/carlosmendez', hasEmail: true, hasLinkedin: true, emailRevealed: false, linkedinRevealed: false, confidence: 'medium' },
   ],
   'FreshFace Co': [
-    { id: 'l15', name: 'Amanda Brooks', role: 'Founder', email: 'amanda@freshfaceco.com', linkedin: 'linkedin.com/in/amandabrooks', confidence: 'medium' },
+    { id: 'l15', name: 'Amanda Brooks', role: 'Founder', email: 'amanda@freshfaceco.com', linkedin: 'linkedin.com/in/amandabrooks', hasEmail: true, hasLinkedin: true, emailRevealed: false, linkedinRevealed: false, confidence: 'medium' },
   ],
   'La Roche-Posay': [
-    { id: 'l16', name: 'Corporate Partnerships', role: "L'Oréal Group", email: 'partnerships@loreal.com', linkedin: '', confidence: 'medium' },
+    { id: 'l16', name: 'Corporate Partnerships', role: "L'Oréal Group", email: 'partnerships@loreal.com', linkedin: '', hasEmail: true, hasLinkedin: false, emailRevealed: false, linkedinRevealed: false, confidence: 'medium' },
   ],
   'CeraVe': [
-    { id: 'l17', name: 'Corporate Partnerships', role: "L'Oréal Group", email: 'partnerships@loreal.com', linkedin: '', confidence: 'medium' },
+    { id: 'l17', name: 'Corporate Partnerships', role: "L'Oréal Group", email: 'partnerships@loreal.com', linkedin: '', hasEmail: true, hasLinkedin: false, emailRevealed: false, linkedinRevealed: false, confidence: 'medium' },
   ],
 };
 
-const LeadDrawer = ({ brand, product, onClose, onAddToContacts }) => {
+const LeadDrawer = ({ brand, product, onClose, onAddToContacts, tokenBalance: externalBalance, onTokenSpend: externalTokenSpend }) => {
   const leads = mockLeads[brand] || [];
   const [selectedLeads, setSelectedLeads] = useState([]);
+  const [localTokenBalance, setLocalTokenBalance] = useState(externalBalance ?? 48);
   const toggleLead = (id) => setSelectedLeads((prev) => prev.includes(id) ? prev.filter((l) => l !== id) : [...prev, id]);
   const toggleAllLeads = () => setSelectedLeads(selectedLeads.length === leads.length ? [] : leads.map((l) => l.id));
+
+  const handleTokenSpend = (cost, field, leadId) => {
+    setLocalTokenBalance((prev) => Math.max(0, prev - cost));
+    externalTokenSpend?.(cost, field, leadId);
+  };
 
   return (
     <>
       <div className="oai-lead-drawer__overlay" onClick={onClose} />
       <aside className="oai-lead-drawer" role="dialog" aria-label={`Leads for ${brand}`}>
         <div className="oai-lead-drawer__header">
-          <h2 className="oai-lead-drawer__title">Brand Leads</h2>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
+            <h2 className="oai-lead-drawer__title">Brand Leads</h2>
+            <TokenBadge cost={localTokenBalance} variant={localTokenBalance < 10 ? 'balance-low' : 'balance'} />
+          </div>
           <button className="oai-lead-drawer__close" onClick={onClose} aria-label="Close panel">✕</button>
         </div>
         <div className="oai-lead-drawer__body">
@@ -292,21 +306,14 @@ const LeadDrawer = ({ brand, product, onClose, onAddToContacts }) => {
             <div className="oai-lead-drawer__empty">No leads found for this brand yet.</div>
           ) : (
             leads.map((lead) => (
-              <div key={lead.id} className={`oai-lead-drawer__contact ${selectedLeads.includes(lead.id) ? 'oai-lead-drawer__contact--selected' : ''}`}>
-                <input type="checkbox" className="oai-lead-drawer__contact-check" checked={selectedLeads.includes(lead.id)} onChange={() => toggleLead(lead.id)} aria-label={`Select ${lead.name}`} />
-                <div className="oai-lead-drawer__contact-body">
-                  <div className="oai-lead-drawer__contact-name">{lead.name}</div>
-                  <div className="oai-lead-drawer__contact-role">{lead.role}</div>
-                  <div className="oai-lead-drawer__contact-details">
-                    <span>{lead.email}</span>
-                    {lead.linkedin && <a href={`https://${lead.linkedin}`} target="_blank" rel="noopener noreferrer">LinkedIn</a>}
-                  </div>
-                  <div className="oai-lead-drawer__contact-confidence">
-                    <span className={`oai-lead-drawer__confidence-dot oai-lead-drawer__confidence-dot--${lead.confidence}`} />
-                    {lead.confidence === 'high' ? 'High' : 'Medium'} confidence
-                  </div>
-                </div>
-              </div>
+              <LeadContactCard
+                key={lead.id}
+                lead={lead}
+                tokenBalance={localTokenBalance}
+                onTokenSpend={handleTokenSpend}
+                selected={selectedLeads.includes(lead.id)}
+                onSelect={toggleLead}
+              />
             ))
           )}
         </div>
