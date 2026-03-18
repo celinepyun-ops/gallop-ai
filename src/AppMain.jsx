@@ -117,16 +117,16 @@ const DashboardContent = () => {
 
 /* ── Search Results mock data ─────────────────────────────────────── */
 const searchResults = [
-  { title: 'EcoGlow Naturals Vitamin C Brightening Moisturizer with Hyaluronic Acid', asin: 'B0CK9X2M1P', brand: 'EcoGlow Naturals', price: '$24.97', rating: 4.6, reviews: 1243, salesRank: 8420, revenueGrowth: 46, salesRankTrend: -38, reviewVelocity: 32, priceStability: 'stable', partnershipScore: 92, brandStage: 'sweet-spot', estimatedMonthlySales: 890 },
-  { title: 'SunShield Pro SPF 50 Mineral Sunscreen, Reef-Safe, Lightweight', asin: 'B0DJ7M3KN2', brand: 'SunShield Pro', price: '$18.49', rating: 4.5, reviews: 876, salesRank: 12300, revenueGrowth: 38, salesRankTrend: -31, reviewVelocity: 28, priceStability: 'stable', partnershipScore: 88, brandStage: 'sweet-spot', estimatedMonthlySales: 640 },
-  { title: 'PureRadiance Retinol Night Cream Anti-Aging Face Moisturizer', asin: 'B0BN4L8FQ3', brand: 'PureRadiance', price: '$21.99', rating: 4.4, reviews: 2108, salesRank: 15600, revenueGrowth: 29, salesRankTrend: -24, reviewVelocity: 18, priceStability: 'stable', partnershipScore: 82, brandStage: 'sweet-spot', estimatedMonthlySales: 510 },
-  { title: 'GlowUp Skin Niacinamide Serum 10% + Zinc for Pore Minimizer', asin: 'B0CRK8V1N4', brand: 'GlowUp Skin', price: '$15.99', rating: 4.3, reviews: 645, salesRank: 21400, revenueGrowth: 22, salesRankTrend: -19, reviewVelocity: 41, priceStability: 'moderate', partnershipScore: 78, brandStage: 'sweet-spot', estimatedMonthlySales: 380 },
-  { title: 'Derma Botanics Collagen Peptide Face Cream with Vitamin E', asin: 'B0DM6P2KR5', brand: 'Derma Botanics', price: '$28.50', rating: 4.7, reviews: 3456, salesRank: 6800, revenueGrowth: 18, salesRankTrend: -14, reviewVelocity: 12, priceStability: 'stable', partnershipScore: 75, brandStage: 'sweet-spot', estimatedMonthlySales: 1050 },
-  { title: 'AquaVeil Hydrating Sunscreen SPF 30 for Sensitive Skin', asin: 'B0CJ3N7MP6', brand: 'AquaVeil', price: '$16.99', rating: 4.5, reviews: 412, salesRank: 34200, revenueGrowth: 55, salesRankTrend: -42, reviewVelocity: 52, priceStability: 'stable', partnershipScore: 85, brandStage: 'sweet-spot', estimatedMonthlySales: 250 },
-  { title: 'BotaniShield Zinc Oxide Sunscreen SPF 50+ Broad Spectrum', asin: 'B0BK2M9LN7', brand: 'BotaniShield', price: '$22.00', rating: 4.2, reviews: 289, salesRank: 42100, revenueGrowth: 61, salesRankTrend: -48, reviewVelocity: 67, priceStability: 'moderate', partnershipScore: 80, brandStage: 'sweet-spot', estimatedMonthlySales: 190 },
-  { title: 'CeraVe Moisturizing Cream, Body and Face Moisturizer for Dry Skin', asin: 'B00TTD9BRC', brand: 'CeraVe', price: '$18.96', rating: 4.7, reviews: 138412, salesRank: 42, revenueGrowth: 3, salesRankTrend: -2, reviewVelocity: 4, priceStability: 'stable', partnershipScore: 25, brandStage: 'enterprise', estimatedMonthlySales: 28500 },
-  { title: 'La Roche-Posay Toleriane Double Repair Face Moisturizer', asin: 'B01N95PQHQ', brand: 'La Roche-Posay', price: '$24.99', rating: 4.6, reviews: 46666, salesRank: 156, revenueGrowth: 5, salesRankTrend: -3, reviewVelocity: 6, priceStability: 'stable', partnershipScore: 28, brandStage: 'enterprise', estimatedMonthlySales: 12400 },
-  { title: 'FreshFace Co Aloe Vera Gel Moisturizer, Lightweight Daily Hydrator', asin: 'B0DN8K4QM8', brand: 'FreshFace Co', price: '$12.99', rating: 4.1, reviews: 87, salesRank: 78400, revenueGrowth: 12, salesRankTrend: -8, reviewVelocity: 24, priceStability: 'volatile', partnershipScore: 42, brandStage: 'early', estimatedMonthlySales: 110 },
+  { title: 'EcoGlow Naturals Vitamin C Brightening Moisturizer with Hyaluronic Acid', asin: 'B0CK9X2M1P', brand: 'EcoGlow Naturals', seller: 'EcoGlow Naturals LLC', isBrand: true, price: '$24.97', rating: 4.6, reviews: 1243, salesRank: 8420, monthlyRevenue: 22223, revenueGrowth: 46, salesRankTrend: -38, reviewVelocity: 32, priceStability: 'stable', partnershipScore: 92, brandStage: 'sweet-spot', estimatedMonthlySales: 890 },
+  { title: 'SunShield Pro SPF 50 Mineral Sunscreen, Reef-Safe, Lightweight', asin: 'B0DJ7M3KN2', brand: 'SunShield Pro', seller: 'SunShield Pro Inc.', isBrand: true, price: '$18.49', rating: 4.5, reviews: 876, salesRank: 12300, monthlyRevenue: 11834, revenueGrowth: 38, salesRankTrend: -31, reviewVelocity: 28, priceStability: 'stable', partnershipScore: 88, brandStage: 'sweet-spot', estimatedMonthlySales: 640 },
+  { title: 'PureRadiance Retinol Night Cream Anti-Aging Face Moisturizer', asin: 'B0BN4L8FQ3', brand: 'PureRadiance', seller: 'PureRadiance Beauty Co.', isBrand: true, price: '$21.99', rating: 4.4, reviews: 2108, salesRank: 15600, monthlyRevenue: 11215, revenueGrowth: 29, salesRankTrend: -24, reviewVelocity: 18, priceStability: 'stable', partnershipScore: 82, brandStage: 'sweet-spot', estimatedMonthlySales: 510 },
+  { title: 'GlowUp Skin Niacinamide Serum 10% + Zinc for Pore Minimizer', asin: 'B0CRK8V1N4', brand: 'GlowUp Skin', seller: 'GlowUp Skin Care', isBrand: true, price: '$15.99', rating: 4.3, reviews: 645, salesRank: 21400, monthlyRevenue: 6076, revenueGrowth: 22, salesRankTrend: -19, reviewVelocity: 41, priceStability: 'moderate', partnershipScore: 78, brandStage: 'sweet-spot', estimatedMonthlySales: 380 },
+  { title: 'Derma Botanics Collagen Peptide Face Cream with Vitamin E', asin: 'B0DM6P2KR5', brand: 'Derma Botanics', seller: 'Derma Botanics Ltd.', isBrand: true, price: '$28.50', rating: 4.7, reviews: 3456, salesRank: 6800, monthlyRevenue: 29925, revenueGrowth: 18, salesRankTrend: -14, reviewVelocity: 12, priceStability: 'stable', partnershipScore: 75, brandStage: 'sweet-spot', estimatedMonthlySales: 1050 },
+  { title: 'AquaVeil Hydrating Sunscreen SPF 30 for Sensitive Skin', asin: 'B0CJ3N7MP6', brand: 'AquaVeil', seller: 'AquaVeil Skincare', isBrand: true, price: '$16.99', rating: 4.5, reviews: 412, salesRank: 34200, monthlyRevenue: 4248, revenueGrowth: 55, salesRankTrend: -42, reviewVelocity: 52, priceStability: 'stable', partnershipScore: 85, brandStage: 'sweet-spot', estimatedMonthlySales: 250 },
+  { title: 'BotaniShield Zinc Oxide Sunscreen SPF 50+ Broad Spectrum', asin: 'B0BK2M9LN7', brand: 'BotaniShield', seller: 'BotaniShield Naturals', isBrand: true, price: '$22.00', rating: 4.2, reviews: 289, salesRank: 42100, monthlyRevenue: 4180, revenueGrowth: 61, salesRankTrend: -48, reviewVelocity: 67, priceStability: 'moderate', partnershipScore: 80, brandStage: 'sweet-spot', estimatedMonthlySales: 190 },
+  { title: 'CeraVe Moisturizing Cream, Body and Face Moisturizer for Dry Skin', asin: 'B00TTD9BRC', brand: 'CeraVe', seller: "L'Oreal USA", isBrand: false, price: '$18.96', rating: 4.7, reviews: 138412, salesRank: 42, monthlyRevenue: 540360, revenueGrowth: 3, salesRankTrend: -2, reviewVelocity: 4, priceStability: 'stable', partnershipScore: 25, brandStage: 'enterprise', estimatedMonthlySales: 28500 },
+  { title: 'Neutrogena Hydro Boost Gel Moisturizer for Dry Skin', asin: 'B00NR1YQHQ', brand: 'Neutrogena', seller: 'DiscountBeautyMart', isBrand: false, price: '$19.97', rating: 4.5, reviews: 62300, salesRank: 210, monthlyRevenue: 239640, revenueGrowth: 4, salesRankTrend: -1, reviewVelocity: 5, priceStability: 'stable', partnershipScore: 22, brandStage: 'enterprise', estimatedMonthlySales: 12000 },
+  { title: 'FreshFace Co Aloe Vera Gel Moisturizer, Lightweight Daily Hydrator', asin: 'B0DN8K4QM8', brand: 'FreshFace Co', seller: 'FreshFace Co', isBrand: true, price: '$12.99', rating: 4.1, reviews: 87, salesRank: 78400, monthlyRevenue: 1429, revenueGrowth: 12, salesRankTrend: -8, reviewVelocity: 24, priceStability: 'volatile', partnershipScore: 42, brandStage: 'early', estimatedMonthlySales: 110 },
 ];
 
 /* ── Helpers ────────────────────────────────────────────────────── */
@@ -248,8 +248,8 @@ const mockLeads = {
   'FreshFace Co': [
     { id: 'l15', name: 'Amanda Brooks', role: 'Founder', email: 'amanda@freshfaceco.com', linkedin: 'linkedin.com/in/amandabrooks', confidence: 'medium' },
   ],
-  'La Roche-Posay': [
-    { id: 'l16', name: 'Corporate Partnerships', role: "L'Oréal Group", email: 'partnerships@loreal.com', linkedin: '', confidence: 'medium' },
+  'Neutrogena': [
+    { id: 'l16', name: 'Corporate Partnerships', role: 'Johnson & Johnson', email: 'partnerships@jnj.com', linkedin: '', confidence: 'medium' },
   ],
   'CeraVe': [
     { id: 'l17', name: 'Corporate Partnerships', role: "L'Oréal Group", email: 'partnerships@loreal.com', linkedin: '', confidence: 'medium' },
@@ -321,8 +321,15 @@ const LeadDrawer = ({ brand, product, onClose, onAddToContacts }) => {
   );
 };
 
-/* ── Page: Search Brands ─────────────────────────────────────────── */
-const SearchBrandsContent = ({ onNavigate }) => {
+/* ── AI Brand Badge ──────────────────────────────────────────────── */
+const AIBrandBadge = ({ isBrand }) => (
+  <span className={`oai-results__ai-badge oai-results__ai-badge--${isBrand ? 'brand' : 'reseller'}`}>
+    {isBrand ? 'Brand \u2713' : 'Reseller'}
+  </span>
+);
+
+/* ── Page: Search ───────────────────────────────────────────────── */
+const SearchContent = ({ onNavigate }) => {
   const [keyword, setKeyword] = useState('sunscreen');
   const [country, setCountry] = useState('US');
   const [category, setCategory] = useState('Cosmetics & Beauty');
@@ -330,6 +337,10 @@ const SearchBrandsContent = ({ onNavigate }) => {
   const [minRating, setMinRating] = useState('3.5');
   const [rankMin, setRankMin] = useState('1000');
   const [rankMax, setRankMax] = useState('50000');
+  const [revenueMin, setRevenueMin] = useState('');
+  const [revenueMax, setRevenueMax] = useState('');
+  const [growthMin, setGrowthMin] = useState('');
+  const [growthMax, setGrowthMax] = useState('');
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -376,8 +387,8 @@ const SearchBrandsContent = ({ onNavigate }) => {
   return (
     <div style={{ maxWidth: '1200px' }}>
       <div className="oai-search-page__header">
-        <h1 className="oai-search-page__title">Find Growing Brands</h1>
-        <p className="oai-search-page__subtitle">Discover fast-growing Amazon brands ready for manufacturing partnerships.</p>
+        <h1 className="oai-search-page__title">Search Products</h1>
+        <p className="oai-search-page__subtitle">Discover growing Amazon products and identify real brands ready for manufacturing partnerships.</p>
       </div>
 
       <div className="oai-search-card">
@@ -419,12 +430,28 @@ const SearchBrandsContent = ({ onNavigate }) => {
               />
             </div>
             <div className="oai-search-card__field">
-              <label className="oai-search-card__label" htmlFor="search-rank-min">Sales Rank Min</label>
-              <input id="search-rank-min" className="oai-search-card__text-input" type="number" value={rankMin} onChange={(e) => setRankMin(e.target.value)} />
+              <label className="oai-search-card__label">Sales Rank</label>
+              <div className="oai-search-card__range-group">
+                <input className="oai-search-card__text-input" type="number" value={rankMin} onChange={(e) => setRankMin(e.target.value)} placeholder="Min" aria-label="Sales rank minimum" />
+                <span className="oai-search-card__range-sep">to</span>
+                <input className="oai-search-card__text-input" type="number" value={rankMax} onChange={(e) => setRankMax(e.target.value)} placeholder="Max" aria-label="Sales rank maximum" />
+              </div>
             </div>
             <div className="oai-search-card__field">
-              <label className="oai-search-card__label" htmlFor="search-rank-max">Sales Rank Max</label>
-              <input id="search-rank-max" className="oai-search-card__text-input" type="number" value={rankMax} onChange={(e) => setRankMax(e.target.value)} />
+              <label className="oai-search-card__label">Monthly Revenue ($)</label>
+              <div className="oai-search-card__range-group">
+                <input className="oai-search-card__text-input" type="number" value={revenueMin} onChange={(e) => setRevenueMin(e.target.value)} placeholder="Min" aria-label="Monthly revenue minimum" />
+                <span className="oai-search-card__range-sep">to</span>
+                <input className="oai-search-card__text-input" type="number" value={revenueMax} onChange={(e) => setRevenueMax(e.target.value)} placeholder="Max" aria-label="Monthly revenue maximum" />
+              </div>
+            </div>
+            <div className="oai-search-card__field">
+              <label className="oai-search-card__label">Growth Value (%)</label>
+              <div className="oai-search-card__range-group">
+                <input className="oai-search-card__text-input" type="number" value={growthMin} onChange={(e) => setGrowthMin(e.target.value)} placeholder="Min" aria-label="Growth value minimum" />
+                <span className="oai-search-card__range-sep">to</span>
+                <input className="oai-search-card__text-input" type="number" value={growthMax} onChange={(e) => setGrowthMax(e.target.value)} placeholder="Max" aria-label="Growth value maximum" />
+              </div>
             </div>
           </div>
         )}
@@ -443,7 +470,7 @@ const SearchBrandsContent = ({ onNavigate }) => {
       {hasSearched && (
         <div className="oai-results">
           <div className="oai-results__header">
-            <h2 className="oai-results__title">{loading ? 'Searching...' : `${sortedResults.length} Brands Found`}</h2>
+            <h2 className="oai-results__title">{loading ? 'Searching...' : `${sortedResults.length} Products Found`}</h2>
             {!loading && sortedResults.length > 0 && <span className="oai-results__subtitle">Sorted by {sortBy === 'partnershipScore' ? 'Partnership Score' : sortBy}</span>}
           </div>
 
@@ -461,13 +488,14 @@ const SearchBrandsContent = ({ onNavigate }) => {
                     <th className="oai-results__th oai-results__th--check">
                       <input type="checkbox" aria-label="Select all products" checked={selected.length === sortedResults.length && sortedResults.length > 0} onChange={toggleAll} />
                     </th>
-                    <th className="oai-results__th oai-results__th--title">Brand / Product</th>
+                    <th className="oai-results__th oai-results__th--title">Product</th>
+                    <th className="oai-results__th">Brand <InfoTooltip wide><strong>AI Brand Enrichment</strong><br/>AI analyzes the seller to determine if they are the actual brand owner or a third-party reseller.</InfoTooltip></th>
+                    <SortHeader label="Price" field="price" />
                     <SortHeader label={<>Score <InfoTooltip><strong>Partnership Score (0–100)</strong><br/>Weighted from: revenue growth, sales rank fit, price stability, and review velocity. Higher = better manufacturing partner fit.</InfoTooltip></>} field="partnershipScore" />
+                    <SortHeader label="Sales Rank" field="salesRank" />
                     <SortHeader label="Rev. Growth" field="revenueGrowth" />
-                    <SortHeader label="Est. Sales/mo" field="estimatedMonthlySales" />
                     <SortHeader label="Rating" field="rating" />
                     <SortHeader label="Reviews" field="reviews" />
-                    <th className="oai-results__th">Stage <InfoTooltip><strong>Brand Stage</strong><br/>Early: rank &gt;50K<br/>Sweet Spot: 5K–50K (ideal)<br/>Established: 1K–5K<br/>Enterprise: &lt;1K (too big)</InfoTooltip></th>
                     <th className="oai-results__th">Action</th>
                   </tr>
                 </thead>
@@ -475,18 +503,24 @@ const SearchBrandsContent = ({ onNavigate }) => {
                   {sortedResults.map((product) => (
                     <tr key={product.asin} className={`oai-results__row ${selected.includes(product.asin) ? 'oai-results__row--selected' : ''}`}>
                       <td className="oai-results__td oai-results__td--check">
-                        <input type="checkbox" aria-label={`Select ${product.brand}`} checked={selected.includes(product.asin)} onChange={() => toggleSelect(product.asin)} />
+                        <input type="checkbox" aria-label={`Select ${product.title}`} checked={selected.includes(product.asin)} onChange={() => toggleSelect(product.asin)} />
                       </td>
                       <td className="oai-results__td oai-results__td--title">
-                        <div className="oai-results__product-title">{product.brand}</div>
-                        <div className="oai-results__product-asin">{product.title}</div>
+                        <div className="oai-results__product-title">{product.title}</div>
+                        <div className="oai-results__product-asin">ASIN: {product.asin}</div>
                       </td>
+                      <td className="oai-results__td">
+                        <div className="oai-results__brand-cell">
+                          <span className="oai-results__brand-name">{product.brand}</span>
+                          <AIBrandBadge isBrand={product.isBrand} />
+                        </div>
+                      </td>
+                      <td className="oai-results__td">{product.price}</td>
                       <td className="oai-results__td oai-results__td--score"><ScoreBadge score={product.partnershipScore} product={product} /></td>
+                      <td className="oai-results__td">{product.salesRank.toLocaleString()}</td>
                       <td className="oai-results__td"><TrendArrow value={product.revenueGrowth} /></td>
-                      <td className="oai-results__td">{product.estimatedMonthlySales ? product.estimatedMonthlySales.toLocaleString() : '—'}</td>
-                      <td className="oai-results__td"><span className="oai-results__rating">★ {product.rating}</span></td>
+                      <td className="oai-results__td"><span className="oai-results__rating">{product.rating}</span></td>
                       <td className="oai-results__td">{product.reviews.toLocaleString()}</td>
-                      <td className="oai-results__td"><StageBadge stage={product.brandStage} /></td>
                       <td className="oai-results__td">
                         <button className="oai-results__action-btn" onClick={() => setDrawerProduct(product)} title="View brand leads">View Lead →</button>
                       </td>
@@ -499,13 +533,13 @@ const SearchBrandsContent = ({ onNavigate }) => {
 
           {selected.length > 0 && (
             <div className="oai-results__list-section">
-              <h3 className="oai-results__list-title">Selected Brands <span className="oai-results__list-count">{selected.length}</span></h3>
+              <h3 className="oai-results__list-title">Selected Products <span className="oai-results__list-count">{selected.length}</span></h3>
               <div className="oai-results__list-items">
                 {sortedResults.filter((r) => selected.includes(r.asin)).map((product) => (
                   <div key={product.asin} className="oai-results__list-item">
                     <div className="oai-results__list-item-info">
-                      <span className="oai-results__list-item-name">{product.brand}</span>
-                      <span className="oai-results__list-item-brand">Score: {product.partnershipScore} · Rev. Growth: +{product.revenueGrowth}%</span>
+                      <span className="oai-results__list-item-name">{product.title}</span>
+                      <span className="oai-results__list-item-brand">{product.brand} · Score: {product.partnershipScore} · Rev. Growth: +{product.revenueGrowth}%</span>
                     </div>
                     <button className="oai-results__list-item-remove" onClick={() => toggleSelect(product.asin)}>✕</button>
                   </div>
@@ -1140,7 +1174,7 @@ function AppMain() {
     {
       items: [
         { id: 'dashboard', label: 'Dashboard', icon: Icons.dashboard, onClick: () => navigate('dashboard') },
-        { id: 'search-brands', label: 'Search Brands', icon: Icons.search, onClick: () => navigate('search-brands') },
+        { id: 'search', label: 'Search', icon: Icons.search, onClick: () => navigate('search') },
         { id: 'people', label: 'People', icon: Icons.contacts, onClick: () => navigate('people') },
         { id: 'emails', label: 'Emails', icon: Icons.campaigns, onClick: () => navigate('emails') },
         { id: 'templates', label: 'Templates', icon: Icons.templates, onClick: () => navigate('templates') },
@@ -1155,7 +1189,7 @@ function AppMain() {
   const renderContent = () => {
     switch (page) {
       case 'dashboard': return <DashboardContent />;
-      case 'search-brands': return <SearchBrandsContent onNavigate={navigate} />;
+      case 'search': return <SearchContent onNavigate={navigate} />;
       case 'people': return <PeopleContent onNavigate={navigate} />;
       case 'emails': return <EmailsContent />;
       case 'templates': return <TemplatesContent />;

@@ -814,6 +814,73 @@
   color: var(--color-text-muted);
 }
 
+/* ── AI Brand Badge ────────────────────────────────────────────────── */
+.oai-results__brand-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.oai-results__brand-name {
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  line-height: var(--leading-normal);
+}
+
+.oai-results__ai-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  padding: 1px var(--space-2);
+  border-radius: var(--radius-full);
+  width: fit-content;
+  line-height: 1.4;
+}
+
+.oai-results__ai-badge--brand {
+  background: var(--color-primary-50);
+  color: var(--color-primary-700);
+  border: 1px solid var(--color-primary-200);
+}
+
+.oai-results__ai-badge--reseller {
+  background: var(--color-neutral-100);
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-neutral-200);
+}
+
+[data-theme="dark"] .oai-results__ai-badge--brand {
+  background: color-mix(in srgb, var(--color-primary-600) 15%, transparent);
+  color: var(--color-primary-300);
+  border-color: color-mix(in srgb, var(--color-primary-600) 30%, transparent);
+}
+
+[data-theme="dark"] .oai-results__ai-badge--reseller {
+  background: var(--color-neutral-800);
+  color: var(--color-neutral-400);
+  border-color: var(--color-neutral-700);
+}
+
+/* ── Revenue range filter ──────────────────────────────────────────── */
+.oai-search-card__range-group {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.oai-search-card__range-group .oai-search-card__text-input {
+  flex: 1;
+  min-width: 0;
+}
+
+.oai-search-card__range-sep {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  flex-shrink: 0;
+}
+
 .oai-results__rating {
   color: var(--color-secondary-500);
   font-weight: var(--font-weight-medium);

@@ -149,14 +149,14 @@ const DashboardContent = () => {
 };
 
 /* ══════════════════════════════════════════════════════════════════
-   Page: Search Brands
+   Page: Search
    ══════════════════════════════════════════════════════════════════ */
-const SearchBrandsContent = () => (
+const SearchContent = () => (
   <div style={{ maxWidth: '1100px' }}>
     <div className="oai-search-page__header">
-      <h1 className="oai-search-page__title">Search Amazon Brands</h1>
+      <h1 className="oai-search-page__title">Search Products</h1>
       <p className="oai-search-page__subtitle">
-        Find top-selling and fast-growing brands to target for outreach.
+        Discover growing Amazon products and identify real brands ready for manufacturing partnerships.
       </p>
     </div>
 
@@ -321,7 +321,7 @@ function App() {
     {
       items: [
         { id: 'dashboard', label: 'Dashboard', icon: Icons.dashboard, onClick: () => setPage('dashboard') },
-        { id: 'search-brands', label: 'Search Brands', icon: Icons.search, onClick: () => setPage('search-brands') },
+        { id: 'search', label: 'Search', icon: Icons.search, onClick: () => setPage('search') },
         { id: 'brands', label: 'Brands', icon: Icons.brands, onClick: () => setPage('brands') },
         { id: 'campaigns', label: 'Campaigns', icon: Icons.campaigns, onClick: () => setPage('campaigns') },
         { id: 'analytics', label: 'Analytics', icon: Icons.analytics, onClick: () => setPage('analytics') },
@@ -339,8 +339,8 @@ function App() {
     switch (page) {
       case 'dashboard':
         return <DashboardContent />;
-      case 'search-brands':
-        return <SearchBrandsContent />;
+      case 'search':
+        return <SearchContent />;
       default:
         return <NotFound onBackClick={() => setPage('dashboard')} />;
     }
