@@ -2164,6 +2164,310 @@
   background: var(--color-neutral-50);
 }
 
+/* ── People page tabs header ────────────────────────────────────────── */
+.oai-people__tabs-header {
+  margin-bottom: var(--space-4);
+}
+
+/* ── Company Tab ────────────────────────────────────────────────────── */
+
+.oai-company__search-card {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  margin-bottom: var(--space-6);
+  font-family: var(--font-family-sans);
+}
+
+.oai-company__search-row {
+  display: flex;
+  gap: var(--space-3);
+  align-items: stretch;
+}
+
+.oai-company__search-row .oai-people__finder-input {
+  flex: 1;
+}
+
+.oai-company__search-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-5);
+  background: var(--color-primary-600);
+  color: #FFFFFF;
+  border: none;
+  border-radius: var(--radius-md);
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+  white-space: nowrap;
+}
+
+.oai-company__search-btn:hover {
+  background: var(--color-primary-700);
+}
+
+.oai-company__search-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus);
+}
+
+/* Company results table */
+.oai-company__results {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  margin-bottom: var(--space-6);
+}
+
+.oai-company__table-wrap {
+  overflow-x: auto;
+}
+
+.oai-company__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-sm);
+}
+
+.oai-company__table th {
+  text-align: left;
+  padding: var(--space-3) var(--space-4);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+  border-bottom: 1px solid var(--color-border-default);
+  white-space: nowrap;
+  background: var(--color-bg-card);
+}
+
+.oai-company__table td {
+  padding: var(--space-3) var(--space-4);
+  color: var(--color-text-primary);
+  border-bottom: 1px solid var(--color-border-default);
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.oai-company__table tr:last-child td {
+  border-bottom: none;
+}
+
+.oai-company__row {
+  transition: background var(--transition-fast);
+}
+
+.oai-company__row:hover {
+  background: var(--color-neutral-50);
+}
+
+/* Company name clickable link */
+.oai-company__name-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary-600);
+  cursor: pointer;
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.oai-company__name-btn:hover {
+  color: var(--color-primary-700);
+  text-decoration: underline;
+}
+
+.oai-company__name-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus);
+  border-radius: var(--radius-sm);
+}
+
+.oai-company__domain {
+  color: var(--color-text-secondary);
+}
+
+/* Company row actions */
+.oai-company__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.oai-company__view-btn,
+.oai-company__similar-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-3);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-card);
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+  white-space: nowrap;
+}
+
+.oai-company__view-btn:hover {
+  background: var(--color-neutral-50);
+  border-color: var(--color-border-strong);
+}
+
+.oai-company__similar-btn {
+  color: var(--color-primary-600);
+  border-color: var(--color-primary-200);
+  background: var(--color-primary-50);
+}
+
+.oai-company__similar-btn:hover {
+  background: var(--color-primary-100);
+  border-color: var(--color-primary-300);
+}
+
+.oai-company__view-btn:focus-visible,
+.oai-company__similar-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus);
+}
+
+/* Company drilldown (people at company) */
+.oai-company__drilldown {
+  font-family: var(--font-family-sans);
+}
+
+.oai-company__back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  background: none;
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  margin-bottom: var(--space-5);
+  transition: background var(--transition-fast);
+}
+
+.oai-company__back-btn:hover {
+  background: var(--color-neutral-50);
+}
+
+.oai-company__back-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus);
+}
+
+.oai-company__detail-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  margin-bottom: var(--space-6);
+}
+
+.oai-company__detail-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background: var(--color-primary-50);
+  border: 1px solid var(--color-primary-200);
+  border-radius: var(--radius-lg);
+  color: var(--color-primary-600);
+  flex-shrink: 0;
+}
+
+.oai-company__detail-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.oai-company__detail-name {
+  margin: 0 0 var(--space-1);
+  font-family: var(--font-family-serif);
+  font-weight: var(--font-weight-normal);
+  font-size: var(--font-size-lg);
+  color: var(--color-text-primary);
+}
+
+.oai-company__detail-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.oai-company__detail-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.oai-company__detail-stats {
+  display: flex;
+  gap: var(--space-4);
+  flex-shrink: 0;
+}
+
+/* ── Dark mode overrides for Company tab ──────────────────────────── */
+[data-theme="dark"] .oai-company__row:hover {
+  background: var(--color-neutral-700);
+}
+
+[data-theme="dark"] .oai-company__name-btn {
+  color: var(--color-primary-400);
+}
+
+[data-theme="dark"] .oai-company__name-btn:hover {
+  color: var(--color-primary-300);
+}
+
+[data-theme="dark"] .oai-company__similar-btn {
+  color: var(--color-primary-400);
+  border-color: var(--color-neutral-600);
+  background: rgba(0, 100, 0, 0.1);
+}
+
+[data-theme="dark"] .oai-company__similar-btn:hover {
+  background: rgba(0, 100, 0, 0.2);
+}
+
+[data-theme="dark"] .oai-company__view-btn:hover {
+  background: var(--color-neutral-700);
+}
+
+[data-theme="dark"] .oai-company__detail-avatar {
+  background: rgba(0, 100, 0, 0.15);
+  border-color: var(--color-neutral-600);
+  color: var(--color-primary-400);
+}
+
+[data-theme="dark"] .oai-company__back-btn:hover {
+  background: var(--color-neutral-700);
+}
+
 /* ==========================================================================
    Lead Drawer — Slide-out panel for viewing brand contacts
    ========================================================================== */
