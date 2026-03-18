@@ -1,16 +1,78 @@
-# React + Vite
+# Gallop AI
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+B2B SaaS platform for Amazon brand outreach. Helps manufacturing businesses discover fast-growing Amazon brands and initiate strategic partnerships through AI-powered scoring, contact discovery, and automated email outreach.
 
-Currently, two official plugins are available:
+**Live:** [gallopai.vercel.app](https://gallopai.vercel.app)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Quick Start
 
-## React Compiler
+```bash
+npm install
+```
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Development
 
-## Expanding the ESLint configuration
+```bash
+# Full app (combined marketing + app)
+npm run dev
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+# Marketing site only (Landing, Product, Pricing) — port 5173
+npm run dev:marketing
+
+# App only (Dashboard, Search, People, Emails) — port 5174
+npm run dev:app
+
+# Storybook design system — port 6006
+npm run storybook
+```
+
+### Build
+
+```bash
+npm run build
+npm run build-storybook
+```
+
+## Architecture
+
+```
+src/
+├── AppMain.jsx          # Main app router (all pages unified for Vercel SPA)
+├── App.jsx              # App shell
+├── MarketingApp.jsx     # Marketing pages shell
+├── services/            # API integrations (Keepa)
+└── stories/             # All components, pages, and styles
+    ├── tokens.css       # Design system tokens
+    ├── fonts.css        # Typography
+    ├── icons.jsx        # SVG icon library
+    ├── PageLayout.jsx   # Sidebar + Navbar + content wrapper
+    ├── Sidebar.jsx      # Collapsible navigation
+    ├── Navbar.jsx       # Top bar with search
+    ├── Dashboard.jsx    # Dashboard page
+    ├── SearchBrands.jsx # Brand discovery + results
+    ├── People.jsx       # Contact finder
+    ├── Emails.jsx       # Outreach review UI
+    └── ...              # 40+ components
+```
+
+## Multi-Server Setup
+
+| Server    | Command              | Port | Pages                                    |
+|-----------|----------------------|------|------------------------------------------|
+| Marketing | `npm run dev:marketing` | 5173 | Landing, Product, Pricing             |
+| App       | `npm run dev:app`       | 5174 | Dashboard, Search, People, Emails, Templates, Settings |
+| Storybook | `npm run storybook`     | 6006 | Component library & design system     |
+| Vercel    | Single SPA deploy       | —    | All pages combined via AppMain.jsx    |
+
+## Tech Stack
+
+- **React 19** + Vite 7
+- **CSS** with BEM (`oai-` prefix) + CSS custom properties
+- **Storybook 10** for component development
+- **Chromatic** for visual regression testing
+- **Vercel** for deployment
+
+## CI/CD
+
+- Push to `main` auto-triggers Chromatic visual tests
+- Vercel auto-deploys from `main`
