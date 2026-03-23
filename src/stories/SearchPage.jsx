@@ -8,6 +8,8 @@ import { Button } from './Button';
 import { Input } from './Input';
 import { Select } from './Select';
 import { EmptyState } from './EmptyState';
+import { Modal } from './Modal';
+import { Toast } from './Toast';
 import { Icons } from './icons';
 import './searchpage.css';
 
@@ -125,12 +127,28 @@ const DEFAULT_FILTERS = {
 /* ══════════════════════════════════════════════════════════════════
    SearchPage Component
    ══════════════════════════════════════════════════════════════════ */
+/* ── Mock lists for Add to List ───────────────────────────────── */
+const MOCK_LISTS = [
+  { id: 'list-1', name: 'Skincare Q2', tabCount: 2 },
+  { id: 'list-2', name: 'Hair Care Prospects', tabCount: 1 },
+  { id: 'list-3', name: 'Summer Campaign', tabCount: 3 },
+];
+
 export const SearchPage = ({ products = MOCK_PRODUCTS }) => {
   const [keyword, setKeyword] = useState('');
   const [activeTab, setActiveTab] = useState('all');
   const [filtersOpen, setFiltersOpen] = useState(true);
   const [filters, setFilters] = useState(DEFAULT_FILTERS);
   const [expandedBrand, setExpandedBrand] = useState(null);
+
+  // Selection state
+  const [selectedProducts, setSelectedProducts] = useState([]);
+  const [selectedBrands, setSelectedBrands] = useState([]);
+
+  // Add to List modal
+  const [addToListOpen, setAddToListOpen] = useState(false);
+  const [selectedListId, setSelectedListId] = useState(null);
+  const [toast, setToast] = useState(null);
 
   /* ── Filter logic (AND) ────────────────────────────────────── */
   const filteredProducts = useMemo(() => {
@@ -167,6 +185,47 @@ export const SearchPage = ({ products = MOCK_PRODUCTS }) => {
   const updateFilter = (key, value) => setFilters((prev) => ({ ...prev, [key]: value }));
   const resetFilters = () => setFilters(DEFAULT_FILTERS);
 
+  /* ── Selection helpers ─────────────────────────────────────── */
+  const toggleProduct = (id) => setSelectedProducts((prev) =>
+    prev.includes(id) ? prev.filter((p) => p !== id) : [...prev, id]
+  );
+  const toggleBrand = (name) => setSelectedBrands((prev) =>
+    prev.includes(name) ? prev.filter((b) => b !== name) : [...prev, name]
+  );
+  const toggleAllProducts = () => {
+    if (selectedProducts.length === filteredProducts.length) {
+      setSelectedProducts([]);
+    } else {
+      setSelectedProducts(filteredProducts.map((p) => p.id));
+    }
+  };
+  const toggleAllBrands = () => {
+    if (selectedBrands.length === brandGroups.length) {
+      setSelectedBrands([]);
+    } else {
+      setSelectedBrands(brandGroups.map((g) => g.brandName));
+    }
+  };
+
+  const selectionCount = activeTab === 'brands' ? selectedBrands.length : selectedProducts.length;
+
+  const handleAddToList = () => {
+    if (!selectedListId) return;
+    const list = MOCK_LISTS.find((l) => l.id === selectedListId);
+    const currentKeyword = keyword.trim() || 'Default';
+    const count = selectionCount;
+    setAddToListOpen(false);
+    setSelectedListId(null);
+    setSelectedProducts([]);
+    setSelectedBrands([]);
+    showToast(`${count} item${count > 1 ? 's' : ''} added to "${list?.name}" under "${currentKeyword}" tab`);
+  };
+
+  const showToast = (message) => {
+    setToast(message);
+    setTimeout(() => setToast(null), 3500);
+  };
+
   /* ── Category tabs ─────────────────────────────────────────── */
   const categoryTabs = [
     { id: 'all', label: 'All' },
@@ -178,7 +237,7 @@ export const SearchPage = ({ products = MOCK_PRODUCTS }) => {
 
   /* ── Tab content renderers ─────────────────────────────────── */
   const renderProductTable = () => (
-    <Table columns={productColumns} data={filteredProducts} sortable striped />
+    <Table columns={productColumns} data={filteredProducts} sortable selectable striped />
   );
 
   const renderBrandsView = () => (
@@ -186,43 +245,68 @@ export const SearchPage = ({ products = MOCK_PRODUCTS }) => {
       {brandGroups.length === 0 ? (
         <EmptyState icon={Icons.brands} title="No brands found" description="Try adjusting your filters." />
       ) : (
-        brandGroups.map((group) => (
-          <div key={group.brandName} className="oai-search-brands__card">
-            <button
-              className="oai-search-brands__header"
-              onClick={() => setExpandedBrand(expandedBrand === group.brandName ? null : group.brandName)}
-              aria-expanded={expandedBrand === group.brandName}
-            >
-              <div className="oai-search-brands__info">
-                <span className="oai-search-brands__name">{group.brandName}</span>
-                <Badge label={group.channel} variant={group.channel === 'Wholesale' ? 'success' : 'warning'} size="small" />
-                <Badge label={`${group.productCount} product${group.productCount > 1 ? 's' : ''}`} variant="info" size="small" />
-              </div>
-              <div className="oai-search-brands__stats">
-                <span className="oai-search-brands__stat">
-                  Avg Rank: <strong>{formatRank(group.avgSalesRank)}</strong>
-                </span>
-                <span className="oai-search-brands__stat">
-                  Revenue: <strong>{formatRevenue(group.totalRevenue)}</strong>
-                </span>
-                <span className="oai-search-brands__stat">
-                  Growth: <strong style={{ color: group.avgGrowth >= 30 ? 'var(--color-success-600)' : undefined }}>+{group.avgGrowth}%</strong>
-                </span>
-                <svg
-                  className={`oai-search-brands__chevron ${expandedBrand === group.brandName ? 'oai-search-brands__chevron--open' : ''}`}
-                  width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
-                >
-                  <polyline points="6 9 12 15 18 9" />
-                </svg>
-              </div>
-            </button>
-            {expandedBrand === group.brandName && (
-              <div className="oai-search-brands__products">
-                <Table columns={productColumns} data={group.products} sortable striped />
-              </div>
-            )}
+        <>
+          {/* Select all header */}
+          <div className="oai-search-brands__select-all">
+            <label className="oai-search-brands__select-all-label">
+              <input
+                type="checkbox"
+                checked={selectedBrands.length === brandGroups.length && brandGroups.length > 0}
+                onChange={toggleAllBrands}
+              />
+              {selectedBrands.length > 0 ? `${selectedBrands.length} selected` : 'Select all'}
+            </label>
           </div>
-        ))
+          {brandGroups.map((group) => {
+            const isSelected = selectedBrands.includes(group.brandName);
+            return (
+              <div key={group.brandName} className={`oai-search-brands__card ${isSelected ? 'oai-search-brands__card--selected' : ''}`}>
+                <div className="oai-search-brands__header">
+                  <input
+                    type="checkbox"
+                    className="oai-search-brands__check"
+                    checked={isSelected}
+                    onChange={(e) => { e.stopPropagation(); toggleBrand(group.brandName); }}
+                    aria-label={`Select ${group.brandName}`}
+                  />
+                  <button
+                    className="oai-search-brands__header-btn"
+                    onClick={() => setExpandedBrand(expandedBrand === group.brandName ? null : group.brandName)}
+                    aria-expanded={expandedBrand === group.brandName}
+                  >
+                    <div className="oai-search-brands__info">
+                      <span className="oai-search-brands__name">{group.brandName}</span>
+                      <Badge label={group.channel} variant={group.channel === 'Wholesale' ? 'success' : 'warning'} size="small" />
+                      <Badge label={`${group.productCount} product${group.productCount > 1 ? 's' : ''}`} variant="info" size="small" />
+                    </div>
+                    <div className="oai-search-brands__stats">
+                      <span className="oai-search-brands__stat">
+                        Avg Rank: <strong>{formatRank(group.avgSalesRank)}</strong>
+                      </span>
+                      <span className="oai-search-brands__stat">
+                        Revenue: <strong>{formatRevenue(group.totalRevenue)}</strong>
+                      </span>
+                      <span className="oai-search-brands__stat">
+                        Growth: <strong style={{ color: group.avgGrowth >= 30 ? 'var(--color-success-600)' : undefined }}>+{group.avgGrowth}%</strong>
+                      </span>
+                      <svg
+                        className={`oai-search-brands__chevron ${expandedBrand === group.brandName ? 'oai-search-brands__chevron--open' : ''}`}
+                        width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+                      >
+                        <polyline points="6 9 12 15 18 9" />
+                      </svg>
+                    </div>
+                  </button>
+                </div>
+                {expandedBrand === group.brandName && (
+                  <div className="oai-search-brands__products">
+                    <Table columns={productColumns} data={group.products} sortable striped />
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </>
       )}
     </div>
   );
@@ -429,6 +513,56 @@ export const SearchPage = ({ products = MOCK_PRODUCTS }) => {
         </div>
         {renderTabContent()}
       </div>
+
+      {/* ── Selection action bar ─────────────────────────── */}
+      {selectionCount > 0 && (
+        <div className="oai-search-action-bar">
+          <span className="oai-search-action-bar__count">
+            {selectionCount} {activeTab === 'brands' ? 'brand' : 'product'}{selectionCount > 1 ? 's' : ''} selected
+          </span>
+          <Button variant="primary" size="medium" label="Add to List" onClick={() => setAddToListOpen(true)} />
+          <Button variant="ghost" size="small" label="Clear" onClick={() => { setSelectedProducts([]); setSelectedBrands([]); }} />
+        </div>
+      )}
+
+      {/* ── Add to List Modal ────────────────────────────── */}
+      <Modal
+        isOpen={addToListOpen}
+        onClose={() => { setAddToListOpen(false); setSelectedListId(null); }}
+        title="Add to List"
+        size="sm"
+        footer={
+          <div style={{ display: 'flex', gap: 'var(--space-3)', justifyContent: 'flex-end' }}>
+            <Button variant="ghost" size="small" label="Cancel" onClick={() => { setAddToListOpen(false); setSelectedListId(null); }} />
+            <Button variant="primary" size="small" label="Add to List" onClick={handleAddToList} disabled={!selectedListId} />
+          </div>
+        }
+      >
+        <p style={{ margin: '0 0 var(--space-2)', fontSize: 'var(--font-size-sm)', color: 'var(--color-text-secondary)' }}>
+          {selectionCount} item{selectionCount > 1 ? 's' : ''} will be added
+          {keyword.trim() ? ` under the "${keyword.trim()}" tab` : ''}.
+        </p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)', marginTop: 'var(--space-3)' }}>
+          {MOCK_LISTS.map((list) => (
+            <button
+              key={list.id}
+              className={`oai-atl__list-item ${selectedListId === list.id ? 'oai-atl__list-item--selected' : ''}`}
+              onClick={() => setSelectedListId(list.id)}
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', padding: 'var(--space-3)', border: `1px solid ${selectedListId === list.id ? 'var(--color-primary-500)' : 'var(--color-border-default)'}`, borderRadius: 'var(--radius-md)', background: selectedListId === list.id ? 'var(--color-primary-50)' : 'var(--color-bg-card)', cursor: 'pointer', fontFamily: 'var(--font-family-sans)', textAlign: 'left' }}
+            >
+              <span style={{ fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-text-primary)' }}>{list.name}</span>
+              <Badge label={`${list.tabCount} tab${list.tabCount > 1 ? 's' : ''}`} variant="info" size="small" />
+            </button>
+          ))}
+        </div>
+      </Modal>
+
+      {/* ── Toast ────────────────────────────────────────── */}
+      {toast && (
+        <div style={{ position: 'fixed', bottom: 24, right: 24, zIndex: 9999 }}>
+          <Toast message={toast} variant="success" onClose={() => setToast(null)} />
+        </div>
+      )}
     </div>
   );
 };
