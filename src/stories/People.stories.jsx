@@ -79,6 +79,9 @@ const suggestedRoles = [
   { label: 'Head of Partnerships', category: 'Partnerships' },
   { label: 'Director of Business Development', category: 'Partnerships' },
   { label: 'Vendor Manager', category: 'Partnerships' },
+  { label: 'Sales Manager', category: 'Sales' },
+  { label: 'Account Executive', category: 'Sales' },
+  { label: 'Head of Sales', category: 'Sales' },
   { label: 'Head of Supply Chain', category: 'Operations' },
   { label: 'Director of Purchasing', category: 'Operations' },
   { label: 'Procurement Manager', category: 'Operations' },
@@ -86,9 +89,17 @@ const suggestedRoles = [
   { label: 'Director of Product Development', category: 'Product' },
   { label: 'Brand Manager', category: 'Product' },
   { label: 'Product Manager', category: 'Product' },
+  { label: 'Marketing Lead', category: 'Marketing' },
   { label: 'Head of Marketing', category: 'Marketing' },
+  { label: 'Marketing Manager', category: 'Marketing' },
   { label: 'Buyer', category: 'Retail' },
   { label: 'Retail Account Manager', category: 'Retail' },
+];
+
+/* Premade quick-select roles shown below the input */
+const quickRoles = [
+  'CEO / Founder', 'Sales Manager', 'Marketing Lead', 'Head of Supply Chain',
+  'Procurement Manager', 'Brand Manager',
 ];
 
 const defaultTags = [
@@ -356,6 +367,7 @@ const PeopleTabContent = ({
           </div>
         </div>
 
+        {/* Active tags */}
         {titleTags.length > 0 && (
           <div className="oai-people__finder-tags">
             {titleTags.map((tag, i) => (
@@ -363,6 +375,18 @@ const PeopleTabContent = ({
                 {tag}
                 <button className="oai-people__finder-tag-remove" onClick={() => handleRemoveTag(i)} aria-label={`Remove ${tag}`}>&times;</button>
               </span>
+            ))}
+          </div>
+        )}
+
+        {/* Quick-select premade roles */}
+        {titleTags.length === 0 && (
+          <div className="oai-people__finder-quick">
+            <span className="oai-people__finder-quick-label">Suggested roles:</span>
+            {quickRoles.map((role) => (
+              <button key={role} className="oai-people__finder-quick-btn" onClick={() => addTag(role)}>
+                {role}
+              </button>
             ))}
           </div>
         )}
