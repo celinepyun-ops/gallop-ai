@@ -286,7 +286,7 @@ export const ListsPage = ({ initialLists = MOCK_LISTS }) => {
           <div className="oai-lists__content">
             {!selectedList ? (
               <EmptyState
-                icon="👈"
+                icon={Icons.brands}
                 title="Select a list"
                 description="Choose a list from the sidebar to view its contents."
               />
@@ -315,7 +315,7 @@ export const ListsPage = ({ initialLists = MOCK_LISTS }) => {
                     <Table columns={listItemColumns} data={activeTab.items} sortable selectable striped />
                   ) : (
                     <EmptyState
-                      icon="📋"
+                      icon={Icons.brands}
                       title="No items in this tab"
                       description="Add products from the Search page using the 'Add to List' button."
                     />

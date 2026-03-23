@@ -184,7 +184,7 @@ export const SearchPage = ({ products = MOCK_PRODUCTS }) => {
   const renderBrandsView = () => (
     <div className="oai-search-brands">
       {brandGroups.length === 0 ? (
-        <EmptyState icon="🏷️" title="No brands found" description="Try adjusting your filters." />
+        <EmptyState icon={Icons.brands} title="No brands found" description="Try adjusting your filters." />
       ) : (
         brandGroups.map((group) => (
           <div key={group.brandName} className="oai-search-brands__card">
@@ -229,7 +229,7 @@ export const SearchPage = ({ products = MOCK_PRODUCTS }) => {
 
   const renderComingSoon = (label) => (
     <EmptyState
-      icon="🚧"
+      icon={Icons.search}
       title={`${label} — Coming Soon`}
       description="This tab will be available after Apollo API integration."
     />
