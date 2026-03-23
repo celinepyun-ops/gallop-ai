@@ -26,6 +26,7 @@ import { Settings } from './stories/Settings';
 import { LandingPage } from './stories/LandingPage';
 import { PricingPage } from './stories/PricingPage';
 import { ProductPage } from './stories/ProductPage';
+import { ListsPage } from './stories/ListsPage';
 import { Icons } from './stories/icons';
 
 /* ── Page-specific CSS ───────────────────────────────────────────── */
@@ -322,7 +323,7 @@ function App() {
       items: [
         { id: 'dashboard', label: 'Dashboard', icon: Icons.dashboard, onClick: () => setPage('dashboard') },
         { id: 'search', label: 'Search', icon: Icons.search, onClick: () => setPage('search') },
-        { id: 'brands', label: 'Products', icon: Icons.brands, onClick: () => setPage('brands') },
+        { id: 'lists', label: 'Lists', icon: Icons.brands, onClick: () => setPage('lists') },
         { id: 'campaigns', label: 'Campaigns', icon: Icons.campaigns, onClick: () => setPage('campaigns') },
         { id: 'analytics', label: 'Analytics', icon: Icons.analytics, onClick: () => setPage('analytics') },
       ],
@@ -341,6 +342,8 @@ function App() {
         return <DashboardContent />;
       case 'search':
         return <SearchContent />;
+      case 'lists':
+        return <ListsPage />;
       default:
         return <NotFound onBackClick={() => setPage('dashboard')} />;
     }
