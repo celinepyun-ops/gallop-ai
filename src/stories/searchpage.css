@@ -2881,3 +2881,173 @@
 [data-theme="dark"] .oai-lead-drawer__close:hover {
   background: var(--color-neutral-600);
 }
+
+/* ==========================================================================
+   SearchPage — Advanced Filters & Brands View
+   ========================================================================== */
+
+/* ── Filter Toggle ─────────────────────────────────────────────────────── */
+.oai-search-card__filter-toggle-row {
+  margin-bottom: var(--space-4);
+}
+
+.oai-search-card__filter-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-card);
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  font-family: var(--font-family-sans);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  transition: color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.oai-search-card__filter-toggle:hover {
+  color: var(--color-text-primary);
+  border-color: var(--color-primary-400);
+}
+
+/* ── Advanced Filters Panel ────────────────────────────────────────────── */
+.oai-search-card__advanced-filters {
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-border-default);
+  margin-top: var(--space-2);
+}
+
+.oai-search-card__filter-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: var(--space-5);
+  margin-bottom: var(--space-4);
+}
+
+@media (max-width: 768px) {
+  .oai-search-card__filter-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.oai-search-card__filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.oai-search-card__filter-label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}
+
+.oai-search-card__filter-range {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.oai-search-card__filter-range .oai-input-wrapper {
+  flex: 1;
+}
+
+.oai-search-card__filter-range .oai-select-wrapper {
+  flex: 1;
+}
+
+.oai-search-card__filter-separator {
+  color: var(--color-text-muted);
+  font-weight: var(--font-weight-medium);
+  flex-shrink: 0;
+}
+
+.oai-search-card__filter-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: var(--space-2);
+}
+
+/* ── Results count ─────────────────────────────────────────────────────── */
+.oai-search-results__count {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-3);
+}
+
+/* ── Brands View (accordion cards) ─────────────────────────────────────── */
+.oai-search-brands {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.oai-search-brands__card {
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-card);
+  overflow: hidden;
+}
+
+.oai-search-brands__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: var(--space-4) var(--space-5);
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-family: var(--font-family-sans);
+  text-align: left;
+  transition: background var(--transition-fast);
+}
+
+.oai-search-brands__header:hover {
+  background: var(--color-bg-secondary);
+}
+
+.oai-search-brands__info {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.oai-search-brands__name {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+
+.oai-search-brands__stats {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+}
+
+.oai-search-brands__stat {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.oai-search-brands__stat strong {
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-semibold);
+}
+
+.oai-search-brands__chevron {
+  transition: transform var(--transition-fast);
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+}
+
+.oai-search-brands__chevron--open {
+  transform: rotate(180deg);
+}
+
+.oai-search-brands__products {
+  padding: 0 var(--space-5) var(--space-5);
+  border-top: 1px solid var(--color-border-default);
+}
