@@ -3,6 +3,21 @@ import PropTypes from 'prop-types';
 import { Icons } from './icons';
 import './TokenBadge.css';
 
+/* ── Helpers ─────────────────────────────────────────────────────── */
+const blurText = (text) => (
+  <span className="oai-reveal__blur" aria-hidden="true">{text}</span>
+);
+
+const maskEmail = (email) => {
+  if (!email) return '';
+  const [local, domain] = email.split('@');
+  if (!domain) return email;
+  return `${local[0]}${'•'.repeat(Math.max(local.length - 1, 3))}@${domain}`;
+};
+
+const getFirstName = (fullName) => fullName?.split(' ')[0] || '';
+const getLastName = (fullName) => fullName?.split(' ').slice(1).join(' ') || '';
+
 /* ── Token cost badge ────────────────────────────────────────────── */
 export const TokenBadge = ({ cost, variant = 'cost' }) => (
   <span className={`oai-token-badge oai-token-badge--${variant}`}>
@@ -33,28 +48,55 @@ TokenBalance.propTypes = {
 export const ContactField = ({
   type = 'email',
   available = false,
-  revealed = false,
-  value = '',
+  revealLevel = 'none', // 'none' | 'partial' | 'full'
+  partialValue = '',
+  fullValue = '',
   tokenCost = 2,
   onReveal,
   disabled = false,
 }) => {
   const label = type === 'email' ? 'Email' : 'LinkedIn';
 
-  if (revealed && value) {
+  // Full reveal — show complete value
+  if (revealLevel === 'full' && fullValue) {
     return (
       <div className="oai-contact-field">
-        <span className="oai-contact-field__revealed">
-          {type === 'linkedin' ? (
-            <a href={`https://${value}`} target="_blank" rel="noopener noreferrer">{value}</a>
-          ) : (
-            value
-          )}
+        <span className="oai-contact-field__status oai-contact-field__status--available">
+          <span className="oai-contact-field__status-icon" aria-hidden="true">{'\u2713'}</span>
+          <span className="oai-contact-field__revealed">
+            {type === 'linkedin' ? (
+              <a href={`https://${fullValue}`} target="_blank" rel="noopener noreferrer">{fullValue}</a>
+            ) : (
+              fullValue
+            )}
+          </span>
         </span>
       </div>
     );
   }
 
+  // Partial reveal — show masked value + reveal full button
+  if (revealLevel === 'partial' && partialValue) {
+    return (
+      <div className="oai-contact-field">
+        <span className="oai-contact-field__status oai-contact-field__status--available">
+          <span className="oai-contact-field__status-icon" aria-hidden="true">{'\u2713'}</span>
+          <span className="oai-contact-field__partial">{partialValue}</span>
+        </span>
+        <button
+          className="oai-reveal-btn"
+          onClick={onReveal}
+          disabled={disabled}
+          aria-label={`Reveal full ${label} for ${tokenCost} tokens`}
+        >
+          Reveal
+          <TokenBadge cost={tokenCost} />
+        </button>
+      </div>
+    );
+  }
+
+  // None — show availability + initial reveal button
   return (
     <div className="oai-contact-field">
       <span className={`oai-contact-field__status oai-contact-field__status--${available ? 'available' : 'unavailable'}`}>
@@ -83,24 +125,29 @@ export const ContactField = ({
 ContactField.propTypes = {
   type: PropTypes.oneOf(['email', 'linkedin']),
   available: PropTypes.bool,
-  revealed: PropTypes.bool,
-  value: PropTypes.string,
+  revealLevel: PropTypes.oneOf(['none', 'partial', 'full']),
+  partialValue: PropTypes.string,
+  fullValue: PropTypes.string,
   tokenCost: PropTypes.number,
   onReveal: PropTypes.func,
   disabled: PropTypes.bool,
 };
 
 /* ── Reveal confirmation dialog ──────────────────────────────────── */
-export const RevealConfirm = ({ type = 'email', tokenCost = 2, tokenBalance = 48, onConfirm, onCancel }) => {
+export const RevealConfirm = ({ type = 'email', tokenCost = 2, tokenBalance = 48, stage = 'initial', onConfirm, onCancel }) => {
   const label = type === 'email' ? 'email' : 'LinkedIn profile';
   const canAfford = tokenBalance >= tokenCost;
+
+  const stageText = stage === 'full'
+    ? `reveal the full ${label}`
+    : `check if this ${label} is verified`;
 
   return (
     <div className="oai-reveal-confirm" role="alert">
       <p className="oai-reveal-confirm__text">
         {canAfford ? (
           <>
-            This will use <span className="oai-reveal-confirm__cost">{tokenCost} tokens</span> to reveal this {label}.{' '}
+            This will use <span className="oai-reveal-confirm__cost">{tokenCost} tokens</span> to {stageText}.{' '}
             <span className="oai-reveal-confirm__balance">You have {tokenBalance} remaining.</span>
           </>
         ) : (
@@ -128,11 +175,28 @@ RevealConfirm.propTypes = {
   type: PropTypes.oneOf(['email', 'linkedin']),
   tokenCost: PropTypes.number,
   tokenBalance: PropTypes.number,
+  stage: PropTypes.oneOf(['initial', 'full']),
   onConfirm: PropTypes.func,
   onCancel: PropTypes.func,
 };
 
-/* ── Full lead contact card with token-gated reveal ──────────────── */
+/* ══════════════════════════════════════════════════════════════════
+   LeadContactCard — Progressive reveal flow
+
+   Step 1: View Lead → FREE
+     - First name visible, last name blurred
+     - Email: ✓ available / ✗ not available (free)
+     - LinkedIn: ✓ available / ✗ not available (free)
+
+   Step 2: "Reveal" email → Token cost confirmation
+     - Apollo API check → partial email ("Sarah C•••@company.com")
+     - First name revealed
+
+   Step 3: "Reveal Full" → Additional token cost
+     - Full email revealed
+
+   Step 4: Already revealed → no further cost
+   ══════════════════════════════════════════════════════════════════ */
 export const LeadContactCard = ({
   lead,
   tokenBalance = 48,
@@ -140,28 +204,52 @@ export const LeadContactCard = ({
   selected = false,
   onSelect,
 }) => {
+  // Reveal stages: 'none' → 'partial' → 'full'
+  const [emailReveal, setEmailReveal] = useState(lead.emailRevealed ? 'full' : 'none');
+  const [linkedinReveal, setLinkedinReveal] = useState(lead.linkedinRevealed ? 'full' : 'none');
   const [confirmingField, setConfirmingField] = useState(null);
-  const [revealedFields, setRevealedFields] = useState({
-    email: lead.emailRevealed || false,
-    linkedin: lead.linkedinRevealed || false,
-  });
+  const [confirmStage, setConfirmStage] = useState('initial');
 
-  const emailCost = 2;
+  const emailInitialCost = 2;
+  const emailFullCost = 1;
   const linkedinCost = 1;
 
-  const handleRevealClick = (field) => {
+  const firstName = getFirstName(lead.name);
+  const lastName = getLastName(lead.name);
+  const nameRevealed = emailReveal !== 'none' || linkedinReveal !== 'none';
+
+  const handleRevealClick = (field, stage) => {
     setConfirmingField(field);
+    setConfirmStage(stage);
   };
 
-  const handleConfirm = (field) => {
-    const cost = field === 'email' ? emailCost : linkedinCost;
-    setRevealedFields((prev) => ({ ...prev, [field]: true }));
-    onTokenSpend?.(cost, field, lead.id);
+  const handleConfirm = () => {
+    if (confirmingField === 'email') {
+      if (confirmStage === 'initial') {
+        setEmailReveal('partial');
+        onTokenSpend?.(emailInitialCost, 'email-partial', lead.id);
+      } else {
+        setEmailReveal('full');
+        onTokenSpend?.(emailFullCost, 'email-full', lead.id);
+      }
+    } else if (confirmingField === 'linkedin') {
+      setLinkedinReveal('full');
+      onTokenSpend?.(linkedinCost, 'linkedin', lead.id);
+    }
     setConfirmingField(null);
+    setConfirmStage('initial');
   };
 
   const handleCancel = () => {
     setConfirmingField(null);
+    setConfirmStage('initial');
+  };
+
+  const currentCost = () => {
+    if (confirmingField === 'email') {
+      return confirmStage === 'initial' ? emailInitialCost : emailFullCost;
+    }
+    return linkedinCost;
   };
 
   return (
@@ -171,35 +259,45 @@ export const LeadContactCard = ({
         className="oai-lead-drawer__contact-check"
         checked={selected}
         onChange={() => onSelect?.(lead.id)}
-        aria-label={`Select ${lead.name}`}
+        aria-label={`Select ${firstName}`}
       />
       <div className="oai-lead-drawer__contact-body">
-        <div className="oai-lead-drawer__contact-name">{lead.name}</div>
+        {/* Name: first visible, last blurred until a reveal happens */}
+        <div className="oai-lead-drawer__contact-name">
+          {firstName}{' '}
+          {nameRevealed ? lastName : blurText(lastName || 'Smith')}
+        </div>
         <div className="oai-lead-drawer__contact-role">{lead.role}</div>
+
         <div className="oai-lead-drawer__contact-details" style={{ flexDirection: 'column', gap: '0' }}>
+          {/* Email field */}
           <ContactField
             type="email"
             available={lead.hasEmail}
-            revealed={revealedFields.email}
-            value={lead.email}
-            tokenCost={emailCost}
-            onReveal={() => handleRevealClick('email')}
+            revealLevel={emailReveal}
+            partialValue={maskEmail(lead.email)}
+            fullValue={lead.email}
+            tokenCost={emailReveal === 'partial' ? emailFullCost : emailInitialCost}
+            onReveal={() => handleRevealClick('email', emailReveal === 'partial' ? 'full' : 'initial')}
           />
+          {/* LinkedIn field */}
           <ContactField
             type="linkedin"
             available={lead.hasLinkedin}
-            revealed={revealedFields.linkedin}
-            value={lead.linkedin}
+            revealLevel={linkedinReveal}
+            fullValue={lead.linkedin}
             tokenCost={linkedinCost}
-            onReveal={() => handleRevealClick('linkedin')}
+            onReveal={() => handleRevealClick('linkedin', 'full')}
           />
         </div>
+
         {confirmingField && (
           <RevealConfirm
             type={confirmingField}
-            tokenCost={confirmingField === 'email' ? emailCost : linkedinCost}
+            tokenCost={currentCost()}
             tokenBalance={tokenBalance}
-            onConfirm={() => handleConfirm(confirmingField)}
+            stage={confirmStage}
+            onConfirm={handleConfirm}
             onCancel={handleCancel}
           />
         )}

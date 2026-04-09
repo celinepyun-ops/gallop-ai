@@ -2,6 +2,7 @@ import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { LoadingSkeleton } from './LoadingSkeleton';
 import { EmptyState } from './EmptyState';
+import { Icons } from './icons';
 import './table.css';
 
 /** Data table with sorting, selection, and loading states */
@@ -79,7 +80,7 @@ export const Table = ({
   if (data.length === 0) {
     return (
       <div className="oai-table-wrapper">
-        <EmptyState title={emptyMessage} icon="📋" />
+        <EmptyState title={emptyMessage} icon={Icons.templates} />
       </div>
     );
   }

@@ -309,20 +309,21 @@
   align-items: center;
   gap: var(--space-1);
   padding: var(--space-1) var(--space-3);
-  border: 1px solid var(--color-border-default);
+  border: 1px solid var(--color-primary-200);
   border-radius: var(--radius-full);
   font-size: var(--font-size-sm);
   font-family: var(--font-family-sans);
   color: var(--color-text-primary);
-  background: var(--color-bg-card);
+  background: var(--color-primary-50);
 }
 
 .oai-credits-badge__icon {
-  color: var(--color-secondary-500);
+  color: var(--color-primary-700);
 }
 
 .oai-credits-badge__count {
   font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
 }
 
 /* ==========================================================================
@@ -1840,9 +1841,10 @@
   align-items: center;
   gap: var(--space-1);
   padding: var(--space-1) var(--space-3);
-  background: var(--color-primary-600);
-  color: #FFFFFF;
-  border-radius: var(--radius-md);
+  background: var(--color-neutral-100);
+  border: 1px solid var(--color-border-default);
+  color: var(--color-text-secondary);
+  border-radius: var(--radius-full);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
 }
@@ -1850,16 +1852,54 @@
 .oai-people__finder-tag-remove {
   background: none;
   border: none;
-  color: #FFFFFF;
+  color: var(--color-text-muted);
   cursor: pointer;
-  font-size: 12px;
+  font-size: 14px;
   padding: 0;
   margin-left: 2px;
-  opacity: 0.8;
+  line-height: 1;
+  transition: color var(--transition-fast);
 }
 
 .oai-people__finder-tag-remove:hover {
-  opacity: 1;
+  color: var(--color-text-primary);
+}
+
+/* ── Quick-select premade role chips ─────────────────────────────── */
+.oai-people__finder-quick {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+
+.oai-people__finder-quick-label {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  font-family: var(--font-family-sans);
+  margin-right: var(--space-1);
+}
+
+.oai-people__finder-quick-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-1) var(--space-3);
+  background: var(--color-neutral-50);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-full);
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
+}
+
+.oai-people__finder-quick-btn:hover {
+  background: var(--color-primary-50);
+  border-color: var(--color-primary-300);
+  color: var(--color-primary-700);
 }
 
 .oai-people__finder-search-btn {
@@ -2607,8 +2647,7 @@
 .oai-lead-drawer__overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 100, 0, 0.06);
-  backdrop-filter: blur(2px);
+  background: rgba(255, 255, 255, 0.85);
   z-index: 200;
   animation: oai-fadeIn 0.2s ease;
 }
@@ -2630,7 +2669,7 @@
   bottom: 0;
   width: 440px;
   max-width: 90vw;
-  background: var(--color-bg-surface);
+  background: #FFFFFF;
   border-left: 1px solid var(--color-border-default);
   box-shadow: -4px 0 20px rgba(0, 0, 0, 0.08);
   z-index: 201;
@@ -2646,6 +2685,7 @@
   justify-content: space-between;
   padding: var(--space-5) var(--space-6);
   border-bottom: 1px solid var(--color-border-default);
+  background: #FFFFFF;
   flex-shrink: 0;
 }
 
@@ -2681,6 +2721,7 @@
   flex: 1;
   overflow-y: auto;
   padding: var(--space-5) var(--space-6);
+  background: #FFFFFF;
 }
 
 /* Brand summary at top of drawer */
@@ -2811,6 +2852,7 @@
   flex-shrink: 0;
   padding: var(--space-4) var(--space-6);
   border-top: 1px solid var(--color-border-default);
+  background: #FFFFFF;
   display: flex;
   align-items: center;
   gap: var(--space-3);
@@ -2863,11 +2905,18 @@
 
 /* Dark mode */
 [data-theme="dark"] .oai-lead-drawer {
+  background: var(--color-neutral-800);
   box-shadow: -8px 0 24px rgba(0, 0, 0, 0.4);
 }
 
+[data-theme="dark"] .oai-lead-drawer__header,
+[data-theme="dark"] .oai-lead-drawer__body,
+[data-theme="dark"] .oai-lead-drawer__footer {
+  background: var(--color-neutral-800);
+}
+
 [data-theme="dark"] .oai-lead-drawer__overlay {
-  background: rgba(0, 0, 0, 0.25);
+  background: rgba(20, 20, 18, 0.9);
 }
 
 [data-theme="dark"] .oai-lead-drawer__contact--selected {
@@ -2880,4 +2929,469 @@
 
 [data-theme="dark"] .oai-lead-drawer__close:hover {
   background: var(--color-neutral-600);
+}
+
+/* ==========================================================================
+   SearchPage — Advanced Filters & Brands View
+   ========================================================================== */
+
+/* ── Filter Chips ──────────────────────────────────────────────────────── */
+.oai-search-card__filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+
+.oai-search-card__filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-3);
+  background: var(--color-primary-50);
+  border: 1px solid var(--color-primary-200);
+  border-radius: var(--radius-full);
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-primary-700);
+}
+
+.oai-search-card__filter-chip-x {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  color: var(--color-primary-400);
+  border-radius: 50%;
+  transition: color var(--transition-fast), background var(--transition-fast);
+}
+
+.oai-search-card__filter-chip-x:hover {
+  color: var(--color-primary-700);
+  background: var(--color-primary-100);
+}
+
+.oai-search-card__filter-chip-clear {
+  padding: var(--space-1) var(--space-2);
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-muted);
+  transition: color var(--transition-fast);
+}
+
+.oai-search-card__filter-chip-clear:hover {
+  color: var(--color-text-primary);
+  text-decoration: underline;
+}
+
+/* ── Filter Toggle ─────────────────────────────────────────────────────── */
+.oai-search-card__filter-toggle-row {
+  margin-bottom: var(--space-4);
+}
+
+.oai-search-card__filter-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-card);
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  font-family: var(--font-family-sans);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  transition: color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.oai-search-card__filter-toggle:hover {
+  color: var(--color-text-primary);
+  border-color: var(--color-primary-400);
+}
+
+/* ── Advanced Filters Panel ────────────────────────────────────────────── */
+.oai-search-card__advanced-filters {
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-border-default);
+  margin-top: var(--space-2);
+}
+
+.oai-search-card__filter-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: var(--space-5);
+  margin-bottom: var(--space-4);
+}
+
+@media (max-width: 768px) {
+  .oai-search-card__filter-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.oai-search-card__filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.oai-search-card__filter-label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}
+
+.oai-search-card__filter-range {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.oai-search-card__filter-range .oai-input-wrapper {
+  flex: 1;
+}
+
+.oai-search-card__filter-range .oai-select-wrapper {
+  flex: 1;
+}
+
+.oai-search-card__filter-separator {
+  color: var(--color-text-muted);
+  font-weight: var(--font-weight-medium);
+  flex-shrink: 0;
+}
+
+.oai-search-card__filter-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: var(--space-2);
+}
+
+/* ── Results count ─────────────────────────────────────────────────────── */
+.oai-search-results__count {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-3);
+}
+
+/* ── Brands View (accordion cards) ─────────────────────────────────────── */
+.oai-search-brands {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.oai-search-brands__card {
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-card);
+  overflow: hidden;
+}
+
+.oai-search-brands__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: var(--space-4) var(--space-5);
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-family: var(--font-family-sans);
+  text-align: left;
+  transition: background var(--transition-fast);
+}
+
+.oai-search-brands__header:hover {
+  background: var(--color-bg-secondary);
+}
+
+.oai-search-brands__info {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.oai-search-brands__name {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+
+.oai-search-brands__stats {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+}
+
+.oai-search-brands__stat {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.oai-search-brands__stat strong {
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-semibold);
+}
+
+.oai-search-brands__chevron {
+  transition: transform var(--transition-fast);
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+}
+
+.oai-search-brands__chevron--open {
+  transform: rotate(180deg);
+}
+
+.oai-search-brands__products {
+  padding: 0 var(--space-5) var(--space-5);
+  border-top: 1px solid var(--color-border-default);
+}
+
+/* ── Brand select all ────────────────────────────────────────────── */
+.oai-search-brands__select-all {
+  margin-bottom: var(--space-3);
+}
+
+.oai-search-brands__select-all-label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+}
+
+.oai-search-brands__select-all-label input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--color-primary-600);
+  cursor: pointer;
+}
+
+/* ── Brand card with checkbox ────────────────────────────────────── */
+.oai-search-brands__card--selected {
+  border-color: var(--color-primary-400);
+  background: var(--color-primary-50);
+}
+
+.oai-search-brands__header {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+}
+
+.oai-search-brands__check {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  accent-color: var(--color-primary-600);
+  cursor: pointer;
+}
+
+.oai-search-brands__header-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-family: var(--font-family-sans);
+  text-align: left;
+  padding: 0;
+  transition: color var(--transition-fast);
+}
+
+/* ── Selection Action Bar (sticky bottom) ────────────────────────── */
+.oai-search-action-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-6);
+  background: #FFFFFF;
+  border-top: 1px solid var(--color-border-default);
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.06);
+  z-index: 100;
+}
+
+.oai-search-action-bar__count {
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  flex: 1;
+}
+
+/* ==========================================================================
+   NLPSearchInput — Natural language search with parsed filter tags
+   ========================================================================== */
+.oai-nlp-search {
+  position: relative;
+  font-family: var(--font-family-sans);
+}
+
+.oai-nlp-search__input-wrap {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-card);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.oai-nlp-search__input-wrap:focus-within {
+  border-color: var(--color-primary-500);
+  box-shadow: 0 0 0 3px rgba(var(--color-primary-500-rgb, 0, 100, 0), 0.12);
+}
+
+.oai-nlp-search__icon {
+  flex-shrink: 0;
+  color: var(--color-text-muted);
+}
+
+.oai-nlp-search__input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: var(--font-size-base);
+  font-family: var(--font-family-sans);
+  color: var(--color-text-primary);
+  min-width: 0;
+}
+
+.oai-nlp-search__input::placeholder {
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+.oai-nlp-search__clear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border: none;
+  background: var(--color-bg-secondary);
+  border-radius: 50%;
+  cursor: pointer;
+  color: var(--color-text-muted);
+  font-size: 13px;
+  line-height: 1;
+  transition: background var(--transition-fast);
+}
+
+.oai-nlp-search__clear:hover {
+  background: var(--color-border-default);
+  color: var(--color-text-primary);
+}
+
+.oai-nlp-search__btn {
+  flex-shrink: 0;
+  padding: var(--space-2) var(--space-5);
+  border: none;
+  border-radius: var(--radius-md);
+  background: var(--color-primary-600);
+  color: var(--color-text-inverse);
+  font-size: var(--font-size-base);
+  font-family: var(--font-family-sans);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.oai-nlp-search__btn:hover {
+  background: var(--color-primary-700);
+}
+
+/* ── Parsed filter tags ──────────────────────────────────────────────── */
+.oai-nlp-search__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+  padding: var(--space-2) 0;
+}
+
+/* ── Suggestion dropdown ─────────────────────────────────────────────── */
+.oai-nlp-search__dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: var(--space-1);
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  z-index: 50;
+  padding: var(--space-2) 0;
+}
+
+.oai-nlp-search__dropdown-section {
+  padding: var(--space-2) var(--space-3);
+}
+
+.oai-nlp-search__dropdown-section + .oai-nlp-search__dropdown-section {
+  border-top: 1px solid var(--color-border-default);
+}
+
+.oai-nlp-search__dropdown-title {
+  display: block;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: var(--space-1);
+}
+
+.oai-nlp-search__dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  padding: var(--space-2) var(--space-2);
+  border: none;
+  background: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  font-family: var(--font-family-sans);
+  color: var(--color-text-primary);
+  text-align: left;
+  transition: background var(--transition-fast);
+}
+
+.oai-nlp-search__dropdown-item:hover {
+  background: var(--color-bg-secondary);
+}
+
+.oai-nlp-search__dropdown-item svg {
+  color: var(--color-text-muted);
+  flex-shrink: 0;
 }
