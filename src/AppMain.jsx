@@ -920,7 +920,55 @@ const emailQueue = [
       { label: 'Actively Hiring — Scaling Operations', expandable: true, detail: 'LinkedIn shows AquaVeil is hiring for operations roles, confirming they are scaling and likely need manufacturing support.' },
     ],
   },
+  {
+    id: 3, list: 'Sunscreen', priority: 'High',
+    to: { name: 'Sarah Chen', email: 'sarah.chen@cerave.com', title: 'VP of Business Development, CeraVe', company: 'CeraVe', location: 'New York, NY' },
+    subject: 'CeraVe Mineral Sunscreen — manufacturing partnership',
+    body: `Hi Sarah,\n\nCeraVe Mineral Sunscreen has hit 42K repeat purchases in the last 90 days — incredible traction.\n\nI'm Ryan at Pacific Beauty Labs. We specialize in reef-safe mineral sunscreen manufacturing and have helped brands scale at exactly your growth stage.\n\nWorth a 15-min call this week?\n\nBest,\nRyan`,
+    signals: [{ label: '42K repeat purchases (90d)', expandable: false }, { label: 'TikTok Shop +340%', expandable: false }],
+  },
+  {
+    id: 4, list: 'Sunscreen', priority: 'Medium',
+    to: { name: 'Tom Rinks', email: 'tom.r@sunbum.com', title: 'Director of Sales, Sun Bum', company: 'Sun Bum', location: 'Cocoa Beach, FL' },
+    subject: 'Scaling Sun Bum production for SPF 50',
+    body: `Hi Tom,\n\nSun Bum Original SPF 50 has been steadily climbing the Amazon Sun Care category. Curious if you'd be open to exploring manufacturing capacity.\n\nWe handle reef-safe formulations and can scale 3-5x without quality compromise.\n\n15-min chat?\n\nRyan`,
+    signals: [{ label: 'Top 100 Sun Care Amazon', expandable: false }],
+  },
+  {
+    id: 5, list: 'Sunscreen', priority: 'High',
+    to: { name: 'Rachel Kim', email: 'rachel.kim@eltamd.com', title: 'Head of Partnerships, EltaMD', company: 'EltaMD', location: 'Boise, ID' },
+    subject: 'EltaMD x Pacific Beauty Labs — partnership',
+    body: `Hi Rachel,\n\nEltaMD UV Clear has been a dermatologist favorite — your formulation standards are well known.\n\nI'm Ryan at Pacific Beauty Labs. We work with dermatologist-grade brands on contract manufacturing and could help with capacity expansion.\n\nWorth a quick call?\n\nRyan`,
+    signals: [{ label: 'Dermatologist-grade brand', expandable: false }],
+  },
+  {
+    id: 6, list: 'Neck Cream', priority: 'High',
+    to: { name: 'Lisa Wang', email: 'lwang@strivectin.com', title: 'BD Manager, StriVectin', company: 'StriVectin', location: 'Nashville, TN' },
+    subject: 'StriVectin TL Neck Cream — manufacturing scale',
+    body: `Hi Lisa,\n\nStriVectin TL Advanced Neck Cream has been #1 on Amazon Neck Care for 4 weeks running. Impressive momentum.\n\nWe specialize in anti-aging formulations and private label production. Curious if there's a fit.\n\nRyan`,
+    signals: [{ label: '#1 Amazon Neck Care 4 weeks', expandable: false }, { label: 'Target expansion', expandable: false }],
+  },
+  {
+    id: 7, list: 'Neck Cream', priority: 'Medium',
+    to: { name: 'Marcus Johnson', email: 'mjohnson@cerave.com', title: 'Global Partnerships, CeraVe', company: 'CeraVe', location: 'Los Angeles, CA' },
+    subject: 'CeraVe Neck Cream — capacity expansion',
+    body: `Hi Marcus,\n\nCeraVe Skin Renewing Neck Cream is gaining strong traction. As you scale into more retail channels, manufacturing capacity becomes critical.\n\nWe'd love to explore a partnership.\n\nRyan`,
+    signals: [{ label: 'Retail expansion', expandable: false }],
+  },
+  {
+    id: 8, list: 'Vitamin C Serum', priority: 'Medium',
+    to: { name: 'Amy Foster', email: 'amy@truskin.com', title: 'Co-Founder, TruSkin', company: 'TruSkin', location: 'Austin, TX' },
+    subject: 'TruSkin Vitamin C — scaling production',
+    body: `Hi Amy,\n\nTruSkin Vitamin C Serum has built impressive Amazon presence. As a co-founder, manufacturing reliability must be top of mind.\n\nWe work with clean skincare brands on contract manufacturing.\n\nWorth a chat?\n\nRyan`,
+    signals: [{ label: 'Clean skincare leader', expandable: false }],
+  },
 ];
+
+// Add list/priority defaults to first 2 entries
+emailQueue[0].list = 'Sunscreen';
+emailQueue[0].priority = 'High';
+emailQueue[1].list = 'Sunscreen';
+emailQueue[1].priority = 'High';
 
 /* ── Page: Emails ────────────────────────────────────────────────── */
 /* ── Inbox mock data — received replies ──────────────────────────── */
@@ -971,6 +1019,15 @@ const EmailsContent = ({ activeCampaign, setActiveCampaign }) => {
   const [approvedCount, setApprovedCount] = useState(0);
   const [selectedReply, setSelectedReply] = useState(INBOX_REPLIES[0]);
   const [inboxReplies, setInboxReplies] = useState(INBOX_REPLIES);
+  // Bulk send state
+  const [bulkSelected, setBulkSelected] = useState(new Set());
+  const [previewEmailId, setPreviewEmailId] = useState(null);
+  const [bulkSendModalOpen, setBulkSendModalOpen] = useState(false);
+  // Token + quota config
+  const TOKENS_TOTAL = 200;
+  const TOKENS_USED = 58;
+  const TOKENS_LEFT = TOKENS_TOTAL - TOKENS_USED;
+  const DAILY_CAP = 35;
 
   const handleApprove = () => {
     const remaining = reviewQueue.filter((_, i) => i !== currentIndex);
@@ -995,12 +1052,35 @@ const EmailsContent = ({ activeCampaign, setActiveCampaign }) => {
     setInboxReplies((prev) => prev.map((r) => r.id === id ? { ...r, isUnread: false } : r));
   };
 
+  // Bulk send helpers
+  const filteredQueue = activeCampaign === 'All' ? reviewQueue : reviewQueue.filter((e) => e.list === activeCampaign);
+  const previewEmail = filteredQueue.find((e) => e.id === previewEmailId) || filteredQueue[0];
+  const toggleBulkRow = (id) => setBulkSelected((prev) => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n; });
+  const selectAllVisible = () => setBulkSelected(new Set(filteredQueue.map((e) => e.id)));
+  const selectByList = (list) => setBulkSelected(new Set(filteredQueue.filter((e) => e.list === list).map((e) => e.id)));
+  const selectByPriority = (priority) => setBulkSelected(new Set(filteredQueue.filter((e) => e.priority === priority).map((e) => e.id)));
+  const clearBulkSelection = () => setBulkSelected(new Set());
+  const handleBulkSend = () => {
+    setApprovedCount((c) => c + bulkSelected.size);
+    setReviewQueue((prev) => prev.filter((e) => !bulkSelected.has(e.id)));
+    setBulkSelected(new Set());
+    setBulkSendModalOpen(false);
+  };
+
+  // Estimated send time (4-8 min spacing)
+  const estimateMinutes = (count) => Math.round(count * 6); // avg 6 min apart
+  const formatFinishTime = (mins) => {
+    const now = new Date();
+    now.setMinutes(now.getMinutes() + mins);
+    return now.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+  };
+
   const unreadCount = inboxReplies.filter((r) => r.isUnread).length;
 
   const emailTabs = [
     { id: 'summary', label: 'Summary', count: 0 },
     { id: 'inbox', label: 'Inbox', count: unreadCount },
-    { id: 'review', label: 'For Review', count: reviewQueue.length },
+    { id: 'review', label: 'For Review', count: filteredQueue.length },
     { id: 'queue', label: 'Queue', count: approvedCount },
     { id: 'sent', label: 'Sent', count: 0 },
   ];
@@ -1274,91 +1354,193 @@ const EmailsContent = ({ activeCampaign, setActiveCampaign }) => {
         </div>
       )}
 
-        {/* ── REVIEW TAB ────────────────────────────────────── */}
-        {activeEmailTab === 'review' && currentEmail ? (
-          <div style={{ display: 'flex', gap: 'var(--space-4)' }}>
-            {/* Email preview */}
-            <div className="oai-email-preview" style={{ flex: 1 }}>
-              <div className="oai-email-preview__to">
-                <span className="oai-email-preview__to-label">To:</span>
-                <span className="oai-email-preview__to-name">{currentEmail.to.name}</span>
-                <span className="oai-email-preview__to-email">&lt;{currentEmail.to.email}&gt;</span>
-                <div className="oai-email-preview__nav">
-                  <button className="oai-email-preview__nav-btn" onClick={() => setCurrentIndex(Math.max(0, currentIndex - 1))} disabled={currentIndex === 0}>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6" /></svg>
-                  </button>
-                  <span className="oai-email-preview__nav-count">{currentIndex + 1}/{reviewQueue.length}</span>
-                  <button className="oai-email-preview__nav-btn" onClick={() => setCurrentIndex(Math.min(reviewQueue.length - 1, currentIndex + 1))} disabled={currentIndex === reviewQueue.length - 1}>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6" /></svg>
-                  </button>
+        {/* ── REVIEW TAB ── Bulk Send ──────────────────────── */}
+        {activeEmailTab === 'review' && filteredQueue.length > 0 && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
+            {/* Token & Quota Meter */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-4)', padding: 'var(--space-3) var(--space-4)', border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-lg)', background: 'var(--color-bg-card)', fontFamily: 'var(--font-family-sans)' }}>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)', marginBottom: '2px' }}>Tokens this month</div>
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: 'var(--space-1)' }}>
+                  <span style={{ fontSize: '20px', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-primary)' }}>{TOKENS_LEFT}</span>
+                  <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)' }}>/ {TOKENS_TOTAL} left</span>
+                </div>
+                <div style={{ marginTop: '4px', height: '4px', borderRadius: '2px', background: 'var(--color-neutral-100)', overflow: 'hidden' }}>
+                  <div style={{ width: `${(TOKENS_LEFT / TOKENS_TOTAL) * 100}%`, height: '100%', background: 'var(--color-primary-600)' }} />
                 </div>
               </div>
-              <div className="oai-email-preview__subject">{currentEmail.subject}</div>
-              <div className="oai-email-preview__body">
-                {currentEmail.body.split('\n').map((line, i) => (
-                  <p key={i}>{line || '\u00A0'}</p>
-                ))}
-              </div>
-              <div className="oai-email-preview__actions">
-                <Button variant="ghost" size="small" label="Delete" onClick={handleDelete} />
-                <div style={{ display: 'flex', gap: 'var(--space-2)' }}>
-                  <Button variant="ghost" size="small" label="ASAP" onClick={handleApprove} />
-                  <Button variant="primary" size="small" label="Approve to Send" onClick={handleApprove} />
+              <div style={{ width: '1px', height: '40px', background: 'var(--color-border-default)' }} />
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)', marginBottom: '2px' }}>Daily limit</div>
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: 'var(--space-1)' }}>
+                  <span style={{ fontSize: '20px', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-primary)' }}>{approvedCount}</span>
+                  <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)' }}>/ {DAILY_CAP} sent today</span>
                 </div>
+                <div style={{ marginTop: '4px', height: '4px', borderRadius: '2px', background: 'var(--color-neutral-100)', overflow: 'hidden' }}>
+                  <div style={{ width: `${(approvedCount / DAILY_CAP) * 100}%`, height: '100%', background: 'var(--color-success)' }} />
+                </div>
+              </div>
+              <div style={{ width: '1px', height: '40px', background: 'var(--color-border-default)' }} />
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)', marginBottom: '2px' }}>Selected</div>
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: 'var(--space-1)' }}>
+                  <span style={{ fontSize: '20px', fontWeight: 'var(--font-weight-semibold)', color: bulkSelected.size > 0 ? 'var(--color-primary-700)' : 'var(--color-text-muted)' }}>{bulkSelected.size}</span>
+                  <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)' }}>of {filteredQueue.length}</span>
+                </div>
+                {bulkSelected.size > 0 && (
+                  <div style={{ marginTop: '4px', fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)' }}>
+                    Finishes ~{formatFinishTime(estimateMinutes(bulkSelected.size))}
+                  </div>
+                )}
               </div>
             </div>
 
-            {/* Contact sidebar */}
-            <div className="oai-email-contact" style={{ width: '280px', flexShrink: 0 }}>
-              <div className="oai-email-contact__header">
-                <Avatar initials={currentEmail.to.name.split(' ').map(n => n[0]).join('')} size="medium" />
-                <div>
-                  <div className="oai-email-contact__name">{currentEmail.to.name}</div>
-                  <div className="oai-email-contact__title">{currentEmail.to.title}</div>
-                  <div className="oai-email-contact__company">{currentEmail.to.company}</div>
-                </div>
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
-                <div className="oai-email-contact__row">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" /><polyline points="22,6 12,13 2,6" /></svg>
-                  {currentEmail.to.email}
-                </div>
-                <div className="oai-email-contact__row">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>
-                  {currentEmail.to.location}
-                </div>
-              </div>
-              <div>
-                <div className="oai-email-signals__label">Key Signals</div>
-                {currentEmail.signals.map((signal, i) => (
-                  <div key={i} className="oai-email-signal">
-                    <button className="oai-email-signal__header" onClick={() => setExpandedSignal(expandedSignal === i ? -1 : i)}>
-                      <span>{signal.label}</span>
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ transform: expandedSignal === i ? 'rotate(180deg)' : 'rotate(0)', transition: 'transform 0.15s' }}><polyline points="6 9 12 15 18 9" /></svg>
-                    </button>
-                    {expandedSignal === i && signal.detail && (
-                      <div className="oai-email-signal__detail">{signal.detail}</div>
-                    )}
-                  </div>
-                ))}
-              </div>
+            {/* Quick filter row */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', flexWrap: 'wrap' }}>
+              <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-secondary)', fontFamily: 'var(--font-family-sans)', fontWeight: 'var(--font-weight-medium)' }}>Quick select:</span>
+              <button onClick={selectAllVisible} style={{ padding: 'var(--space-1) var(--space-2)', border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-md)', background: 'var(--color-bg-card)', fontSize: 'var(--font-size-xs)', fontFamily: 'var(--font-family-sans)', cursor: 'pointer' }}>Select all ({filteredQueue.length})</button>
+              <button onClick={() => selectByList('Sunscreen')} style={{ padding: 'var(--space-1) var(--space-2)', border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-md)', background: 'var(--color-bg-card)', fontSize: 'var(--font-size-xs)', fontFamily: 'var(--font-family-sans)', cursor: 'pointer' }}>Sunscreen ({reviewQueue.filter((e) => e.list === 'Sunscreen').length})</button>
+              <button onClick={() => selectByList('Neck Cream')} style={{ padding: 'var(--space-1) var(--space-2)', border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-md)', background: 'var(--color-bg-card)', fontSize: 'var(--font-size-xs)', fontFamily: 'var(--font-family-sans)', cursor: 'pointer' }}>Neck Cream ({reviewQueue.filter((e) => e.list === 'Neck Cream').length})</button>
+              <button onClick={() => selectByPriority('High')} style={{ padding: 'var(--space-1) var(--space-2)', border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-md)', background: 'var(--color-bg-card)', fontSize: 'var(--font-size-xs)', fontFamily: 'var(--font-family-sans)', cursor: 'pointer' }}>High Priority ({reviewQueue.filter((e) => e.priority === 'High').length})</button>
+              {bulkSelected.size > 0 && <button onClick={clearBulkSelection} style={{ padding: 'var(--space-1) var(--space-2)', border: 'none', background: 'transparent', color: 'var(--color-text-link)', fontSize: 'var(--font-size-xs)', fontFamily: 'var(--font-family-sans)', cursor: 'pointer', textDecoration: 'underline' }}>Clear selection</button>}
             </div>
-          </div>
-        ) : activeEmailTab !== 'inbox' && (
-          <div style={{ textAlign: 'center', padding: 'var(--space-10) var(--space-4)', color: 'var(--color-text-muted)', fontFamily: 'var(--font-family-sans)' }}>
-            <div style={{ marginBottom: 'var(--space-2)' }}>{Icons.campaigns}</div>
-            <h3 style={{ margin: '0 0 4px', fontSize: 'var(--font-size-md)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-text-secondary)' }}>No emails {activeEmailTab === 'drafting' ? 'drafting' : activeEmailTab === 'sent' ? 'sent' : activeEmailTab === 'failed' ? 'failed' : 'in queue'}</h3>
-            <p style={{ margin: 0, fontSize: 'var(--font-size-sm)' }}>Emails {activeEmailTab === 'drafting' ? 'being drafted' : activeEmailTab === 'sent' ? 'that have been sent' : activeEmailTab === 'failed' ? 'that failed to send' : 'queued for sending'} will appear here.</p>
+
+            {/* Two-pane: list (left) + preview (right) */}
+            <div style={{ display: 'flex', gap: 'var(--space-3)', minHeight: '500px' }}>
+              <div style={{ width: '380px', minWidth: '380px', border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-lg)', background: 'var(--color-bg-card)', overflow: 'auto', maxHeight: '600px' }}>
+                {filteredQueue.map((email) => {
+                  const isSelected = bulkSelected.has(email.id);
+                  const isPreviewing = previewEmail?.id === email.id;
+                  return (
+                    <div key={email.id} style={{ display: 'flex', gap: 'var(--space-2)', padding: 'var(--space-3)', borderBottom: '1px solid var(--color-border-default)', background: isPreviewing ? 'var(--color-primary-50)' : isSelected ? 'var(--color-neutral-50)' : 'transparent', cursor: 'pointer' }} onClick={() => setPreviewEmailId(email.id)}>
+                      <input type="checkbox" checked={isSelected} onChange={(e) => { e.stopPropagation(); toggleBulkRow(email.id); }} onClick={(e) => e.stopPropagation()} style={{ marginTop: '2px' }} />
+                      <div style={{ flex: 1, minWidth: 0, fontFamily: 'var(--font-family-sans)' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '2px' }}>
+                          <span style={{ fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-primary)' }}>{email.to.name}</span>
+                          <Badge label={email.priority} variant={email.priority === 'High' ? 'warning' : 'info'} size="small" />
+                        </div>
+                        <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-secondary)', marginBottom: '4px' }}>{email.to.company}</div>
+                        <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginBottom: '4px' }}>{email.subject}</div>
+                        <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{email.body.split('\n')[0]}</div>
+                        <div style={{ marginTop: '4px' }}>
+                          <Badge label={email.list} variant="default" size="small" />
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {previewEmail && (
+                <div className="oai-email-preview" style={{ flex: 1 }}>
+                  <div className="oai-email-preview__to">
+                    <span className="oai-email-preview__to-label">To:</span>
+                    <span className="oai-email-preview__to-name">{previewEmail.to.name}</span>
+                    <span className="oai-email-preview__to-email">&lt;{previewEmail.to.email}&gt;</span>
+                  </div>
+                  <div className="oai-email-preview__subject">{previewEmail.subject}</div>
+                  <div className="oai-email-preview__body">
+                    {previewEmail.body.split('\n').map((line, i) => (<p key={i}>{line || ' '}</p>))}
+                  </div>
+                  <div className="oai-email-preview__actions">
+                    <Button variant="ghost" size="small" label="Delete" onClick={handleDelete} />
+                    <div style={{ display: 'flex', gap: 'var(--space-2)' }}>
+                      <Button variant="ghost" size="small" label="Edit" onClick={() => {}} />
+                      <Button variant="primary" size="small" label="Approve" onClick={handleApprove} />
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         )}
 
-        {/* Keyboard hint */}
-        <div className="oai-email-hint-bar">
-          <span>Cmd + Enter to approve</span>
-          <span>Arrow keys to navigate</span>
-          <Button variant="ghost" size="small" label="Approve all" onClick={handleApproveAll} />
-        </div>
+        {activeEmailTab === 'review' && filteredQueue.length === 0 && (
+          <div style={{ textAlign: 'center', padding: 'var(--space-10) var(--space-4)', color: 'var(--color-text-muted)', fontFamily: 'var(--font-family-sans)' }}>
+            <div style={{ marginBottom: 'var(--space-2)' }}>{Icons.campaigns}</div>
+            <h3 style={{ margin: '0 0 4px', fontSize: 'var(--font-size-md)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-text-secondary)' }}>No emails for review</h3>
+            <p style={{ margin: 0, fontSize: 'var(--font-size-sm)' }}>Drafts will appear here when you find new contacts.</p>
+          </div>
+        )}
+
+        {!['summary', 'inbox', 'review'].includes(activeEmailTab) && (
+          <div style={{ textAlign: 'center', padding: 'var(--space-10) var(--space-4)', color: 'var(--color-text-muted)', fontFamily: 'var(--font-family-sans)' }}>
+            <div style={{ marginBottom: 'var(--space-2)' }}>{Icons.campaigns}</div>
+            <h3 style={{ margin: '0 0 4px', fontSize: 'var(--font-size-md)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-text-secondary)' }}>No emails in {activeEmailTab}</h3>
+            <p style={{ margin: 0, fontSize: 'var(--font-size-sm)' }}>Emails will appear here.</p>
+          </div>
+        )}
+
+
+        {/* Keyboard hint — only when no bulk selected */}
+        {bulkSelected.size === 0 && (
+          <div className="oai-email-hint-bar">
+            <span>Cmd + Enter to approve</span>
+            <span>Arrow keys to navigate</span>
+            <Button variant="ghost" size="small" label="Approve all" onClick={handleApproveAll} />
+          </div>
+        )}
       </main>
+
+      {/* Bulk Action Bar (fixed bottom when emails selected) */}
+      {bulkSelected.size > 0 && activeEmailTab === 'review' && (
+        <div className="oai-search-action-bar">
+          <span className="oai-search-action-bar__count">{bulkSelected.size} email{bulkSelected.size > 1 ? 's' : ''} selected</span>
+          <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)', fontFamily: 'var(--font-family-sans)' }}>
+            Tokens after send: {TOKENS_LEFT - bulkSelected.size} &middot; Finishes ~{formatFinishTime(estimateMinutes(bulkSelected.size))}
+          </span>
+          <Button variant="primary" size="medium" label={`Send ${bulkSelected.size} email${bulkSelected.size > 1 ? 's' : ''}`} onClick={() => setBulkSendModalOpen(true)} />
+          <Button variant="ghost" size="small" label="Approve only (queue)" onClick={handleBulkSend} />
+          <Button variant="ghost" size="small" label="Clear" onClick={clearBulkSelection} />
+        </div>
+      )}
+
+      {/* Bulk Send Confirmation Modal */}
+      {bulkSendModalOpen && (
+        <div onClick={() => setBulkSendModalOpen(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div onClick={(e) => e.stopPropagation()} style={{ width: '440px', background: 'var(--color-bg-card)', border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-5)', fontFamily: 'var(--font-family-sans)', boxShadow: 'var(--shadow-xl)' }}>
+            <h2 style={{ margin: '0 0 var(--space-3)', fontSize: 'var(--font-size-lg)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-primary)' }}>Send {bulkSelected.size} email{bulkSelected.size > 1 ? 's' : ''}?</h2>
+            <p style={{ margin: '0 0 var(--space-3)', fontSize: 'var(--font-size-sm)', color: 'var(--color-text-secondary)' }}>Breakdown by campaign:</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)', marginBottom: 'var(--space-4)' }}>
+              {['Sunscreen', 'Neck Cream', 'Vitamin C Serum'].map((listName) => {
+                const count = reviewQueue.filter((e) => bulkSelected.has(e.id) && e.list === listName).length;
+                if (count === 0) return null;
+                return (
+                  <div key={listName} style={{ display: 'flex', justifyContent: 'space-between', padding: 'var(--space-2) var(--space-3)', background: 'var(--color-neutral-50)', borderRadius: 'var(--radius-md)', fontSize: 'var(--font-size-sm)' }}>
+                    <span>{count} to <strong>{listName}</strong></span>
+                    <Badge label={listName} variant="default" size="small" />
+                  </div>
+                );
+              })}
+            </div>
+            <div style={{ padding: 'var(--space-3)', background: 'var(--color-primary-50)', borderRadius: 'var(--radius-md)', marginBottom: 'var(--space-4)', fontSize: 'var(--font-size-sm)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                <span style={{ color: 'var(--color-text-secondary)' }}>Tokens used</span>
+                <strong>{bulkSelected.size}</strong>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                <span style={{ color: 'var(--color-text-secondary)' }}>Remaining after send</span>
+                <strong>{TOKENS_LEFT - bulkSelected.size}</strong>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                <span style={{ color: 'var(--color-text-secondary)' }}>Estimated completion</span>
+                <strong>{formatFinishTime(estimateMinutes(bulkSelected.size))}</strong>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ color: 'var(--color-text-secondary)' }}>Pacing</span>
+                <strong>4-8 min apart (auto)</strong>
+              </div>
+            </div>
+            <p style={{ margin: '0 0 var(--space-4)', fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)', lineHeight: 1.5 }}>
+              Emails will be spaced naturally throughout the day to protect your domain reputation. You can pause the queue anytime.
+            </p>
+            <div style={{ display: 'flex', gap: 'var(--space-2)', justifyContent: 'flex-end' }}>
+              <Button variant="ghost" size="medium" label="Cancel" onClick={() => setBulkSendModalOpen(false)} />
+              <Button variant="primary" size="medium" label={`Send ${bulkSelected.size} email${bulkSelected.size > 1 ? 's' : ''}`} onClick={handleBulkSend} />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
