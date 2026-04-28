@@ -971,6 +971,28 @@ emailQueue[1].list = 'Sunscreen';
 emailQueue[1].priority = 'High';
 
 /* ── Page: Emails ────────────────────────────────────────────────── */
+/* SentimentBadge — AI-classified reply sentiment */
+const SentimentBadge = ({ sentiment }) => {
+  const cfg = {
+    positive: { label: 'Positive', bg: 'var(--color-success-100)', color: 'var(--color-success-700)', icon: <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="4 12 9 17 20 6" /></svg> },
+    neutral: { label: 'Promising', bg: 'var(--color-primary-100)', color: 'var(--color-primary-700)', icon: <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><line x1="5" y1="12" x2="19" y2="12" /></svg> },
+    negative: { label: 'Declined', bg: 'var(--color-neutral-100)', color: 'var(--color-text-muted)', icon: <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg> },
+  };
+  const c = cfg[sentiment] || cfg.neutral;
+  return (
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '3px', padding: '2px 6px', borderRadius: '4px', background: c.bg, color: c.color, fontSize: '10px', fontWeight: 'var(--font-weight-semibold)', fontFamily: 'var(--font-family-sans)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+      {c.icon}{c.label}
+    </span>
+  );
+};
+
+/* SequenceStepBadge — which follow-up step the email is on */
+const SequenceStepBadge = ({ step }) => (
+  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '3px', padding: '2px 6px', borderRadius: '4px', background: 'var(--color-neutral-100)', color: 'var(--color-text-secondary)', fontSize: '10px', fontWeight: 'var(--font-weight-medium)', fontFamily: 'var(--font-family-sans)' }}>
+    Step {step}
+  </span>
+);
+
 /* ── Inbox mock data — received replies ──────────────────────────── */
 const INBOX_REPLIES = [
   {
@@ -984,6 +1006,9 @@ const INBOX_REPLIES = [
     isUnread: true,
     list: 'Sunscreen List',
     stage: 'replied',
+    sentiment: 'positive',
+    sentimentReason: 'Mentioned scheduling a call, confirmed alignment with growth strategy',
+    sequenceStep: 1,
   },
   {
     id: 'reply-2',
@@ -996,6 +1021,9 @@ const INBOX_REPLIES = [
     isUnread: true,
     list: 'Neck Cream List',
     stage: 'replied',
+    sentiment: 'neutral',
+    sentimentReason: 'Looped in another contact — needs follow-up to nurture',
+    sequenceStep: 1,
   },
   {
     id: 'reply-3',
@@ -1008,6 +1036,9 @@ const INBOX_REPLIES = [
     isUnread: false,
     list: 'Sunscreen List',
     stage: 'replied',
+    sentiment: 'negative',
+    sentimentReason: 'Declined — fully committed with current partners',
+    sequenceStep: 1,
   },
 ];
 
@@ -1326,9 +1357,12 @@ const EmailsContent = ({ activeCampaign, setActiveCampaign }) => {
       {/* ── INBOX TAB ─────────────────────────────────────── */}
       {activeEmailTab === 'inbox' && (
         <div className="oai-inbox">
-          {/* Reply list (left) */}
+          {/* Reply list (left) — sorted by sentiment priority: positive → neutral → negative */}
           <div className="oai-inbox__list">
-            {inboxReplies.map((reply) => (
+            {[...inboxReplies].sort((a, b) => {
+              const order = { positive: 0, neutral: 1, negative: 2 };
+              return (order[a.sentiment] ?? 3) - (order[b.sentiment] ?? 3);
+            }).map((reply) => (
               <button
                 key={reply.id}
                 className={`oai-inbox__item ${selectedReply?.id === reply.id ? 'oai-inbox__item--active' : ''} ${reply.isUnread ? 'oai-inbox__item--unread' : ''}`}
@@ -1347,6 +1381,7 @@ const EmailsContent = ({ activeCampaign, setActiveCampaign }) => {
                 <div className="oai-inbox__item-subject">{reply.subject}</div>
                 <div className="oai-inbox__item-preview">{reply.preview}</div>
                 <div className="oai-inbox__item-footer">
+                  <SentimentBadge sentiment={reply.sentiment} />
                   <Badge label={reply.list} variant="default" size="small" />
                   {reply.isUnread && <span className="oai-inbox__unread-dot" />}
                 </div>
@@ -1365,8 +1400,21 @@ const EmailsContent = ({ activeCampaign, setActiveCampaign }) => {
                     <div className="oai-inbox__detail-email">{selectedReply.from.email} &middot; {selectedReply.receivedAt}</div>
                   </div>
                 </div>
-                <Badge label={selectedReply.list} variant="info" size="small" />
+                <div style={{ display: 'flex', gap: 'var(--space-1)' }}>
+                  <SentimentBadge sentiment={selectedReply.sentiment} />
+                  <Badge label={selectedReply.list} variant="info" size="small" />
+                </div>
               </div>
+
+              {/* AI Sentiment Insight */}
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: 'var(--space-2)', padding: 'var(--space-3)', background: 'var(--color-primary-50)', border: '1px solid var(--color-primary-200)', borderRadius: 'var(--radius-md)', marginBottom: 'var(--space-3)', fontFamily: 'var(--font-family-sans)' }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--color-primary-600)" style={{ flexShrink: 0, marginTop: '1px' }}><path d="M12 3l1.5 5.5L19 10l-5.5 1.5L12 17l-1.5-5.5L5 10l5.5-1.5L12 3z" /></svg>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-primary-700)', marginBottom: '2px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>AI Sentiment</div>
+                  <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-text-primary)', lineHeight: 1.5 }}>{selectedReply.sentimentReason}</div>
+                </div>
+              </div>
+
               <div className="oai-inbox__detail-subject">{selectedReply.subject}</div>
               <div className="oai-inbox__detail-body">
                 {selectedReply.body.split('\n').map((line, i) => (
@@ -1457,8 +1505,9 @@ const EmailsContent = ({ activeCampaign, setActiveCampaign }) => {
                         <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-secondary)', marginBottom: '4px' }}>{email.to.company}</div>
                         <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginBottom: '4px' }}>{email.subject}</div>
                         <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{email.body.split('\n')[0]}</div>
-                        <div style={{ marginTop: '4px' }}>
+                        <div style={{ marginTop: '4px', display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
                           <Badge label={email.list} variant="default" size="small" />
+                          {email.sequenceStep && <SequenceStepBadge step={email.sequenceStep} />}
                         </div>
                       </div>
                     </div>
@@ -1472,6 +1521,10 @@ const EmailsContent = ({ activeCampaign, setActiveCampaign }) => {
                     <span className="oai-email-preview__to-label">To:</span>
                     <span className="oai-email-preview__to-name">{previewEmail.to.name}</span>
                     <span className="oai-email-preview__to-email">&lt;{previewEmail.to.email}&gt;</span>
+                    <div style={{ marginLeft: 'auto', display: 'flex', gap: 'var(--space-1)' }}>
+                      {previewEmail.sequenceStep && <SequenceStepBadge step={previewEmail.sequenceStep} />}
+                      <Badge label={previewEmail.priority} variant={previewEmail.priority === 'High' ? 'warning' : 'info'} size="small" />
+                    </div>
                   </div>
                   <div className="oai-email-preview__subject">{previewEmail.subject}</div>
                   <div className="oai-email-preview__body">
@@ -1482,6 +1535,62 @@ const EmailsContent = ({ activeCampaign, setActiveCampaign }) => {
                     <div style={{ display: 'flex', gap: 'var(--space-2)' }}>
                       <Button variant="ghost" size="small" label="Edit" onClick={() => {}} />
                       <Button variant="primary" size="small" label="Approve" onClick={handleApprove} />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {previewEmail && (
+                <div style={{ width: '280px', flexShrink: 0, display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
+                  <div style={{ border: '1px solid var(--color-primary-200)', background: 'var(--color-primary-50)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-3)', fontFamily: 'var(--font-family-sans)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)', marginBottom: 'var(--space-2)' }}>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--color-primary-600)"><path d="M12 3l1.5 5.5L19 10l-5.5 1.5L12 17l-1.5-5.5L5 10l5.5-1.5L12 3z" /></svg>
+                      <span style={{ fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-primary-700)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>AI Lead Overview</span>
+                    </div>
+                    <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-text-primary)', lineHeight: 1.6 }}>
+                      {previewEmail.aiOverview || 'AI is generating overview...'}
+                    </div>
+                  </div>
+
+                  <div style={{ border: '1px solid var(--color-border-default)', background: 'var(--color-bg-card)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-3)', fontFamily: 'var(--font-family-sans)' }}>
+                    <div style={{ fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 'var(--space-2)' }}>Contact</div>
+                    <div style={{ fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-primary)' }}>{previewEmail.to.name}</div>
+                    <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-secondary)', marginBottom: 'var(--space-2)' }}>{previewEmail.to.title}</div>
+                    <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-secondary)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>
+                      {previewEmail.to.location}
+                    </div>
+                  </div>
+
+                  {previewEmail.signals && previewEmail.signals.length > 0 && (
+                    <div style={{ border: '1px solid var(--color-border-default)', background: 'var(--color-bg-card)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-3)', fontFamily: 'var(--font-family-sans)' }}>
+                      <div style={{ fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 'var(--space-2)' }}>Brand Signals</div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                        {previewEmail.signals.slice(0, 3).map((s, i) => (
+                          <div key={i} style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-primary)', display: 'flex', alignItems: 'flex-start', gap: '6px' }}>
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--color-success)" strokeWidth="2.5" style={{ flexShrink: 0, marginTop: '2px' }}><polyline points="20 6 9 17 4 12" /></svg>
+                            <span>{s.label}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  <div style={{ border: '1px solid var(--color-border-default)', background: 'var(--color-bg-card)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-3)', fontFamily: 'var(--font-family-sans)' }}>
+                    <div style={{ fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 'var(--space-2)' }}>Sequence</div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                      {[
+                        { step: 1, label: 'Day 0 — Intro', current: (previewEmail.sequenceStep || 1) === 1 },
+                        { step: 2, label: 'Day 3 — Follow-up #1', current: (previewEmail.sequenceStep || 1) === 2, queued: true },
+                        { step: 3, label: 'Day 7 — Follow-up #2', current: (previewEmail.sequenceStep || 1) === 3 },
+                        { step: 4, label: 'Day 14 — Final break-up', current: (previewEmail.sequenceStep || 1) === 4 },
+                      ].map((s) => (
+                        <div key={s.step} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 6px', borderRadius: 'var(--radius-sm)', background: s.current ? 'var(--color-primary-50)' : 'transparent', fontSize: 'var(--font-size-xs)', color: s.current ? 'var(--color-primary-700)' : 'var(--color-text-secondary)', fontWeight: s.current ? 'var(--font-weight-semibold)' : 'normal' }}>
+                          <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 16, height: 16, borderRadius: '50%', background: s.current ? 'var(--color-primary-600)' : 'var(--color-neutral-200)', color: 'white', fontSize: '10px', fontWeight: 600 }}>{s.step}</span>
+                          <span style={{ flex: 1 }}>{s.label}</span>
+                          {s.queued && <span style={{ fontSize: '10px', color: 'var(--color-text-muted)' }}>auto</span>}
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </div>
