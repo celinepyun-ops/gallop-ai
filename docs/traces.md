@@ -1,5 +1,49 @@
 # Traces — Key Product Decisions
 
+## 2026-04-29
+
+### Meeting Feedback — Campaign Creation Flow Priority
+
+**Wow Points (차별점)**
+- Company → People 자동 연결 (edge case): Company 이름만 추가해도 그 회사의 BD 담당자 후보 즉시 표시 — Apollo enrich 자동화
+
+**Email Follow-up Automation 개념 정리**
+- Segment = List = 사람 그룹
+- Campaign = 그 리스트에 대한 시기/목적별 outreach 시도
+- 1 list = 1 campaign으로 단순화 (multi-campaign per list는 MVP 제외)
+- **Interest Level (High/Medium/Low)는 MVP에서 빼기** — Sentiment AI로 대체
+- Email Sequence 초기 셋업 (Day 0 / Day 3 / Day 7 / Day 14)이 가장 critical
+
+**핵심 미구현 기능 (P0)**
+- **Create Campaign 플로우** — 현재는 Campaign 디스플레이만 있고 생성 기능 없음
+- 양방향 연결 필요:
+  - List → Create Campaign (기존 리스트로 캠페인 생성)
+  - Campaign → Pull from List (캠페인 만들고 어떤 리스트 쓸지 선택)
+- 이유: List 만들어놓고 진행 안 할 수도 있고, 리드 반려/필터링 후 캠페인 시작하는 케이스 분리
+- Activate 시점부터 시퀀스 자동 발송 메커니즘 + 진행 상황 시각화
+
+**경쟁 비교 (Mike Torres 워크플로 — 현재 vs Gallop)**
+- 현재: Instantly + Apollo + Smartlead (3개 툴, 5단계, 며칠 작업)
+  1. Instantly 결제 → 온보딩
+  2. 타겟팅 (예: 화장품 제조사 35명 + Marketing agency 35명)
+  3. Apollo에서 회사 검색 → 직책 enrich → CSV 다운로드
+  4. Smartlead에 CSV 업로드 → 시퀀스 작성 → Activate
+  5. 두 개 리스트 따로 관리
+- Gallop 가치 제안: Search → Reveal → Create Campaign → Activate (1개 툴, 4단계, 1시간 내)
+
+**개발 우선순위**
+1. **Create Campaign UI 플로우** (4-step modal): Name + List → Sequence templates (Day 0/3/7/14) → Sending settings → Review & Activate
+2. **List → Create Campaign 진입점**: Lists 페이지에서 "Create Campaign from this List" 버튼
+3. **Campaign Activation 흐름 시각화**: Active 상태, sequence 진행 상황 실시간, Pause/Stop
+4. **Onboarding 단순화**: Connect Email OAuth, 첫 캠페인 가이드
+
+**To-do 자체 검증 (dogfooding)**
+- Gallop 자체 홍보 이메일 시퀀스를 Gallop으로 만들어보기
+- 타겟: 화장품 제조사 + Marketing agency
+- 실제 사용해보면서 빠진 기능/플로우 발견
+
+---
+
 ## 2026-04-28
 
 ### Master User Story Map (Problem → Solution → Feature)
