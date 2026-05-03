@@ -1042,7 +1042,7 @@ const INBOX_REPLIES = [
   },
 ];
 
-const EmailsContent = ({ activeCampaign, setActiveCampaign }) => {
+const EmailsContent = ({ activeCampaign, setActiveCampaign, pendingCampaignList, clearPendingCampaign }) => {
   const [activeEmailTab, setActiveEmailTab] = useState('summary');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [expandedSignal, setExpandedSignal] = useState(1);
@@ -1120,13 +1120,41 @@ const EmailsContent = ({ activeCampaign, setActiveCampaign }) => {
 
   const EMAIL_LISTS = ['All', 'Sunscreen', 'Neck Cream', 'Vitamin C Serum'];
   const EMAIL_CAMPAIGNS = [
-    { id: 'q2-sunscreen', name: 'Q2 Sunscreen Launch', list: 'Sunscreen', status: 'active', stats: '5 sent · 2 replied' },
-    { id: 'spring-mfg', name: 'Spring Manufacturing Outreach', list: 'Sunscreen', status: 'active', stats: '3 sent · 1 replied' },
-    { id: 'q2-neckcream', name: 'Q2 Neck Cream Intro', list: 'Neck Cream', status: 'active', stats: '2 sent · 1 reply' },
-    { id: 'vitamin-spring', name: 'Vitamin C Spring 2026', list: 'Vitamin C Serum', status: 'draft', stats: 'Not started' },
+    { id: 'q2-sunscreen', name: 'Q2 Sunscreen Launch', list: 'Sunscreen', status: 'active', stats: '5 sent · 2 replied', progress: { day0: 5, day3: 5, day7: 2, day14: 0 }, totalContacts: 5, currentDay: 7 },
+    { id: 'spring-mfg', name: 'Spring Manufacturing Outreach', list: 'Sunscreen', status: 'active', stats: '3 sent · 1 replied', progress: { day0: 3, day3: 3, day7: 0, day14: 0 }, totalContacts: 3, currentDay: 4 },
+    { id: 'q2-neckcream', name: 'Q2 Neck Cream Intro', list: 'Neck Cream', status: 'active', stats: '2 sent · 1 reply', progress: { day0: 2, day3: 2, day7: 0, day14: 0 }, totalContacts: 2, currentDay: 5 },
+    { id: 'vitamin-spring', name: 'Vitamin C Spring 2026', list: 'Vitamin C Serum', status: 'draft', stats: 'Not started', progress: { day0: 0, day3: 0, day7: 0, day14: 0 }, totalContacts: 1, currentDay: 0 },
   ];
   const [sidebarFolded, setSidebarFolded] = useState({ lists: false, campaigns: false, today: false });
   const toggleFold = (key) => setSidebarFolded((prev) => ({ ...prev, [key]: !prev[key] }));
+
+  // Create Campaign modal state
+  const [createCampaignOpen, setCreateCampaignOpen] = useState(false);
+  const [campaignStep, setCampaignStep] = useState(1);
+  const [campaignForm, setCampaignForm] = useState({
+    name: '',
+    list: 'Sunscreen',
+    template1: 'Hi {{name}},\n\nI noticed {{company}} has been growing fast in the {{category}} category. We help brands at your stage scale manufacturing without compromising quality.\n\nWorth a 15-min call this week?\n\nBest,\nRyan',
+    template2: 'Hi {{name}},\n\nFollowing up on my note from earlier — would love to share how we\'ve helped similar brands. Free this week?\n\nBest,\nRyan',
+    template3: 'Hi {{name}},\n\nLast quick thought — happy to send a brief overview of our manufacturing capacity and case studies if helpful.\n\nBest,\nRyan',
+    template4: 'Hi {{name}},\n\nNo worries if not a fit right now. Closing the loop — feel free to reach out anytime in the future.\n\nBest,\nRyan',
+    dailyCap: 10,
+    businessHours: true,
+    sentimentAuto: true,
+  });
+  const updateCampaignForm = (field, value) => setCampaignForm((prev) => ({ ...prev, [field]: value }));
+  const closeCreateCampaign = () => { setCreateCampaignOpen(false); setCampaignStep(1); clearPendingCampaign?.(); };
+
+  useEffect(() => {
+    if (pendingCampaignList) {
+      setCampaignForm((prev) => ({ ...prev, list: pendingCampaignList, name: `${pendingCampaignList} Outreach` }));
+      setCreateCampaignOpen(true);
+    }
+  }, [pendingCampaignList]);
+  const activateCampaign = () => {
+    closeCreateCampaign();
+    // Mock: in real app, would create campaign in backend
+  };
   const [emailSidebarVisible, setEmailSidebarVisible] = useState(true);
 
   return (
@@ -1167,6 +1195,20 @@ const EmailsContent = ({ activeCampaign, setActiveCampaign }) => {
           </button>
           {!sidebarFolded.campaigns && (
             <div style={{ padding: '0 var(--space-3) var(--space-3)', display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
+              <button
+                onClick={() => setCreateCampaignOpen(true)}
+                style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
+                  padding: 'var(--space-2)', border: '1px dashed var(--color-primary-400)',
+                  borderRadius: 'var(--radius-md)', background: 'transparent',
+                  color: 'var(--color-primary-700)', cursor: 'pointer',
+                  fontFamily: 'var(--font-family-sans)', fontSize: 'var(--font-size-xs)',
+                  fontWeight: 'var(--font-weight-semibold)',
+                }}
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
+                New Campaign
+              </button>
               {EMAIL_CAMPAIGNS.map((c) => (
                 <button
                   key={c.id}
@@ -1184,7 +1226,28 @@ const EmailsContent = ({ activeCampaign, setActiveCampaign }) => {
                     <span style={{ fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.name}</span>
                     <Badge label={c.status === 'active' ? 'Active' : 'Draft'} variant={c.status === 'active' ? 'success' : 'default'} size="small" />
                   </div>
-                  <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)' }}>{c.list} &middot; {c.stats}</div>
+                  <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)', marginBottom: c.status === 'active' ? '6px' : 0 }}>{c.list} &middot; {c.stats}</div>
+                  {c.status === 'active' && (
+                    <div style={{ display: 'flex', gap: '2px', marginTop: '4px' }}>
+                      {[
+                        { day: 0, count: c.progress.day0, label: 'D0' },
+                        { day: 3, count: c.progress.day3, label: 'D3' },
+                        { day: 7, count: c.progress.day7, label: 'D7' },
+                        { day: 14, count: c.progress.day14, label: 'D14' },
+                      ].map((s) => {
+                        const pct = c.totalContacts > 0 ? (s.count / c.totalContacts) * 100 : 0;
+                        const isCurrent = s.day <= c.currentDay && (s.day === 0 || c.currentDay > [0, 3, 7, 14][[0, 3, 7, 14].indexOf(s.day) - 1]);
+                        return (
+                          <div key={s.day} title={`${s.label}: ${s.count}/${c.totalContacts} sent`} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
+                            <div style={{ width: '100%', height: '3px', borderRadius: '1px', background: 'var(--color-neutral-100)', overflow: 'hidden' }}>
+                              <div style={{ width: `${pct}%`, height: '100%', background: isCurrent ? 'var(--color-primary-600)' : pct > 0 ? 'var(--color-success)' : 'transparent', transition: 'width 0.3s' }} />
+                            </div>
+                            <span style={{ fontSize: '9px', color: 'var(--color-text-muted)', fontWeight: pct > 0 ? 'var(--font-weight-semibold)' : 'normal' }}>{s.label}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
                 </button>
               ))}
             </div>
@@ -1685,6 +1748,213 @@ const EmailsContent = ({ activeCampaign, setActiveCampaign }) => {
           </div>
         </div>
       )}
+
+      {/* ── Create Campaign Modal (4 steps) ─────────────────── */}
+      {createCampaignOpen && (
+        <div onClick={closeCreateCampaign} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div onClick={(e) => e.stopPropagation()} style={{ width: '560px', maxHeight: '85vh', background: 'var(--color-bg-card)', border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-lg)', fontFamily: 'var(--font-family-sans)', boxShadow: 'var(--shadow-xl)', display: 'flex', flexDirection: 'column' }}>
+            {/* Modal header */}
+            <div style={{ padding: 'var(--space-4) var(--space-5)', borderBottom: '1px solid var(--color-border-default)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div>
+                <h2 style={{ margin: 0, fontSize: 'var(--font-size-lg)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-primary)' }}>Create Campaign</h2>
+                <p style={{ margin: '4px 0 0', fontSize: 'var(--font-size-xs)', color: 'var(--color-text-secondary)' }}>Step {campaignStep} of 4</p>
+              </div>
+              <button onClick={closeCreateCampaign} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)', display: 'flex', padding: 'var(--space-1)' }}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+              </button>
+            </div>
+
+            {/* Step indicator */}
+            <div style={{ display: 'flex', padding: '0 var(--space-5)', marginTop: 'var(--space-3)' }}>
+              {[1, 2, 3, 4].map((n) => (
+                <div key={n} style={{ flex: 1, height: '3px', borderRadius: '2px', background: n <= campaignStep ? 'var(--color-primary-600)' : 'var(--color-neutral-200)', marginRight: n < 4 ? '4px' : '0' }} />
+              ))}
+            </div>
+
+            {/* Modal body */}
+            <div style={{ padding: 'var(--space-5)', overflowY: 'auto', flex: 1 }}>
+              {/* Step 1: Name + List */}
+              {campaignStep === 1 && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+                  <div>
+                    <h3 style={{ margin: '0 0 var(--space-1)', fontSize: 'var(--font-size-md)', fontWeight: 'var(--font-weight-semibold)' }}>Name your campaign</h3>
+                    <p style={{ margin: '0 0 var(--space-3)', fontSize: 'var(--font-size-sm)', color: 'var(--color-text-secondary)' }}>Give it a descriptive name so you can find it later (e.g. "Q2 Sunscreen Launch").</p>
+                    <input
+                      type="text"
+                      placeholder="e.g. Q2 Sunscreen Launch"
+                      value={campaignForm.name}
+                      onChange={(e) => updateCampaignForm('name', e.target.value)}
+                      style={{ width: '100%', padding: 'var(--space-2) var(--space-3)', border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-md)', fontFamily: 'var(--font-family-sans)', fontSize: 'var(--font-size-sm)', outline: 'none', boxSizing: 'border-box' }}
+                    />
+                  </div>
+                  <div>
+                    <h3 style={{ margin: '0 0 var(--space-1)', fontSize: 'var(--font-size-md)', fontWeight: 'var(--font-weight-semibold)' }}>Connect a list</h3>
+                    <p style={{ margin: '0 0 var(--space-3)', fontSize: 'var(--font-size-sm)', color: 'var(--color-text-secondary)' }}>This campaign will send emails to everyone in the selected list.</p>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
+                      {['Sunscreen', 'Neck Cream', 'Vitamin C Serum'].map((l) => (
+                        <button
+                          key={l}
+                          onClick={() => updateCampaignForm('list', l)}
+                          style={{
+                            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                            padding: 'var(--space-3)', border: `1px solid ${campaignForm.list === l ? 'var(--color-primary-500)' : 'var(--color-border-default)'}`,
+                            borderRadius: 'var(--radius-md)', background: campaignForm.list === l ? 'var(--color-primary-50)' : 'var(--color-bg-card)',
+                            cursor: 'pointer', fontFamily: 'var(--font-family-sans)', fontSize: 'var(--font-size-sm)', textAlign: 'left',
+                          }}
+                        >
+                          <span style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
+                            {campaignForm.list === l && <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary-600)" strokeWidth="2.5"><polyline points="4 12 9 17 20 6" /></svg>}
+                            <span style={{ marginLeft: campaignForm.list === l ? 0 : 22, fontWeight: campaignForm.list === l ? 'var(--font-weight-semibold)' : 'normal' }}>{l}</span>
+                          </span>
+                          <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)' }}>
+                            {l === 'Sunscreen' ? '5 contacts' : l === 'Neck Cream' ? '2 contacts' : '1 contact'}
+                          </span>
+                        </button>
+                      ))}
+                      <button style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', padding: 'var(--space-3)', border: '1px dashed var(--color-border-strong)', borderRadius: 'var(--radius-md)', background: 'none', cursor: 'pointer', color: 'var(--color-text-link)', fontFamily: 'var(--font-family-sans)', fontSize: 'var(--font-size-sm)' }}>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
+                        Create new list
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Step 2: Email Sequence */}
+              {campaignStep === 2 && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
+                  <div>
+                    <h3 style={{ margin: '0 0 var(--space-1)', fontSize: 'var(--font-size-md)', fontWeight: 'var(--font-weight-semibold)' }}>Email sequence</h3>
+                    <p style={{ margin: '0 0 var(--space-2)', fontSize: 'var(--font-size-sm)', color: 'var(--color-text-secondary)' }}>4 follow-up steps. Use {`{{name}}`}, {`{{company}}`}, {`{{category}}`} as variables. Sequence stops automatically when contact replies.</p>
+                  </div>
+                  {[
+                    { step: 1, label: 'Day 0 — Intro', field: 'template1' },
+                    { step: 2, label: 'Day 3 — Follow-up #1', field: 'template2' },
+                    { step: 3, label: 'Day 7 — Follow-up #2', field: 'template3' },
+                    { step: 4, label: 'Day 14 — Final break-up', field: 'template4' },
+                  ].map((s) => (
+                    <div key={s.step} style={{ border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-md)', overflow: 'hidden' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 'var(--space-2) var(--space-3)', background: 'var(--color-neutral-50)', borderBottom: '1px solid var(--color-border-default)' }}>
+                        <span style={{ fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-primary)' }}>{s.label}</span>
+                        <button style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '2px 8px', border: '1px solid var(--color-primary-300)', borderRadius: 'var(--radius-sm)', background: 'var(--color-primary-50)', color: 'var(--color-primary-700)', cursor: 'pointer', fontSize: '11px', fontFamily: 'var(--font-family-sans)' }}>
+                          <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3l1.5 5.5L19 10l-5.5 1.5L12 17l-1.5-5.5L5 10l5.5-1.5L12 3z" /></svg>
+                          AI rewrite
+                        </button>
+                      </div>
+                      <textarea
+                        value={campaignForm[s.field]}
+                        onChange={(e) => updateCampaignForm(s.field, e.target.value)}
+                        rows={4}
+                        style={{ width: '100%', padding: 'var(--space-2) var(--space-3)', border: 'none', outline: 'none', fontFamily: 'var(--font-family-sans)', fontSize: 'var(--font-size-xs)', resize: 'vertical', boxSizing: 'border-box', lineHeight: 1.5 }}
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Step 3: Sending Settings */}
+              {campaignStep === 3 && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+                  <div>
+                    <h3 style={{ margin: '0 0 var(--space-1)', fontSize: 'var(--font-size-md)', fontWeight: 'var(--font-weight-semibold)' }}>Sending settings</h3>
+                    <p style={{ margin: '0 0 var(--space-3)', fontSize: 'var(--font-size-sm)', color: 'var(--color-text-secondary)' }}>Pace your sends to protect your domain reputation.</p>
+                  </div>
+
+                  {/* Daily cap */}
+                  <div>
+                    <label style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-medium)', marginBottom: 'var(--space-2)' }}>
+                      <span>Daily send limit</span>
+                      <span style={{ color: 'var(--color-primary-700)', fontWeight: 'var(--font-weight-semibold)' }}>{campaignForm.dailyCap} emails / day</span>
+                    </label>
+                    <input
+                      type="range" min="5" max="35" step="5"
+                      value={campaignForm.dailyCap}
+                      onChange={(e) => updateCampaignForm('dailyCap', Number(e.target.value))}
+                      style={{ width: '100%' }}
+                    />
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: 'var(--color-text-muted)' }}>
+                      <span>5</span><span>20</span><span>35 (recommended max)</span>
+                    </div>
+                  </div>
+
+                  {/* Toggles */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
+                    {[
+                      { field: 'businessHours', label: 'Business hours only', desc: 'Send between 9am–6pm in recipient timezone' },
+                      { field: 'sentimentAuto', label: 'Auto-categorize replies', desc: 'AI sentiment classifies each reply (Positive / Promising / Declined)' },
+                    ].map((t) => (
+                      <label key={t.field} style={{ display: 'flex', alignItems: 'flex-start', gap: 'var(--space-3)', padding: 'var(--space-3)', border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-md)', cursor: 'pointer' }}>
+                        <input
+                          type="checkbox"
+                          checked={campaignForm[t.field]}
+                          onChange={(e) => updateCampaignForm(t.field, e.target.checked)}
+                          style={{ marginTop: '2px' }}
+                        />
+                        <div>
+                          <div style={{ fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-text-primary)' }}>{t.label}</div>
+                          <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-secondary)', marginTop: '2px' }}>{t.desc}</div>
+                        </div>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Step 4: Review & Activate */}
+              {campaignStep === 4 && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
+                  <div>
+                    <h3 style={{ margin: '0 0 var(--space-1)', fontSize: 'var(--font-size-md)', fontWeight: 'var(--font-weight-semibold)' }}>Review & activate</h3>
+                    <p style={{ margin: '0 0 var(--space-3)', fontSize: 'var(--font-size-sm)', color: 'var(--color-text-secondary)' }}>Confirm settings before activating. You can pause anytime.</p>
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
+                    {[
+                      { label: 'Campaign name', value: campaignForm.name || '(unnamed)' },
+                      { label: 'Connected list', value: `${campaignForm.list} · ${campaignForm.list === 'Sunscreen' ? '5' : campaignForm.list === 'Neck Cream' ? '2' : '1'} contacts` },
+                      { label: 'Sequence steps', value: '4 emails (Day 0, 3, 7, 14)' },
+                      { label: 'Daily send limit', value: `${campaignForm.dailyCap} / day` },
+                      { label: 'Business hours', value: campaignForm.businessHours ? '9am–6pm' : 'Anytime' },
+                      { label: 'Sentiment auto-categorize', value: campaignForm.sentimentAuto ? 'On' : 'Off' },
+                    ].map((row, i) => (
+                      <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: 'var(--space-2) var(--space-3)', background: 'var(--color-neutral-50)', borderRadius: 'var(--radius-md)', fontSize: 'var(--font-size-sm)' }}>
+                        <span style={{ color: 'var(--color-text-secondary)' }}>{row.label}</span>
+                        <strong>{row.value}</strong>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div style={{ padding: 'var(--space-3)', background: 'var(--color-primary-50)', borderRadius: 'var(--radius-md)', fontSize: 'var(--font-size-sm)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                      <span style={{ color: 'var(--color-text-secondary)' }}>Total emails over 14 days</span>
+                      <strong>{(campaignForm.list === 'Sunscreen' ? 5 : campaignForm.list === 'Neck Cream' ? 2 : 1) * 4} emails</strong>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span style={{ color: 'var(--color-text-secondary)' }}>Tokens used</span>
+                      <strong>{(campaignForm.list === 'Sunscreen' ? 5 : campaignForm.list === 'Neck Cream' ? 2 : 1) * 4}</strong>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Modal footer */}
+            <div style={{ padding: 'var(--space-4) var(--space-5)', borderTop: '1px solid var(--color-border-default)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              {campaignStep > 1 ? (
+                <Button variant="ghost" size="medium" label="Back" onClick={() => setCampaignStep(campaignStep - 1)} />
+              ) : <span />}
+              <div style={{ display: 'flex', gap: 'var(--space-2)' }}>
+                <Button variant="ghost" size="medium" label="Cancel" onClick={closeCreateCampaign} />
+                {campaignStep < 4 ? (
+                  <Button variant="primary" size="medium" label="Next" onClick={() => setCampaignStep(campaignStep + 1)} />
+                ) : (
+                  <Button variant="primary" size="medium" label="Activate Campaign" onClick={activateCampaign} />
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
@@ -1843,6 +2113,8 @@ function AppMain() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   // Campaign filter — persisted across Email / Pipeline / Lists pages
   const [activeCampaign, setActiveCampaign] = useState('All');
+  // Pending campaign creation — set when user clicks "Create Campaign from this List"
+  const [pendingCampaignList, setPendingCampaignList] = useState(null);
 
   // Shared saved lists state
   const [savedLists, setSavedLists] = useState([
@@ -1896,6 +2168,12 @@ function AppMain() {
   const navigate = (p) => {
     setPage(p);
     window.history.pushState({}, '', p === 'landing' ? '/' : `/${p}`);
+  };
+
+  const startCampaignCreation = (listName) => {
+    setPendingCampaignList(listName);
+    setActiveCampaign(listName);
+    navigate('emails');
   };
 
   useEffect(() => {
@@ -1984,10 +2262,10 @@ function AppMain() {
     switch (page) {
       case 'pipeline': return <DashboardContent onNavigate={navigate} activeCampaign={activeCampaign} setActiveCampaign={setActiveCampaign} />;
       case 'search': return <SearchPage savedLists={savedLists} onAddNewList={addNewList} onAddProductsToList={addProductsToList} />;
-      case 'lists': return <SavedListsPage savedLists={savedLists} onAddNewList={addNewList} activeCampaign={activeCampaign} setActiveCampaign={setActiveCampaign} />;
+      case 'lists': return <SavedListsPage savedLists={savedLists} onAddNewList={addNewList} activeCampaign={activeCampaign} setActiveCampaign={setActiveCampaign} onCreateCampaign={startCampaignCreation} />;
       case 'tasks': return <TasksPage />;
       case 'people': return <PeopleContent onNavigate={navigate} />;
-      case 'emails': return <EmailsContent activeCampaign={activeCampaign} setActiveCampaign={setActiveCampaign} />;
+      case 'emails': return <EmailsContent activeCampaign={activeCampaign} setActiveCampaign={setActiveCampaign} pendingCampaignList={pendingCampaignList} clearPendingCampaign={() => setPendingCampaignList(null)} />;
       case 'templates': return <TemplatesContent />;
       default: return <NotFound onBackClick={() => navigate('pipeline')} />;
     }

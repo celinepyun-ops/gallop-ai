@@ -66,7 +66,7 @@ const priorityConfig = {
 /* ══════════════════════════════════════════════════════════════════
    SavedListsPage Component — Salesforce-style CRM Table
    ══════════════════════════════════════════════════════════════════ */
-export const SavedListsPage = ({ savedLists: propLists, onAddNewList, activeCampaign, setActiveCampaign }) => {
+export const SavedListsPage = ({ savedLists: propLists, onAddNewList, activeCampaign, setActiveCampaign, onCreateCampaign }) => {
   const [contacts] = useState(MOCK_CONTACTS);
   const [viewMode, setViewMode] = useState('table'); // 'table' | 'kanban'
   // Sync selectedList with activeCampaign from parent if provided
@@ -240,6 +240,9 @@ export const SavedListsPage = ({ savedLists: propLists, onAddNewList, activeCamp
               </>
             ) : (
               <>
+                {selectedList !== 'All' && onCreateCampaign && (
+                  <Button variant="ghost" size="medium" label={`+ Campaign from ${selectedList}`} onClick={() => onCreateCampaign(selectedList)} />
+                )}
                 <Button variant="primary" size="medium" label="+ New List" onClick={() => setShowNewListInput(true)} />
               </>
             )}
