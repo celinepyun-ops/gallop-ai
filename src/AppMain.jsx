@@ -2425,14 +2425,18 @@ const CampaignsContent = ({ onNavigate, pendingCampaignList, clearPendingCampaig
   const draftCampaigns = CAMPAIGNS_LIST.filter((c) => c.status === 'draft');
 
   return (
-    <div style={{ maxWidth: '1200px' }}>
-      {/* Header */}
+    <div style={{ maxWidth: startInBuilder ? 'none' : '1200px' }}>
+      {/* Header — hidden in builder mode */}
+      {!startInBuilder && (
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
         <div>
           <h1 style={{ margin: '0 0 4px', fontSize: '24px', fontWeight: 400, color: 'var(--color-text-primary)', fontFamily: 'var(--font-family-sans)' }}>Campaigns</h1>
         </div>
       </div>
+      )}
 
+      {!startInBuilder && (
+      <>
       {/* Toolbar — search + filters + add */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', marginBottom: 'var(--space-3)' }}>
         <div style={{ flex: 1, maxWidth: '320px' }}>
@@ -2501,6 +2505,8 @@ const CampaignsContent = ({ onNavigate, pendingCampaignList, clearPendingCampaig
           );
         })}
       </div>
+      </>
+      )}
 
             {/* ─── Create Campaign Modal (or full-page builder) ─── */}
       {createCampaignOpen && (
