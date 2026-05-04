@@ -2507,7 +2507,7 @@ const CampaignsContent = ({ onNavigate, pendingCampaignList, clearPendingCampaig
         <div
           onClick={startInBuilder ? undefined : closeCreateCampaign}
           style={startInBuilder
-            ? { position: 'fixed', inset: 0, background: 'var(--color-bg-page)', zIndex: 100, display: 'flex' }
+            ? { margin: 'calc(-1 * var(--space-6))', minHeight: 'calc(100vh - var(--navbar-height))', background: 'var(--color-bg-card)', display: 'flex', flexDirection: 'column' }
             : { position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }
           }
         >
