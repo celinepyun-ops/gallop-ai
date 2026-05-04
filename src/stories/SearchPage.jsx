@@ -850,9 +850,33 @@ export const SearchPage = ({ products = MOCK_PRODUCTS, savedLists = [], onAddNew
           </div>
         )}
 
-        {/* Tabs */}
-        <div className="oai-sp-main__tabs">
-          <Tabs tabs={categoryTabs} activeTab={activeTab} onTabChange={setActiveTab} />
+        {/* Tabs — pill-style toggle buttons */}
+        <div className="oai-sp-main__tabs" style={{ display: 'flex', gap: 'var(--space-2)' }}>
+          {categoryTabs.map((tab) => {
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                style={{
+                  display: 'inline-flex', alignItems: 'center', gap: '6px',
+                  padding: 'var(--space-2) var(--space-4)',
+                  border: '1px solid',
+                  borderColor: isActive ? 'var(--color-primary-600)' : 'var(--color-border-default)',
+                  borderRadius: 'var(--radius-md)',
+                  background: isActive ? 'var(--color-primary-50)' : 'var(--color-bg-card)',
+                  color: isActive ? 'var(--color-primary-700)' : 'var(--color-text-secondary)',
+                  fontFamily: 'var(--font-family-sans)',
+                  fontSize: 'var(--font-size-sm)',
+                  fontWeight: isActive ? 'var(--font-weight-semibold)' : 'var(--font-weight-medium)',
+                  cursor: 'pointer',
+                  transition: 'all 0.15s',
+                }}
+              >
+                {tab.label}
+              </button>
+            );
+          })}
         </div>
 
         {/* Search bar — normal or AI expanded */}
