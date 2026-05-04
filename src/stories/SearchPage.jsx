@@ -440,6 +440,32 @@ export const SearchPage = ({ products = MOCK_PRODUCTS, savedLists = [], onAddNew
   const [revealConfirm, setRevealConfirm] = useState(false);
   const [revealedEmails, setRevealedEmails] = useState({});
 
+  // Add Company state (P1 Wow Point)
+  const [addCompanyOpen, setAddCompanyOpen] = useState(false);
+  const [companyQuery, setCompanyQuery] = useState('');
+  const [addedCompanies, setAddedCompanies] = useState([]); // [{name, domain, industry, size, location, revenue}]
+  const [companyBanner, setCompanyBanner] = useState(null); // {name, count} or null
+  const COMPANY_DB = [
+    { name: 'CeraVe', domain: 'cerave.com', industry: 'Skincare / Sun Care', size: '1,000+', location: 'New York, NY', revenue: '$2.5B (L\'Oreal)', growth: '+28% MoM', match: 'Bullseye', initials: 'CV', color: '#6B8E23', peopleCount: 12 },
+    { name: 'Olay', domain: 'olay.com', industry: 'Skincare / Anti-Aging', size: '1,000+', location: 'Cincinnati, OH', revenue: '$3.2B (P&G)', growth: '+15% MoM', match: 'Bullseye', initials: 'OL', color: '#DC143C', peopleCount: 9 },
+    { name: 'Supergoop!', domain: 'supergoop.com', industry: 'Sun Care / Clean Beauty', size: '201-1,000', location: 'San Antonio, TX', revenue: '$150M est.', growth: '+340% (TikTok Shop)', match: 'Bullseye', initials: 'SG', color: '#2E8B57', peopleCount: 6 },
+    { name: 'EltaMD', domain: 'eltamd.com', industry: 'Dermatologist Skincare', size: '51-200', location: 'Boise, ID', revenue: '$45M est.', growth: '+22% YoY', match: 'High match', initials: 'EM', color: '#4682B4', peopleCount: 4 },
+    { name: 'StriVectin', domain: 'strivectin.com', industry: 'Anti-Aging Skincare', size: '201-1,000', location: 'Nashville, TN', revenue: '$120M est.', growth: '#1 Amazon Neck Care', match: 'High match', initials: 'SV', color: '#8B008B', peopleCount: 7 },
+    { name: 'Sun Bum', domain: 'sunbum.com', industry: 'Sun Care / Lifestyle', size: '51-200', location: 'Cocoa Beach, FL', revenue: '$60M est.', growth: '+18% MoM', match: 'High match', initials: 'SB', color: '#B8860B', peopleCount: 5 },
+    { name: 'TruSkin', domain: 'truskin.com', industry: 'Clean Skincare', size: '11-50', location: 'Austin, TX', revenue: '$8M est.', growth: 'Founder-led', match: 'Match', initials: 'TS', color: '#FF8C00', peopleCount: 3 },
+    { name: 'Drunk Elephant', domain: 'drunkelephant.com', industry: 'Premium Skincare', size: '1,000+', location: 'New York, NY', revenue: '$1.5B (Shiseido)', growth: '+210% (Protini Neck)', match: 'Bullseye', initials: 'DE', color: '#FF6B6B', peopleCount: 8 },
+  ];
+  const filteredCompanies = COMPANY_DB.filter((c) => !addedCompanies.find((a) => a.name === c.name) && (companyQuery === '' || c.name.toLowerCase().includes(companyQuery.toLowerCase()) || c.domain.toLowerCase().includes(companyQuery.toLowerCase())));
+
+  const handleAddCompany = (company) => {
+    setAddedCompanies((prev) => [...prev, company]);
+    setCompanyBanner({ name: company.name, count: company.peopleCount });
+    setAddCompanyOpen(false);
+    setCompanyQuery('');
+    setActiveTab('brand');
+  };
+  const dismissCompanyBanner = () => setCompanyBanner(null);
+
   // Filter state: which filter options are checked
   const [checkedFilters, setCheckedFilters] = useState({
     'cosmetics': true,
@@ -529,7 +555,23 @@ export const SearchPage = ({ products = MOCK_PRODUCTS, savedLists = [], onAddNew
     // If products selected, show people for those brands; otherwise show all
     const brands = selectedBrandNames.length > 0 ? selectedBrandNames : [...new Set(filteredProducts.map((p) => p.brand))];
     const groups = [];
+
+    // Added companies first (highlighted)
+    for (const co of addedCompanies) {
+      const brandPeople = MOCK_PEOPLE.filter((p) => p.brand === co.name);
+      groups.push({
+        brand: co.name,
+        productCount: 0,
+        people: brandPeople.length > 0 ? brandPeople : [],
+        initials: co.initials,
+        color: co.color,
+        addedDirectly: true,
+      });
+    }
+
     for (const brand of brands) {
+      // skip if already added directly
+      if (addedCompanies.find((c) => c.name === brand)) continue;
       const brandProducts = filteredProducts.filter((p) => p.brand === brand);
       const brandPeople = MOCK_PEOPLE.filter((p) => p.brand === brand);
       if (brandPeople.length > 0) {
@@ -543,7 +585,7 @@ export const SearchPage = ({ products = MOCK_PRODUCTS, savedLists = [], onAddNew
       }
     }
     return groups;
-  }, [selectedBrandNames, filteredProducts]);
+  }, [selectedBrandNames, filteredProducts, addedCompanies]);
 
   /* ── Selection helpers ─────────────────────────────────────── */
   const selectionCount = selectedProducts.length;
@@ -742,12 +784,44 @@ export const SearchPage = ({ products = MOCK_PRODUCTS, savedLists = [], onAddNew
       {/* ── RIGHT: Main Content ──────────────────────────── */}
       <main className={`oai-sp-main ${!filtersVisible ? 'oai-sp-main--full' : ''}`}>
         {/* Header */}
-        <div className="oai-sp-main__header">
-          <h1 className="oai-sp-main__title">Find Growing Products</h1>
-          <p className="oai-sp-main__subtitle">
-            Discover fast-growing Amazon products ready for manufacturing partnerships.
-          </p>
+        <div className="oai-sp-main__header" style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 'var(--space-3)' }}>
+          <div>
+            <h1 className="oai-sp-main__title">Find Growing Products</h1>
+            <p className="oai-sp-main__subtitle">
+              Discover fast-growing Amazon products ready for manufacturing partnerships.
+            </p>
+          </div>
+          <Button variant="primary" size="medium" label="+ Add Company" onClick={() => setAddCompanyOpen(true)} />
         </div>
+
+        {/* Company added banner */}
+        {companyBanner && (
+          <div style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            padding: 'var(--space-3) var(--space-4)',
+            margin: 'var(--space-3) 0',
+            background: 'var(--color-primary-50)',
+            border: '1px solid var(--color-primary-200)',
+            borderLeft: '4px solid var(--color-primary-600)',
+            borderRadius: 'var(--radius-md)',
+            fontFamily: 'var(--font-family-sans)',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="var(--color-primary-600)"><path d="M12 3l1.5 5.5L19 10l-5.5 1.5L12 17l-1.5-5.5L5 10l5.5-1.5L12 3z" /></svg>
+              <span style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-text-primary)' }}>
+                <strong>We found {companyBanner.count} likely decision-makers at {companyBanner.name}</strong> — including BD, Partnerships, and Manufacturing leads.
+              </span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
+              <button onClick={() => { setActiveTab('people'); }} style={{ background: 'none', border: 'none', color: 'var(--color-primary-700)', cursor: 'pointer', fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-semibold)', fontFamily: 'var(--font-family-sans)' }}>
+                View people →
+              </button>
+              <button onClick={dismissCompanyBanner} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)', display: 'flex', padding: '2px' }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Tabs */}
         <div className="oai-sp-main__tabs">
@@ -862,6 +936,38 @@ export const SearchPage = ({ products = MOCK_PRODUCTS, savedLists = [], onAddNew
 
         {activeTab === 'brand' && (
           <div className="oai-sp-people">
+            {/* Added companies via "+ Add Company" */}
+            {addedCompanies.length > 0 && (
+              <div style={{ marginBottom: 'var(--space-4)' }}>
+                <div style={{ fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 'var(--space-2)' }}>Added Companies</div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 'var(--space-3)' }}>
+                  {addedCompanies.map((co) => (
+                    <div key={co.name} style={{ border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-lg)', background: 'var(--color-bg-card)', padding: 'var(--space-3)', fontFamily: 'var(--font-family-sans)' }}>
+                      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 'var(--space-2)', marginBottom: 'var(--space-2)' }}>
+                        <span className="oai-sp-product-cell__avatar" style={{ background: co.color, width: 36, height: 36, fontSize: 12, flexShrink: 0 }}>{co.initials}</span>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)', marginBottom: '2px' }}>
+                            <span style={{ fontSize: 'var(--font-size-md)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-primary)' }}>{co.name}</span>
+                            <Badge label={co.match} variant={co.match === 'Bullseye' ? 'success' : 'info'} size="small" />
+                          </div>
+                          <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-secondary)' }}>{co.domain}</div>
+                        </div>
+                      </div>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px 8px', fontSize: 'var(--font-size-xs)', color: 'var(--color-text-secondary)', marginBottom: 'var(--space-3)' }}>
+                        <span><strong style={{ color: 'var(--color-text-primary)' }}>{co.size}</strong> employees</span>
+                        <span>{co.location}</span>
+                        <span>{co.industry}</span>
+                        <span style={{ color: 'var(--color-success-700)', fontWeight: 'var(--font-weight-semibold)' }}>{co.growth}</span>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: 'var(--space-2)', borderTop: '1px solid var(--color-border-default)' }}>
+                        <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)' }}>{co.peopleCount} contacts found</span>
+                        <Button variant="ghost" size="small" label="View people" onClick={() => setActiveTab('people')} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
             {brandGroups.length === 0 ? (
               <EmptyState icon={Icons.brands} title="No brands found" description="Try adjusting your search or filters." />
             ) : (
@@ -1139,6 +1245,66 @@ export const SearchPage = ({ products = MOCK_PRODUCTS, savedLists = [], onAddNew
         <p style={{ margin: 'var(--space-2) 0 0', fontSize: 'var(--font-size-xs)', color: 'var(--color-text-secondary)' }}>
           Once revealed, you can access this email anytime without additional tokens.
         </p>
+      </Modal>
+
+      {/* ── Add Company Modal ────────────────────────── */}
+      <Modal
+        isOpen={addCompanyOpen}
+        onClose={() => { setAddCompanyOpen(false); setCompanyQuery(''); }}
+        title="Add a Company"
+        size="md"
+      >
+        <p style={{ margin: '0 0 var(--space-3)', fontSize: 'var(--font-size-sm)', color: 'var(--color-text-secondary)' }}>
+          Type a company name or domain — we'll automatically find decision-makers and brand signals.
+        </p>
+        <div style={{ position: 'relative', marginBottom: 'var(--space-3)' }}>
+          <input
+            type="text"
+            placeholder="e.g. CeraVe or cerave.com"
+            value={companyQuery}
+            onChange={(e) => setCompanyQuery(e.target.value)}
+            autoFocus
+            style={{ width: '100%', padding: 'var(--space-3) var(--space-3) var(--space-3) var(--space-9)', border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-md)', fontFamily: 'var(--font-family-sans)', fontSize: 'var(--font-size-sm)', outline: 'none', boxSizing: 'border-box' }}
+          />
+          <span style={{ position: 'absolute', left: 'var(--space-3)', top: '50%', transform: 'translateY(-50%)', display: 'flex', color: 'var(--color-text-muted)' }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
+          </span>
+        </div>
+
+        {/* Suggestions */}
+        <div style={{ maxHeight: '320px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+          {filteredCompanies.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: 'var(--space-4)', color: 'var(--color-text-muted)', fontSize: 'var(--font-size-sm)', fontFamily: 'var(--font-family-sans)' }}>
+              No companies match. Try a different name or domain.
+            </div>
+          ) : (
+            filteredCompanies.slice(0, 6).map((c) => (
+              <button
+                key={c.name}
+                onClick={() => handleAddCompany(c)}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 'var(--space-3)',
+                  padding: 'var(--space-3)', border: '1px solid var(--color-border-default)',
+                  borderRadius: 'var(--radius-md)', background: 'var(--color-bg-card)',
+                  cursor: 'pointer', textAlign: 'left', fontFamily: 'var(--font-family-sans)',
+                  transition: 'border-color 0.15s, background 0.15s',
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--color-primary-400)'; e.currentTarget.style.background = 'var(--color-primary-50)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--color-border-default)'; e.currentTarget.style.background = 'var(--color-bg-card)'; }}
+              >
+                <span className="oai-sp-product-cell__avatar" style={{ background: c.color, width: 32, height: 32, fontSize: 11, flexShrink: 0 }}>{c.initials}</span>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
+                    <span style={{ fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-primary)' }}>{c.name}</span>
+                    <Badge label={c.match} variant={c.match === 'Bullseye' ? 'success' : 'info'} size="small" />
+                  </div>
+                  <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-secondary)' }}>{c.domain} &middot; {c.size} &middot; {c.location}</div>
+                </div>
+                <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)', whiteSpace: 'nowrap' }}>{c.peopleCount} contacts</span>
+              </button>
+            ))
+          )}
+        </div>
       </Modal>
 
       {/* ── Toast ────────────────────────────────────────── */}
