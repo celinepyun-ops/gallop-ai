@@ -1042,7 +1042,7 @@ const INBOX_REPLIES = [
   },
 ];
 
-const EmailsContent = ({ activeCampaign, setActiveCampaign, pendingCampaignList, clearPendingCampaign }) => {
+const EmailsContent = ({ activeCampaign, setActiveCampaign, pendingCampaignList, clearPendingCampaign, onNavigate }) => {
   const [activeEmailTab, setActiveEmailTab] = useState('summary');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [expandedSignal, setExpandedSignal] = useState(1);
@@ -1254,7 +1254,7 @@ const EmailsContent = ({ activeCampaign, setActiveCampaign, pendingCampaignList,
           {!sidebarFolded.campaigns && (
             <div style={{ padding: '0 var(--space-3) var(--space-3)', display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
               <button
-                onClick={() => setCreateCampaignOpen(true)}
+                onClick={() => onNavigate?.('campaigns')}
                 style={{
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
                   padding: 'var(--space-2)', border: '1px dashed var(--color-primary-400)',
@@ -2404,6 +2404,513 @@ const REVEALED_CONTACTS = [
   { id: 'r8', name: 'Jennifer Wu', title: 'Sr. Brand Manager', company: 'IT Cosmetics', email: 'jwu@loreal.com', list: null, revealedAt: '2026-04-14', initials: 'JW', color: '#E91E63', stage: null, tokensUsed: 1 },
 ];
 
+/* ── Campaigns Page ──────────────────────────────────────────────── */
+const CAMPAIGNS_LIST = [
+  { id: 'q2-sunscreen', name: 'Q2 Sunscreen Launch', list: 'Sunscreen', status: 'active', stats: '5 sent · 2 replied', progress: { day0: 5, day3: 5, day7: 2, day14: 0 }, totalContacts: 5, currentDay: 7, replyRate: 40 },
+  { id: 'spring-mfg', name: 'Spring Manufacturing Outreach', list: 'Sunscreen', status: 'active', stats: '3 sent · 1 replied', progress: { day0: 3, day3: 3, day7: 0, day14: 0 }, totalContacts: 3, currentDay: 4, replyRate: 33 },
+  { id: 'q2-neckcream', name: 'Q2 Neck Cream Intro', list: 'Neck Cream', status: 'active', stats: '2 sent · 1 reply', progress: { day0: 2, day3: 2, day7: 0, day14: 0 }, totalContacts: 2, currentDay: 5, replyRate: 50 },
+  { id: 'vitamin-spring', name: 'Vitamin C Spring 2026', list: 'Vitamin C Serum', status: 'draft', stats: 'Not started', progress: { day0: 0, day3: 0, day7: 0, day14: 0 }, totalContacts: 1, currentDay: 0, replyRate: 0 },
+];
+
+const CampaignsContent = ({ onNavigate, pendingCampaignList, clearPendingCampaign }) => {
+  // Reuse all the campaign creation state locally
+  const [createCampaignOpen, setCreateCampaignOpen] = useState(false);
+  const [campaignNamingDone, setCampaignNamingDone] = useState(false);
+  const [campaignTab, setCampaignTab] = useState('leads');
+  const [leadsSubstep, setLeadsSubstep] = useState('empty');
+  const [uploadSource, setUploadSource] = useState(null);
+  const [campaignForm, setCampaignForm] = useState({
+    name: '', list: 'Sunscreen', dailyCap: 10, businessHours: true, sentimentAuto: true,
+    duplicateCheck: { campaigns: true, lists: true, workspace: false },
+    startWhen: 'now', endWhen: 'no_end', scheduleName: 'New schedule',
+    fromTime: '9:00 AM', toTime: '6:00 PM',
+    timezone: 'Eastern Time (US & Canada) (UTC-04:00)',
+    days: { Mon: true, Tue: true, Wed: true, Thu: true, Fri: true, Sat: false, Sun: false },
+  });
+  const updateCampaignForm = (field, value) => setCampaignForm((prev) => ({ ...prev, [field]: value }));
+  const [sequenceSteps, setSequenceSteps] = useState([]);
+  const [activeSequenceIdx, setActiveSequenceIdx] = useState(0);
+  const addSequenceStep = () => {
+    if (sequenceSteps.length >= 4) return;
+    setSequenceSteps((prev) => [...prev, { subject: '', body: '', delayValue: 3, delayUnit: 'days' }]);
+    setActiveSequenceIdx(sequenceSteps.length);
+  };
+  const updateSequenceStep = (idx, field, value) => setSequenceSteps((prev) => prev.map((s, i) => i === idx ? { ...s, [field]: value } : s));
+  const removeSequenceStep = (idx) => {
+    setSequenceSteps((prev) => prev.filter((_, i) => i !== idx));
+    setActiveSequenceIdx((prev) => Math.max(0, prev > idx ? prev - 1 : prev));
+  };
+  const initialColumnMappings = [
+    { col: 'Person Name', type: 'do_not_import', samples: ['Oj Songsong', 'Kevin Ho', 'Shivani Choudhary', 'Adedapo Mustapha'] },
+    { col: 'Person First name', type: 'first_name', samples: ['Oj', 'Kevin', 'Shivani', 'Adedapo'] },
+    { col: 'Person Last name', type: 'last_name', samples: ['Songsong', 'Ho', 'Choudhary', 'Mustapha'] },
+    { col: 'Person Title', type: 'job_title', samples: ['Executive Assistant to CEO / HR', 'Senior Sales Executive', 'Sales Manager', 'Chief Executive Officer'] },
+    { col: 'Person Seniority', type: 'do_not_import', samples: ['Other', 'Other', 'Manager', 'C-Level'] },
+    { col: 'Person Location', type: 'location', samples: ['Metro Manila', 'Kuala Lumpur, Malaysia', 'Noida, India', 'Lekki, Lagos, Nigeria'] },
+    { col: 'Person Email', type: 'email', samples: ['oj@jvsionadvertising.com', 'kevin@8848agency.com', 'shivani@adtric.com', 'adedapo@thrivetechafrica.com'] },
+    { col: 'Person Email Status', type: 'do_not_import', samples: ['Guessed', 'Guessed', 'Guessed', 'Guessed'] },
+    { col: 'Person LinkedIn', type: 'linkedin', samples: ['linkedin.com/in/ojsongsong', 'linkedin.com/in/kevin-ho', 'linkedin.com/in/shivani-c', 'linkedin.com/in/adedapo-m'] },
+    { col: 'Person Phone', type: 'do_not_import', samples: ['—', '—', '—', '—'] },
+    { col: 'Company', type: 'company_name', samples: ['JVsion Advertising', '8848 Communications', 'Adtric Solutions', 'ThriveTech Africa'] },
+    { col: 'Country', type: 'do_not_import', samples: ['United States', 'United Kingdom', 'India', 'Nigeria'] },
+    { col: 'Domain', type: 'website', samples: ['jvsionadvertising.com', '8848agency.com', 'adtric.com', 'thrivetechafrica.com'] },
+    { col: 'Industries', type: 'do_not_import', samples: ['Advertising, Marketing', 'Advertising, PR', 'Digital Marketing', 'IT, Consulting'] },
+  ];
+  const [columnMappings, setColumnMappings] = useState(initialColumnMappings);
+  const updateColumnType = (idx, type) => setColumnMappings((prev) => prev.map((c, i) => i === idx ? { ...c, type } : c));
+  const closeCreateCampaign = () => {
+    setCreateCampaignOpen(false);
+    setCampaignNamingDone(false);
+    setCampaignTab('leads');
+    setLeadsSubstep('empty');
+    setUploadSource(null);
+    setSequenceSteps([]);
+    setActiveSequenceIdx(0);
+    clearPendingCampaign?.();
+  };
+
+  useEffect(() => {
+    if (pendingCampaignList) {
+      setCampaignForm((prev) => ({ ...prev, list: pendingCampaignList, name: `${pendingCampaignList} Outreach` }));
+      setCreateCampaignOpen(true);
+      setCampaignNamingDone(true);
+    }
+  }, [pendingCampaignList]);
+
+  const activeCampaigns = CAMPAIGNS_LIST.filter((c) => c.status === 'active');
+  const draftCampaigns = CAMPAIGNS_LIST.filter((c) => c.status === 'draft');
+
+  return (
+    <div style={{ maxWidth: '1200px' }}>
+      {/* Header */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
+        <div>
+          <h1 style={{ margin: '0 0 4px', fontSize: '24px', fontWeight: 400, color: 'var(--color-text-primary)', fontFamily: 'var(--font-family-sans)' }}>Campaigns</h1>
+          <p style={{ margin: 0, fontFamily: 'var(--font-family-sans)', fontSize: '14px', color: 'var(--color-text-secondary)' }}>{activeCampaigns.length} active &middot; {draftCampaigns.length} draft &middot; Manage outreach campaigns per product segment</p>
+        </div>
+        <Button variant="primary" size="medium" label="+ New Campaign" onClick={() => setCreateCampaignOpen(true)} />
+      </div>
+
+      {/* Stats */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '16px', marginBottom: '24px' }}>
+        <StatsCard title="Active Campaigns" value={String(activeCampaigns.length)} change={`${activeCampaigns.length} running`} trend="up" icon={Icons.campaigns} />
+        <StatsCard title="Total Sent" value={String(CAMPAIGNS_LIST.reduce((sum, c) => sum + c.progress.day0 + c.progress.day3 + c.progress.day7 + c.progress.day14, 0))} change="+8 this week" trend="up" icon={Icons.analytics} />
+        <StatsCard title="Avg Reply Rate" value={`${Math.round(activeCampaigns.reduce((s, c) => s + c.replyRate, 0) / Math.max(1, activeCampaigns.length))}%`} change="Across active campaigns" trend="up" icon={Icons.contacts} />
+        <StatsCard title="Drafts" value={String(draftCampaigns.length)} change="Not started" trend="neutral" icon={Icons.templates} />
+      </div>
+
+      {/* Active campaigns section */}
+      <div style={{ marginBottom: 'var(--space-5)' }}>
+        <h2 style={{ margin: '0 0 var(--space-3)', fontSize: 'var(--font-size-md)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-primary)', fontFamily: 'var(--font-family-sans)' }}>Active</h2>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))', gap: 'var(--space-3)' }}>
+          {activeCampaigns.map((c) => (
+            <div key={c.id} style={{ border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-lg)', background: 'var(--color-bg-card)', padding: 'var(--space-4)', fontFamily: 'var(--font-family-sans)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 'var(--space-2)' }}>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: 'var(--font-size-md)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.name}</div>
+                  <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-secondary)', marginTop: '2px' }}>{c.list} &middot; {c.stats}</div>
+                </div>
+                <Badge label="Active" variant="success" size="small" />
+              </div>
+
+              {/* Progress bars */}
+              <div style={{ display: 'flex', gap: '4px', marginTop: 'var(--space-3)', marginBottom: 'var(--space-3)' }}>
+                {[
+                  { day: 0, count: c.progress.day0, label: 'Day 0' },
+                  { day: 3, count: c.progress.day3, label: 'Day 3' },
+                  { day: 7, count: c.progress.day7, label: 'Day 7' },
+                  { day: 14, count: c.progress.day14, label: 'Day 14' },
+                ].map((s) => {
+                  const pct = c.totalContacts > 0 ? (s.count / c.totalContacts) * 100 : 0;
+                  return (
+                    <div key={s.day} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
+                      <div style={{ width: '100%', height: '6px', borderRadius: '3px', background: 'var(--color-neutral-100)', overflow: 'hidden' }}>
+                        <div style={{ width: `${pct}%`, height: '100%', background: pct > 0 ? 'var(--color-success)' : 'transparent', transition: 'width 0.3s' }} />
+                      </div>
+                      <span style={{ fontSize: '10px', color: 'var(--color-text-muted)', fontWeight: pct > 0 ? 'var(--font-weight-semibold)' : 'normal' }}>{s.label} · {s.count}/{c.totalContacts}</span>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Actions */}
+              <div style={{ display: 'flex', gap: 'var(--space-2)', justifyContent: 'flex-end', marginTop: 'var(--space-2)', paddingTop: 'var(--space-3)', borderTop: '1px solid var(--color-border-default)' }}>
+                <Button variant="ghost" size="small" label="Pause" onClick={() => {}} />
+                <Button variant="ghost" size="small" label="View details" onClick={() => onNavigate?.('emails')} />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Drafts section */}
+      {draftCampaigns.length > 0 && (
+        <div>
+          <h2 style={{ margin: '0 0 var(--space-3)', fontSize: 'var(--font-size-md)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-primary)', fontFamily: 'var(--font-family-sans)' }}>Drafts</h2>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))', gap: 'var(--space-3)' }}>
+            {draftCampaigns.map((c) => (
+              <div key={c.id} style={{ border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-lg)', background: 'var(--color-neutral-50)', padding: 'var(--space-4)', fontFamily: 'var(--font-family-sans)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 'var(--space-2)' }}>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: 'var(--font-size-md)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-primary)' }}>{c.name}</div>
+                    <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-secondary)', marginTop: '2px' }}>{c.list} &middot; Not started</div>
+                  </div>
+                  <Badge label="Draft" variant="default" size="small" />
+                </div>
+                <div style={{ display: 'flex', gap: 'var(--space-2)', justifyContent: 'flex-end', marginTop: 'var(--space-3)', paddingTop: 'var(--space-3)', borderTop: '1px solid var(--color-border-default)' }}>
+                  <Button variant="ghost" size="small" label="Edit" onClick={() => setCreateCampaignOpen(true)} />
+                  <Button variant="primary" size="small" label="Activate" onClick={() => {}} />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ─── Create Campaign Modal (same as in EmailsContent) ─── */}
+      {createCampaignOpen && (
+        <div onClick={closeCreateCampaign} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div onClick={(e) => e.stopPropagation()} style={{ width: '960px', maxWidth: '95vw', maxHeight: '90vh', background: 'var(--color-bg-card)', border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-lg)', fontFamily: 'var(--font-family-sans)', boxShadow: 'var(--shadow-xl)', display: 'flex', flexDirection: 'column' }}>
+            {!campaignNamingDone && (
+              <div style={{ padding: 'var(--space-6) var(--space-6) var(--space-5)' }}>
+                <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 'var(--space-2)' }}>
+                  <button onClick={closeCreateCampaign} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)', display: 'flex', padding: 'var(--space-1)' }}>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+                  </button>
+                </div>
+                <div style={{ textAlign: 'center', padding: 'var(--space-6) 0 var(--space-4)' }}>
+                  <h2 style={{ margin: '0 0 var(--space-2)', fontSize: 'var(--font-size-xl)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-primary)', fontFamily: 'var(--font-family-sans)' }}>Let's create a new campaign</h2>
+                  <p style={{ margin: 0, fontSize: 'var(--font-size-md)', color: 'var(--color-text-secondary)', fontFamily: 'var(--font-family-sans)' }}>What would you like to name it?</p>
+                </div>
+                <div style={{ maxWidth: '440px', margin: '0 auto var(--space-6)' }}>
+                  <input type="text" placeholder="e.g. Q2 Sunscreen Launch" value={campaignForm.name} onChange={(e) => updateCampaignForm('name', e.target.value)} autoFocus onKeyDown={(e) => { if (e.key === 'Enter' && campaignForm.name.trim()) setCampaignNamingDone(true); }} style={{ width: '100%', padding: 'var(--space-3) var(--space-4)', border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-md)', fontFamily: 'var(--font-family-sans)', fontSize: 'var(--font-size-md)', outline: 'none', boxSizing: 'border-box' }} />
+                </div>
+                <div style={{ display: 'flex', gap: 'var(--space-2)', justifyContent: 'center', paddingBottom: 'var(--space-4)' }}>
+                  <Button variant="ghost" size="medium" label="Cancel" onClick={closeCreateCampaign} />
+                  <Button variant="primary" size="medium" label="Continue" onClick={() => campaignForm.name.trim() && setCampaignNamingDone(true)} />
+                </div>
+              </div>
+            )}
+
+            {campaignNamingDone && (
+              <>
+                <div style={{ padding: 'var(--space-4) var(--space-5) var(--space-3)', borderBottom: '1px solid var(--color-border-default)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div>
+                    <h2 style={{ margin: 0, fontSize: 'var(--font-size-lg)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-primary)', fontFamily: 'var(--font-family-sans)' }}>{campaignForm.name || 'New Campaign'}</h2>
+                    <p style={{ margin: '4px 0 0', fontSize: 'var(--font-size-xs)', color: 'var(--color-text-secondary)', fontFamily: 'var(--font-family-sans)' }}>Configure leads, sequence, schedule, and options</p>
+                  </div>
+                  <button onClick={closeCreateCampaign} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)', display: 'flex', padding: 'var(--space-1)' }}>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+                  </button>
+                </div>
+
+                <div style={{ display: 'flex', borderBottom: '1px solid var(--color-border-default)', padding: '0 var(--space-5)' }}>
+                  {[{ id: 'leads', label: 'Leads' }, { id: 'sequences', label: 'Sequences' }, { id: 'schedule', label: 'Schedule' }, { id: 'options', label: 'Options' }].map((t) => (
+                    <button key={t.id} onClick={() => setCampaignTab(t.id)} style={{ padding: 'var(--space-3) var(--space-4)', border: 'none', background: 'none', cursor: 'pointer', fontFamily: 'var(--font-family-sans)', fontSize: 'var(--font-size-sm)', fontWeight: campaignTab === t.id ? 'var(--font-weight-semibold)' : 'var(--font-weight-medium)', color: campaignTab === t.id ? 'var(--color-primary-700)' : 'var(--color-text-secondary)', borderBottom: '2px solid', borderBottomColor: campaignTab === t.id ? 'var(--color-primary-600)' : 'transparent', marginBottom: '-1px' }}>{t.label}</button>
+                  ))}
+                </div>
+
+                <div style={{ padding: 'var(--space-5)', overflowY: 'auto', flex: 1, fontFamily: 'var(--font-family-sans)' }}>
+                  {/* Leads */}
+                  {campaignTab === 'leads' && leadsSubstep === 'empty' && (
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 'var(--space-10) var(--space-4)', textAlign: 'center' }}>
+                      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-muted)" strokeWidth="1.5" style={{ marginBottom: 'var(--space-3)' }}><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>
+                      <h3 style={{ margin: '0 0 var(--space-1)', fontSize: 'var(--font-size-md)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-primary)', fontFamily: 'var(--font-family-sans)' }}>No leads yet</h3>
+                      <p style={{ margin: '0 0 var(--space-4)', fontSize: 'var(--font-size-sm)', color: 'var(--color-text-secondary)' }}>Add leads to start your campaign</p>
+                      <Button variant="primary" size="medium" label="+ Add Leads" onClick={() => setLeadsSubstep('choose-source')} />
+                    </div>
+                  )}
+                  {campaignTab === 'leads' && leadsSubstep === 'choose-source' && (
+                    <div>
+                      <h3 style={{ margin: '0 0 var(--space-1)', fontSize: 'var(--font-size-md)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-primary)', fontFamily: 'var(--font-family-sans)' }}>Add leads</h3>
+                      <p style={{ margin: '0 0 var(--space-4)', fontSize: 'var(--font-size-sm)', color: 'var(--color-text-secondary)' }}>Choose where to import from</p>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 'var(--space-3)' }}>
+                        {[
+                          { id: 'csv', label: 'Upload CSV', desc: 'Import from a .csv file', icon: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /></svg> },
+                          { id: 'gsheets', label: 'Google Sheets', desc: 'Connect a Google Sheet', icon: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2" /><line x1="3" y1="9" x2="21" y2="9" /><line x1="9" y1="21" x2="9" y2="9" /></svg> },
+                          { id: 'manual', label: 'Add Emails Manually', desc: 'Paste a list of emails', icon: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" /><polyline points="22,6 12,13 2,6" /></svg> },
+                        ].map((s) => (
+                          <button key={s.id} onClick={() => { setUploadSource(s.id); setLeadsSubstep('upload'); }} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', padding: 'var(--space-4)', border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-md)', background: 'var(--color-bg-card)', cursor: 'pointer', fontFamily: 'var(--font-family-sans)', color: 'var(--color-text-primary)', transition: 'border-color 0.15s, background 0.15s' }} onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--color-primary-400)'; e.currentTarget.style.background = 'var(--color-primary-50)'; }} onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--color-border-default)'; e.currentTarget.style.background = 'var(--color-bg-card)'; }}>
+                            <span style={{ color: 'var(--color-primary-600)', marginBottom: 'var(--space-2)' }}>{s.icon}</span>
+                            <span style={{ fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-semibold)', marginBottom: '4px' }}>{s.label}</span>
+                            <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)' }}>{s.desc}</span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {campaignTab === 'leads' && leadsSubstep === 'upload' && (
+                    <div>
+                      <button onClick={() => setLeadsSubstep('choose-source')} style={{ display: 'flex', alignItems: 'center', gap: '4px', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-secondary)', fontFamily: 'var(--font-family-sans)', fontSize: 'var(--font-size-xs)', padding: 0, marginBottom: 'var(--space-3)' }}>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6" /></svg>
+                        Back to source selection
+                      </button>
+                      <h3 style={{ margin: '0 0 var(--space-1)', fontSize: 'var(--font-size-md)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-primary)', fontFamily: 'var(--font-family-sans)' }}>{uploadSource === 'csv' ? 'Upload CSV file' : uploadSource === 'gsheets' ? 'Connect Google Sheet' : 'Add emails manually'}</h3>
+                      <p style={{ margin: '0 0 var(--space-4)', fontSize: 'var(--font-size-sm)', color: 'var(--color-text-secondary)' }}>Drop your file or click to browse</p>
+                      <div onClick={() => setLeadsSubstep('processed')} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 'var(--space-10) var(--space-4)', border: '2px dashed var(--color-border-strong)', borderRadius: 'var(--radius-lg)', background: 'var(--color-neutral-50)', cursor: 'pointer', textAlign: 'center' }}>
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary-600)" strokeWidth="1.5" style={{ marginBottom: 'var(--space-3)' }}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" /></svg>
+                        <span style={{ fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-text-primary)', marginBottom: '4px' }}>Drag or click to upload</span>
+                        <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)' }}>Supports .csv up to 10MB</span>
+                      </div>
+                    </div>
+                  )}
+                  {campaignTab === 'leads' && leadsSubstep === 'processed' && (
+                    <div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', padding: 'var(--space-3) var(--space-4)', background: 'var(--color-success-100)', border: '1px solid var(--color-success)', borderRadius: 'var(--radius-md)', marginBottom: 'var(--space-4)' }}>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-success-700)" strokeWidth="2.5"><polyline points="20 6 9 17 4 12" /></svg>
+                        <div style={{ flex: 1 }}>
+                          <div style={{ fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-success-700)' }}>File Processed</div>
+                          <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-secondary)' }}>Detected 35 data rows · Map columns below to import</div>
+                        </div>
+                      </div>
+                      <div style={{ border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-md)', overflow: 'hidden', marginBottom: 'var(--space-4)' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: '180px 160px 1fr', gap: 'var(--space-3)', padding: 'var(--space-2) var(--space-3)', background: 'var(--color-neutral-50)', borderBottom: '1px solid var(--color-border-default)', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                          <span>Column Name</span><span>Select Type</span><span>Samples</span>
+                        </div>
+                        <div style={{ maxHeight: '280px', overflowY: 'auto' }}>
+                          {columnMappings.map((c, i) => (
+                            <div key={i} style={{ display: 'grid', gridTemplateColumns: '180px 160px 1fr', gap: 'var(--space-3)', padding: 'var(--space-2) var(--space-3)', borderBottom: '1px solid var(--color-border-default)', alignItems: 'center', fontSize: 'var(--font-size-xs)' }}>
+                              <span style={{ color: 'var(--color-text-primary)', fontWeight: 'var(--font-weight-medium)' }}>{c.col}</span>
+                              <select value={c.type} onChange={(e) => updateColumnType(i, e.target.value)} style={{ padding: '4px 6px', border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-sm)', background: c.type === 'do_not_import' ? 'var(--color-neutral-50)' : 'var(--color-bg-card)', color: c.type === 'do_not_import' ? 'var(--color-text-muted)' : 'var(--color-text-primary)', fontFamily: 'var(--font-family-sans)', fontSize: 'var(--font-size-xs)', cursor: 'pointer', outline: 'none' }}>
+                                <option value="do_not_import">Do not import</option>
+                                <option value="email">Email</option>
+                                <option value="first_name">First Name</option>
+                                <option value="last_name">Last Name</option>
+                                <option value="job_title">Job Title</option>
+                                <option value="company_name">Company Name</option>
+                                <option value="website">Website</option>
+                                <option value="location">Location</option>
+                                <option value="linkedin">LinkedIn</option>
+                                <option value="phone">Phone</option>
+                              </select>
+                              <div style={{ color: 'var(--color-text-muted)', overflow: 'hidden' }}>
+                                {c.samples.slice(0, 2).map((s, j) => (<div key={j} style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s}</div>))}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                      <div style={{ padding: 'var(--space-3)', background: 'var(--color-neutral-50)', borderRadius: 'var(--radius-md)' }}>
+                        <div style={{ fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-semibold)', marginBottom: 'var(--space-2)', color: 'var(--color-text-primary)' }}>Check for duplicates across</div>
+                        <div style={{ display: 'flex', gap: 'var(--space-3)', flexWrap: 'wrap' }}>
+                          {[{ key: 'campaigns', label: 'All Campaigns' }, { key: 'lists', label: 'All Lists' }, { key: 'workspace', label: 'The Workspace' }].map((d) => (
+                            <label key={d.key} style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: 'var(--font-size-xs)', cursor: 'pointer' }}>
+                              <input type="checkbox" checked={campaignForm.duplicateCheck[d.key]} onChange={(e) => updateCampaignForm('duplicateCheck', { ...campaignForm.duplicateCheck, [d.key]: e.target.checked })} />
+                              {d.label}
+                            </label>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Sequences */}
+                  {campaignTab === 'sequences' && (
+                    <div style={{ display: 'flex', gap: 'var(--space-4)', minHeight: '480px' }}>
+                      <div style={{ width: '280px', flexShrink: 0, display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
+                        <div>
+                          <h3 style={{ margin: '0 0 var(--space-1)', fontSize: 'var(--font-size-md)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-primary)', fontFamily: 'var(--font-family-sans)' }}>Email sequence</h3>
+                          <p style={{ margin: 0, fontSize: 'var(--font-size-xs)', color: 'var(--color-text-secondary)' }}>Add up to 4 steps. Use {`{{name}}`}, {`{{company}}`} as variables.</p>
+                        </div>
+                        {sequenceSteps.length === 0 && (
+                          <div style={{ padding: 'var(--space-5) var(--space-3)', textAlign: 'center', border: '1px dashed var(--color-border-strong)', borderRadius: 'var(--radius-md)', background: 'var(--color-neutral-50)' }}>
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-muted)" strokeWidth="1.5" style={{ marginBottom: 'var(--space-2)' }}><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" /><polyline points="22,6 12,13 2,6" /></svg>
+                            <div style={{ fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-text-primary)', marginBottom: '2px' }}>No steps yet</div>
+                            <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)' }}>Add your first email below</div>
+                          </div>
+                        )}
+                        {sequenceSteps.map((s, idx) => (
+                          <div key={idx} style={{ border: '1px solid', borderColor: activeSequenceIdx === idx ? 'var(--color-primary-500)' : 'var(--color-border-default)', borderRadius: 'var(--radius-md)', background: activeSequenceIdx === idx ? 'var(--color-primary-50)' : 'var(--color-bg-card)', fontFamily: 'var(--font-family-sans)', overflow: 'hidden' }}>
+                            <div onClick={() => setActiveSequenceIdx(idx)} style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', padding: 'var(--space-3)', cursor: 'pointer' }}>
+                              <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 24, height: 24, borderRadius: '50%', background: activeSequenceIdx === idx ? 'var(--color-primary-600)' : 'var(--color-neutral-200)', color: activeSequenceIdx === idx ? 'white' : 'var(--color-text-secondary)', fontSize: '11px', fontWeight: 600, flexShrink: 0 }}>{idx + 1}</span>
+                              <div style={{ flex: 1, minWidth: 0 }}>
+                                <div style={{ fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-primary)' }}>Step {idx + 1}</div>
+                                <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.subject || '<empty subject>'}</div>
+                              </div>
+                              <button onClick={(e) => { e.stopPropagation(); removeSequenceStep(idx); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)', padding: '2px', display: 'flex' }}>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="3 6 5 6 21 6" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /></svg>
+                              </button>
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', padding: 'var(--space-2) var(--space-3)', borderTop: '1px solid var(--color-border-default)', fontSize: 'var(--font-size-xs)', color: 'var(--color-text-secondary)', background: activeSequenceIdx === idx ? 'rgba(255,255,255,0.5)' : 'var(--color-neutral-50)' }}>
+                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
+                              <span>Send next in</span>
+                              <select value={`${s.delayValue}-${s.delayUnit}`} onChange={(e) => { const [val, unit] = e.target.value.split('-'); updateSequenceStep(idx, 'delayValue', Number(val)); updateSequenceStep(idx, 'delayUnit', unit); }} style={{ padding: '2px 6px', border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-sm)', fontFamily: 'var(--font-family-sans)', fontSize: 'var(--font-size-xs)', background: 'var(--color-bg-card)', cursor: 'pointer', outline: 'none', marginLeft: 'auto' }}>
+                                <option value="0-immediately">Immediately</option>
+                                <option value="1-days">1 day</option>
+                                <option value="3-days">3 days</option>
+                                <option value="7-days">1 week</option>
+                                <option value="14-days">2 weeks</option>
+                              </select>
+                            </div>
+                          </div>
+                        ))}
+                        {sequenceSteps.length < 4 && (
+                          <button onClick={addSequenceStep} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', width: '100%', padding: 'var(--space-3)', border: '1px dashed var(--color-primary-400)', borderRadius: 'var(--radius-md)', background: 'transparent', color: 'var(--color-primary-700)', cursor: 'pointer', fontFamily: 'var(--font-family-sans)', fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-semibold)' }}>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
+                            Add sequence ({sequenceSteps.length}/4)
+                          </button>
+                        )}
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        {sequenceSteps.length === 0 ? (
+                          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', minHeight: '400px', textAlign: 'center', border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-md)', background: 'var(--color-neutral-50)' }}>
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-muted)" strokeWidth="1.5" style={{ marginBottom: 'var(--space-2)' }}><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" /><polyline points="22,6 12,13 2,6" /></svg>
+                            <div style={{ fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-text-secondary)' }}>Add a step to start writing</div>
+                          </div>
+                        ) : (
+                          <div style={{ border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-md)', display: 'flex', flexDirection: 'column', minHeight: '480px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 'var(--space-3)', borderBottom: '1px solid var(--color-border-default)', gap: 'var(--space-2)' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', flex: 1 }}>
+                                <span style={{ fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-primary)' }}>Subject</span>
+                                <input type="text" placeholder="Your subject" value={sequenceSteps[activeSequenceIdx]?.subject || ''} onChange={(e) => updateSequenceStep(activeSequenceIdx, 'subject', e.target.value)} style={{ flex: 1, padding: '4px 8px', border: 'none', outline: 'none', fontFamily: 'var(--font-family-sans)', fontSize: 'var(--font-size-sm)', color: 'var(--color-text-primary)', background: 'transparent' }} />
+                              </div>
+                            </div>
+                            <textarea placeholder="Start typing here..." value={sequenceSteps[activeSequenceIdx]?.body || ''} onChange={(e) => updateSequenceStep(activeSequenceIdx, 'body', e.target.value)} rows={12} style={{ flex: 1, width: '100%', padding: 'var(--space-3)', border: 'none', outline: 'none', fontFamily: 'var(--font-family-sans)', fontSize: 'var(--font-size-sm)', resize: 'none', boxSizing: 'border-box', lineHeight: 1.6, color: 'var(--color-text-primary)' }} />
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', padding: 'var(--space-2) var(--space-3)', borderTop: '1px solid var(--color-border-default)', background: 'var(--color-neutral-50)' }}>
+                              <Button variant="primary" size="small" label="Save" onClick={() => {}} />
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Schedule */}
+                  {campaignTab === 'schedule' && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+                      <div>
+                        <h3 style={{ margin: '0 0 var(--space-1)', fontSize: 'var(--font-size-md)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-primary)', fontFamily: 'var(--font-family-sans)' }}>Schedule</h3>
+                        <p style={{ margin: '0 0 var(--space-3)', fontSize: 'var(--font-size-sm)', color: 'var(--color-text-secondary)' }}>Set when this campaign starts, ends, and runs.</p>
+                      </div>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-3)' }}>
+                        <div style={{ border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-md)', padding: 'var(--space-3)' }}>
+                          <div style={{ fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 'var(--space-2)' }}>Start</div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
+                            <span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: '50%', background: 'var(--color-primary-600)' }} />
+                            <select value={campaignForm.startWhen} onChange={(e) => updateCampaignForm('startWhen', e.target.value)} style={{ flex: 1, padding: '6px 8px', border: 'none', background: 'transparent', fontFamily: 'var(--font-family-sans)', fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-text-primary)', cursor: 'pointer', outline: 'none' }}>
+                              <option value="now">Now</option>
+                              <option value="scheduled">Scheduled date</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div style={{ border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-md)', padding: 'var(--space-3)' }}>
+                          <div style={{ fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 'var(--space-2)' }}>End</div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
+                            <span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: '50%', background: 'var(--color-neutral-300)' }} />
+                            <select value={campaignForm.endWhen} onChange={(e) => updateCampaignForm('endWhen', e.target.value)} style={{ flex: 1, padding: '6px 8px', border: 'none', background: 'transparent', fontFamily: 'var(--font-family-sans)', fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-text-primary)', cursor: 'pointer', outline: 'none' }}>
+                              <option value="no_end">No end date</option>
+                              <option value="scheduled">Scheduled end date</option>
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                      <div style={{ border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-md)', padding: 'var(--space-4)', display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
+                        <div style={{ fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-primary)' }}>New schedule</div>
+                        <div>
+                          <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-text-secondary)', marginBottom: '6px' }}>Schedule Name</label>
+                          <input type="text" value={campaignForm.scheduleName} onChange={(e) => updateCampaignForm('scheduleName', e.target.value)} style={{ width: '100%', padding: '8px 10px', border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-md)', fontFamily: 'var(--font-family-sans)', fontSize: 'var(--font-size-sm)', outline: 'none', boxSizing: 'border-box' }} />
+                        </div>
+                        <div>
+                          <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-text-secondary)', marginBottom: '6px' }}>Timing</label>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
+                            <span style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-text-secondary)' }}>From</span>
+                            <select value={campaignForm.fromTime} onChange={(e) => updateCampaignForm('fromTime', e.target.value)} style={{ padding: '8px 10px', border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-md)', fontFamily: 'var(--font-family-sans)', fontSize: 'var(--font-size-sm)', cursor: 'pointer', outline: 'none', background: 'var(--color-bg-card)' }}>
+                              {['7:00 AM','8:00 AM','9:00 AM','10:00 AM','11:00 AM','12:00 PM','1:00 PM','2:00 PM'].map((t) => <option key={t} value={t}>{t}</option>)}
+                            </select>
+                            <span style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-text-secondary)' }}>To</span>
+                            <select value={campaignForm.toTime} onChange={(e) => updateCampaignForm('toTime', e.target.value)} style={{ padding: '8px 10px', border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-md)', fontFamily: 'var(--font-family-sans)', fontSize: 'var(--font-size-sm)', cursor: 'pointer', outline: 'none', background: 'var(--color-bg-card)' }}>
+                              {['3:00 PM','4:00 PM','5:00 PM','6:00 PM','7:00 PM','8:00 PM','9:00 PM','10:00 PM'].map((t) => <option key={t} value={t}>{t}</option>)}
+                            </select>
+                          </div>
+                        </div>
+                        <div>
+                          <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-text-secondary)', marginBottom: '6px' }}>Timezone</label>
+                          <select value={campaignForm.timezone} onChange={(e) => updateCampaignForm('timezone', e.target.value)} style={{ width: '100%', padding: '8px 10px', border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-md)', fontFamily: 'var(--font-family-sans)', fontSize: 'var(--font-size-sm)', cursor: 'pointer', outline: 'none', background: 'var(--color-bg-card)', boxSizing: 'border-box' }}>
+                            <option value="Eastern Time (US & Canada) (UTC-04:00)">Eastern Time (US & Canada) (UTC-04:00)</option>
+                            <option value="Central Time (US & Canada) (UTC-05:00)">Central Time (US & Canada) (UTC-05:00)</option>
+                            <option value="Mountain Time (US & Canada) (UTC-06:00)">Mountain Time (US & Canada) (UTC-06:00)</option>
+                            <option value="Pacific Time (US & Canada) (UTC-07:00)">Pacific Time (US & Canada) (UTC-07:00)</option>
+                            <option value="London (UTC+01:00)">London (UTC+01:00)</option>
+                            <option value="Seoul (UTC+09:00)">Seoul (UTC+09:00)</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-text-secondary)', marginBottom: '6px' }}>Days</label>
+                          <div style={{ display: 'flex', gap: 'var(--space-1)', flexWrap: 'wrap' }}>
+                            {['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map((d) => {
+                              const isOn = campaignForm.days[d];
+                              return (
+                                <button key={d} onClick={() => updateCampaignForm('days', { ...campaignForm.days, [d]: !isOn })} style={{ padding: '8px 14px', border: '1px solid', borderColor: isOn ? 'var(--color-primary-600)' : 'var(--color-border-default)', borderRadius: 'var(--radius-md)', background: isOn ? 'var(--color-primary-600)' : 'var(--color-bg-card)', color: isOn ? 'white' : 'var(--color-text-primary)', fontFamily: 'var(--font-family-sans)', fontSize: 'var(--font-size-sm)', fontWeight: isOn ? 'var(--font-weight-semibold)' : 'var(--font-weight-medium)', cursor: 'pointer' }}>
+                                  {d === 'Mon' ? 'Monday' : d === 'Tue' ? 'Tuesday' : d === 'Wed' ? 'Wednesday' : d === 'Thu' ? 'Thursday' : d === 'Fri' ? 'Friday' : d === 'Sat' ? 'Saturday' : 'Sunday'}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      </div>
+                      <div style={{ border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-md)', padding: 'var(--space-4)' }}>
+                        <label style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-medium)', marginBottom: 'var(--space-2)' }}>
+                          <span>Daily send limit</span>
+                          <span style={{ color: 'var(--color-primary-700)', fontWeight: 'var(--font-weight-semibold)' }}>{campaignForm.dailyCap} emails / day</span>
+                        </label>
+                        <input type="range" min="5" max="35" step="5" value={campaignForm.dailyCap} onChange={(e) => updateCampaignForm('dailyCap', Number(e.target.value))} style={{ width: '100%', accentColor: 'var(--color-primary-600)' }} />
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: 'var(--color-text-muted)' }}>
+                          <span>5</span><span>20</span><span>35 (recommended max)</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Options */}
+                  {campaignTab === 'options' && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+                      <div>
+                        <h3 style={{ margin: '0 0 var(--space-1)', fontSize: 'var(--font-size-md)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-primary)', fontFamily: 'var(--font-family-sans)' }}>Options</h3>
+                        <p style={{ margin: '0 0 var(--space-3)', fontSize: 'var(--font-size-sm)', color: 'var(--color-text-secondary)' }}>Advanced campaign settings.</p>
+                      </div>
+                      <label style={{ display: 'flex', alignItems: 'flex-start', gap: 'var(--space-3)', padding: 'var(--space-3)', border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-md)', cursor: 'pointer' }}>
+                        <input type="checkbox" checked={campaignForm.sentimentAuto} onChange={(e) => updateCampaignForm('sentimentAuto', e.target.checked)} style={{ marginTop: '2px' }} />
+                        <div>
+                          <div style={{ fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-text-primary)' }}>Auto-categorize replies</div>
+                          <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-secondary)', marginTop: '2px' }}>Sentiment classifier marks replies as Positive / Promising / Declined</div>
+                        </div>
+                      </label>
+                      <label style={{ display: 'flex', alignItems: 'flex-start', gap: 'var(--space-3)', padding: 'var(--space-3)', border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-md)', cursor: 'pointer' }}>
+                        <input type="checkbox" defaultChecked style={{ marginTop: '2px' }} />
+                        <div>
+                          <div style={{ fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-text-primary)' }}>Stop sequence on reply</div>
+                          <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-secondary)', marginTop: '2px' }}>Once a contact replies, no more follow-ups go out</div>
+                        </div>
+                      </label>
+                    </div>
+                  )}
+                </div>
+
+                <div style={{ padding: 'var(--space-3) var(--space-5)', borderTop: '1px solid var(--color-border-default)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)' }}>
+                    {leadsSubstep === 'processed' ? `35 leads ready · ${sequenceSteps.length || 'no'} sequence step${sequenceSteps.length === 1 ? '' : 's'} · ${campaignForm.dailyCap} emails/day` : 'Add leads to activate'}
+                  </span>
+                  <div style={{ display: 'flex', gap: 'var(--space-2)' }}>
+                    <Button variant="ghost" size="medium" label="Cancel" onClick={closeCreateCampaign} />
+                    {campaignTab === 'leads' && leadsSubstep === 'processed' && (<Button variant="primary" size="medium" label="Confirm Upload" onClick={() => setCampaignTab('sequences')} />)}
+                    {campaignTab !== 'leads' && (
+                      <Button variant="primary" size="medium" label={campaignTab === 'options' ? 'Activate Campaign' : 'Next'} onClick={() => {
+                        if (campaignTab === 'sequences') setCampaignTab('schedule');
+                        else if (campaignTab === 'schedule') setCampaignTab('options');
+                        else if (campaignTab === 'options') closeCreateCampaign();
+                      }} />
+                    )}
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
 const PeopleContent = ({ onNavigate }) => {
   const [peopleTab, setPeopleTab] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -2589,7 +3096,7 @@ function AppMain() {
   const startCampaignCreation = (listName) => {
     setPendingCampaignList(listName);
     setActiveCampaign(listName);
-    navigate('emails');
+    navigate('campaigns');
   };
 
   useEffect(() => {
@@ -2664,7 +3171,8 @@ function AppMain() {
         { id: 'search', label: 'Search', icon: Icons.search, onClick: () => navigate('search') },
         { id: 'pipeline', label: 'Pipeline', icon: Icons.dashboard, onClick: () => navigate('pipeline') },
         { id: 'lists', label: 'Lists', icon: Icons.list, onClick: () => navigate('lists') },
-        { id: 'emails', label: 'Emails', icon: Icons.campaigns, onClick: () => navigate('emails') },
+        { id: 'campaigns', label: 'Campaigns', icon: Icons.campaigns, onClick: () => navigate('campaigns') },
+        { id: 'emails', label: 'Emails', icon: Icons.bell, onClick: () => navigate('emails') },
         { id: 'tasks', label: 'Tasks', icon: Icons.templates, onClick: () => navigate('tasks') },
       ],
     },
@@ -2681,7 +3189,8 @@ function AppMain() {
       case 'lists': return <SavedListsPage savedLists={savedLists} onAddNewList={addNewList} activeCampaign={activeCampaign} setActiveCampaign={setActiveCampaign} onCreateCampaign={startCampaignCreation} />;
       case 'tasks': return <TasksPage />;
       case 'people': return <PeopleContent onNavigate={navigate} />;
-      case 'emails': return <EmailsContent activeCampaign={activeCampaign} setActiveCampaign={setActiveCampaign} pendingCampaignList={pendingCampaignList} clearPendingCampaign={() => setPendingCampaignList(null)} />;
+      case 'campaigns': return <CampaignsContent onNavigate={navigate} pendingCampaignList={pendingCampaignList} clearPendingCampaign={() => setPendingCampaignList(null)} />;
+      case 'emails': return <EmailsContent activeCampaign={activeCampaign} setActiveCampaign={setActiveCampaign} pendingCampaignList={null} clearPendingCampaign={() => {}} onNavigate={navigate} />;
       case 'templates': return <TemplatesContent />;
       default: return <NotFound onBackClick={() => navigate('pipeline')} />;
     }
