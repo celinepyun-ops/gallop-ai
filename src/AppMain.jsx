@@ -1141,6 +1141,14 @@ const EmailsContent = ({ activeCampaign, setActiveCampaign, pendingCampaignList,
     businessHours: true,
     sentimentAuto: true,
     duplicateCheck: { campaigns: true, lists: true, workspace: false },
+    // Schedule
+    startWhen: 'now', // 'now' | 'scheduled'
+    endWhen: 'no_end', // 'no_end' | 'scheduled'
+    scheduleName: 'New schedule',
+    fromTime: '9:00 AM',
+    toTime: '6:00 PM',
+    timezone: 'Eastern Time (US & Canada) (UTC-04:00)',
+    days: { Mon: true, Tue: true, Wed: true, Thu: true, Fri: true, Sat: false, Sun: false },
   });
   const updateCampaignForm = (field, value) => setCampaignForm((prev) => ({ ...prev, [field]: value }));
 
@@ -2168,9 +2176,131 @@ const EmailsContent = ({ activeCampaign, setActiveCampaign, pendingCampaignList,
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
                       <div>
                         <h3 style={{ margin: '0 0 var(--space-1)', fontSize: 'var(--font-size-md)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-primary)', fontFamily: 'var(--font-family-sans)' }}>Schedule</h3>
-                        <p style={{ margin: '0 0 var(--space-3)', fontSize: 'var(--font-size-sm)', color: 'var(--color-text-secondary)' }}>Pace your sends to protect your domain reputation.</p>
+                        <p style={{ margin: '0 0 var(--space-3)', fontSize: 'var(--font-size-sm)', color: 'var(--color-text-secondary)' }}>Set when this campaign starts, ends, and runs.</p>
                       </div>
-                      <div>
+
+                      {/* Start / End row */}
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-3)' }}>
+                        <div style={{ border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-md)', padding: 'var(--space-3)' }}>
+                          <div style={{ fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 'var(--space-2)' }}>Start</div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
+                            <span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: '50%', background: 'var(--color-primary-600)' }} />
+                            <select
+                              value={campaignForm.startWhen}
+                              onChange={(e) => updateCampaignForm('startWhen', e.target.value)}
+                              style={{ flex: 1, padding: '6px 8px', border: 'none', background: 'transparent', fontFamily: 'var(--font-family-sans)', fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-text-primary)', cursor: 'pointer', outline: 'none' }}
+                            >
+                              <option value="now">Now</option>
+                              <option value="scheduled">Scheduled date</option>
+                            </select>
+                          </div>
+                        </div>
+
+                        <div style={{ border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-md)', padding: 'var(--space-3)' }}>
+                          <div style={{ fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 'var(--space-2)' }}>End</div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
+                            <span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: '50%', background: 'var(--color-neutral-300)' }} />
+                            <select
+                              value={campaignForm.endWhen}
+                              onChange={(e) => updateCampaignForm('endWhen', e.target.value)}
+                              style={{ flex: 1, padding: '6px 8px', border: 'none', background: 'transparent', fontFamily: 'var(--font-family-sans)', fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-text-primary)', cursor: 'pointer', outline: 'none' }}
+                            >
+                              <option value="no_end">No end date</option>
+                              <option value="scheduled">Scheduled end date</option>
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* New schedule section */}
+                      <div style={{ border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-md)', padding: 'var(--space-4)', display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
+                        <div style={{ fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-primary)', fontFamily: 'var(--font-family-sans)' }}>New schedule</div>
+
+                        {/* Schedule name */}
+                        <div>
+                          <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-text-secondary)', marginBottom: '6px' }}>Schedule Name</label>
+                          <input
+                            type="text"
+                            value={campaignForm.scheduleName}
+                            onChange={(e) => updateCampaignForm('scheduleName', e.target.value)}
+                            style={{ width: '100%', padding: '8px 10px', border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-md)', fontFamily: 'var(--font-family-sans)', fontSize: 'var(--font-size-sm)', outline: 'none', boxSizing: 'border-box' }}
+                          />
+                        </div>
+
+                        {/* Timing */}
+                        <div>
+                          <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-text-secondary)', marginBottom: '6px' }}>Timing</label>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
+                            <span style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-text-secondary)' }}>From</span>
+                            <select
+                              value={campaignForm.fromTime}
+                              onChange={(e) => updateCampaignForm('fromTime', e.target.value)}
+                              style={{ padding: '8px 10px', border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-md)', fontFamily: 'var(--font-family-sans)', fontSize: 'var(--font-size-sm)', cursor: 'pointer', outline: 'none', background: 'var(--color-bg-card)' }}
+                            >
+                              {['7:00 AM','8:00 AM','9:00 AM','10:00 AM','11:00 AM','12:00 PM','1:00 PM','2:00 PM'].map((t) => <option key={t} value={t}>{t}</option>)}
+                            </select>
+                            <span style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-text-secondary)' }}>To</span>
+                            <select
+                              value={campaignForm.toTime}
+                              onChange={(e) => updateCampaignForm('toTime', e.target.value)}
+                              style={{ padding: '8px 10px', border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-md)', fontFamily: 'var(--font-family-sans)', fontSize: 'var(--font-size-sm)', cursor: 'pointer', outline: 'none', background: 'var(--color-bg-card)' }}
+                            >
+                              {['3:00 PM','4:00 PM','5:00 PM','6:00 PM','7:00 PM','8:00 PM','9:00 PM','10:00 PM'].map((t) => <option key={t} value={t}>{t}</option>)}
+                            </select>
+                          </div>
+                        </div>
+
+                        {/* Timezone */}
+                        <div>
+                          <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-text-secondary)', marginBottom: '6px' }}>Timezone</label>
+                          <select
+                            value={campaignForm.timezone}
+                            onChange={(e) => updateCampaignForm('timezone', e.target.value)}
+                            style={{ width: '100%', padding: '8px 10px', border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-md)', fontFamily: 'var(--font-family-sans)', fontSize: 'var(--font-size-sm)', cursor: 'pointer', outline: 'none', background: 'var(--color-bg-card)', boxSizing: 'border-box' }}
+                          >
+                            <option value="Eastern Time (US & Canada) (UTC-04:00)">Eastern Time (US & Canada) (UTC-04:00)</option>
+                            <option value="Central Time (US & Canada) (UTC-05:00)">Central Time (US & Canada) (UTC-05:00)</option>
+                            <option value="Mountain Time (US & Canada) (UTC-06:00)">Mountain Time (US & Canada) (UTC-06:00)</option>
+                            <option value="Pacific Time (US & Canada) (UTC-07:00)">Pacific Time (US & Canada) (UTC-07:00)</option>
+                            <option value="London (UTC+01:00)">London (UTC+01:00)</option>
+                            <option value="Seoul (UTC+09:00)">Seoul (UTC+09:00)</option>
+                          </select>
+                        </div>
+
+                        {/* Days */}
+                        <div>
+                          <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-text-secondary)', marginBottom: '6px' }}>Days</label>
+                          <div style={{ display: 'flex', gap: 'var(--space-1)', flexWrap: 'wrap' }}>
+                            {['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map((d) => {
+                              const isOn = campaignForm.days[d];
+                              return (
+                                <button
+                                  key={d}
+                                  onClick={() => updateCampaignForm('days', { ...campaignForm.days, [d]: !isOn })}
+                                  style={{
+                                    padding: '8px 14px',
+                                    border: '1px solid',
+                                    borderColor: isOn ? 'var(--color-primary-600)' : 'var(--color-border-default)',
+                                    borderRadius: 'var(--radius-md)',
+                                    background: isOn ? 'var(--color-primary-600)' : 'var(--color-bg-card)',
+                                    color: isOn ? 'white' : 'var(--color-text-primary)',
+                                    fontFamily: 'var(--font-family-sans)',
+                                    fontSize: 'var(--font-size-sm)',
+                                    fontWeight: isOn ? 'var(--font-weight-semibold)' : 'var(--font-weight-medium)',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.15s',
+                                  }}
+                                >
+                                  {d === 'Mon' ? 'Monday' : d === 'Tue' ? 'Tuesday' : d === 'Wed' ? 'Wednesday' : d === 'Thu' ? 'Thursday' : d === 'Fri' ? 'Friday' : d === 'Sat' ? 'Saturday' : 'Sunday'}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Daily send limit */}
+                      <div style={{ border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-md)', padding: 'var(--space-4)' }}>
                         <label style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-medium)', marginBottom: 'var(--space-2)' }}>
                           <span>Daily send limit</span>
                           <span style={{ color: 'var(--color-primary-700)', fontWeight: 'var(--font-weight-semibold)' }}>{campaignForm.dailyCap} emails / day</span>
@@ -2179,19 +2309,12 @@ const EmailsContent = ({ activeCampaign, setActiveCampaign, pendingCampaignList,
                           type="range" min="5" max="35" step="5"
                           value={campaignForm.dailyCap}
                           onChange={(e) => updateCampaignForm('dailyCap', Number(e.target.value))}
-                          style={{ width: '100%' }}
+                          style={{ width: '100%', accentColor: 'var(--color-primary-600)' }}
                         />
                         <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: 'var(--color-text-muted)' }}>
                           <span>5</span><span>20</span><span>35 (recommended max)</span>
                         </div>
                       </div>
-                      <label style={{ display: 'flex', alignItems: 'flex-start', gap: 'var(--space-3)', padding: 'var(--space-3)', border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-md)', cursor: 'pointer' }}>
-                        <input type="checkbox" checked={campaignForm.businessHours} onChange={(e) => updateCampaignForm('businessHours', e.target.checked)} style={{ marginTop: '2px' }} />
-                        <div>
-                          <div style={{ fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-text-primary)' }}>Business hours only</div>
-                          <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-secondary)', marginTop: '2px' }}>Send between 9am–6pm in recipient timezone</div>
-                        </div>
-                      </label>
                     </div>
                   )}
 
