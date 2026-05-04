@@ -2066,13 +2066,14 @@ const EmailsContent = ({ activeCampaign, setActiveCampaign, pendingCampaignList,
                                   style={{ flex: 1, padding: '4px 8px', border: 'none', outline: 'none', fontFamily: 'var(--font-family-sans)', fontSize: 'var(--font-size-sm)', color: 'var(--color-text-primary)', background: 'transparent' }}
                                 />
                               </div>
-                              <div style={{ display: 'flex', gap: '4px' }}>
-                                <button style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '4px 10px', border: '1px solid var(--color-primary-300)', borderRadius: 'var(--radius-sm)', background: 'var(--color-bg-card)', color: 'var(--color-primary-700)', cursor: 'pointer', fontSize: 'var(--font-size-xs)', fontFamily: 'var(--font-family-sans)' }}>
+                              <div style={{ display: 'flex', gap: '6px' }}>
+                                <button style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '6px 10px', border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-md)', background: 'var(--color-bg-card)', color: 'var(--color-text-secondary)', cursor: 'pointer', fontSize: 'var(--font-size-xs)', fontFamily: 'var(--font-family-sans)' }}>
                                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" /></svg>
                                   Preview
                                 </button>
-                                <button style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '4px 8px', border: '1px solid var(--color-primary-300)', borderRadius: 'var(--radius-sm)', background: 'var(--color-primary-50)', color: 'var(--color-primary-700)', cursor: 'pointer' }} title="AI rewrite">
-                                  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3l1.5 5.5L19 10l-5.5 1.5L12 17l-1.5-5.5L5 10l5.5-1.5L12 3z" /></svg>
+                                <button style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 12px', border: '1px solid var(--color-primary-300)', borderRadius: 'var(--radius-md)', background: 'linear-gradient(135deg, var(--color-primary-50), var(--color-primary-100))', color: 'var(--color-primary-700)', cursor: 'pointer', fontSize: 'var(--font-size-xs)', fontFamily: 'var(--font-family-sans)', fontWeight: 'var(--font-weight-semibold)', whiteSpace: 'nowrap' }}>
+                                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3l1.5 5.5L19 10l-5.5 1.5L12 17l-1.5-5.5L5 10l5.5-1.5L12 3z" /></svg>
+                                  AI Write
                                 </button>
                               </div>
                             </div>
@@ -2717,6 +2718,10 @@ const CampaignsContent = ({ onNavigate, pendingCampaignList, clearPendingCampaig
                                 <span style={{ fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-primary)' }}>Subject</span>
                                 <input type="text" placeholder="Your subject" value={sequenceSteps[activeSequenceIdx]?.subject || ''} onChange={(e) => updateSequenceStep(activeSequenceIdx, 'subject', e.target.value)} style={{ flex: 1, padding: '4px 8px', border: 'none', outline: 'none', fontFamily: 'var(--font-family-sans)', fontSize: 'var(--font-size-sm)', color: 'var(--color-text-primary)', background: 'transparent' }} />
                               </div>
+                              <button onClick={() => {}} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 12px', border: '1px solid var(--color-primary-300)', borderRadius: 'var(--radius-md)', background: 'linear-gradient(135deg, var(--color-primary-50), var(--color-primary-100))', color: 'var(--color-primary-700)', cursor: 'pointer', fontSize: 'var(--font-size-xs)', fontFamily: 'var(--font-family-sans)', fontWeight: 'var(--font-weight-semibold)', whiteSpace: 'nowrap' }}>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3l1.5 5.5L19 10l-5.5 1.5L12 17l-1.5-5.5L5 10l5.5-1.5L12 3z" /></svg>
+                                AI Write
+                              </button>
                             </div>
                             <textarea placeholder="Start typing here..." value={sequenceSteps[activeSequenceIdx]?.body || ''} onChange={(e) => updateSequenceStep(activeSequenceIdx, 'body', e.target.value)} rows={12} style={{ flex: 1, width: '100%', padding: 'var(--space-3)', border: 'none', outline: 'none', fontFamily: 'var(--font-family-sans)', fontSize: 'var(--font-size-sm)', resize: 'none', boxSizing: 'border-box', lineHeight: 1.6, color: 'var(--color-text-primary)' }} />
                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', padding: 'var(--space-2) var(--space-3)', borderTop: '1px solid var(--color-border-default)', background: 'var(--color-neutral-50)' }}>
