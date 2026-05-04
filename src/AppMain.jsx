@@ -2348,11 +2348,218 @@ const REVEALED_CONTACTS = [
 
 /* ── Campaigns Page ──────────────────────────────────────────────── */
 const CAMPAIGNS_LIST = [
-  { id: 'q2-sunscreen', name: 'Q2 Sunscreen Launch', list: 'Sunscreen', status: 'active', stats: '5 sent · 2 replied', progress: { day0: 5, day3: 5, day7: 2, day14: 0 }, totalContacts: 5, currentDay: 7, replyRate: 40 },
-  { id: 'spring-mfg', name: 'Spring Manufacturing Outreach', list: 'Sunscreen', status: 'active', stats: '3 sent · 1 replied', progress: { day0: 3, day3: 3, day7: 0, day14: 0 }, totalContacts: 3, currentDay: 4, replyRate: 33 },
-  { id: 'q2-neckcream', name: 'Q2 Neck Cream Intro', list: 'Neck Cream', status: 'active', stats: '2 sent · 1 reply', progress: { day0: 2, day3: 2, day7: 0, day14: 0 }, totalContacts: 2, currentDay: 5, replyRate: 50 },
-  { id: 'vitamin-spring', name: 'Vitamin C Spring 2026', list: 'Vitamin C Serum', status: 'draft', stats: 'Not started', progress: { day0: 0, day3: 0, day7: 0, day14: 0 }, totalContacts: 1, currentDay: 0, replyRate: 0 },
+  {
+    id: 'q2-sunscreen', name: 'Q2 Sunscreen Launch', list: 'Sunscreen', status: 'active',
+    stats: '5 sent · 2 replied', progress: { day0: 5, day3: 5, day7: 2, day14: 0 },
+    totalContacts: 5, currentDay: 7, replyRate: 40,
+    schedule: { day0Date: 'Apr 23', day3Date: 'Apr 26', day7Date: 'Apr 30', day14Date: 'May 7' },
+    contacts: [
+      { id: 'c1', name: 'Sarah Chen', title: 'VP of Business Development', company: 'CeraVe', step: 2, lastActivity: 'Replied 3h ago', status: 'replied', initials: 'SC', color: '#6B8E23' },
+      { id: 'c2', name: 'Holly Thaggard', title: 'Founder & CEO', company: 'Supergoop!', step: 3, lastActivity: 'Email sent Apr 30', status: 'awaiting', initials: 'HT', color: '#2E8B57' },
+      { id: 'c3', name: 'Tom Rinks', title: 'Director of Sales', company: 'Sun Bum', step: 2, lastActivity: 'Email sent Apr 26', status: 'awaiting', initials: 'TR', color: '#B8860B' },
+      { id: 'c4', name: 'Rachel Kim', title: 'Head of Partnerships', company: 'EltaMD', step: 2, lastActivity: 'Replied 1d ago', status: 'replied', initials: 'RK', color: '#4682B4' },
+      { id: 'c5', name: 'David Park', title: 'VP of Sales', company: 'Blue Lizard', step: 1, lastActivity: 'Email sent Apr 23', status: 'awaiting', initials: 'DP', color: '#4169E1' },
+    ],
+  },
+  {
+    id: 'spring-mfg', name: 'Spring Manufacturing Outreach', list: 'Sunscreen', status: 'active',
+    stats: '3 sent · 1 replied', progress: { day0: 3, day3: 3, day7: 0, day14: 0 },
+    totalContacts: 3, currentDay: 4, replyRate: 33,
+    schedule: { day0Date: 'Apr 26', day3Date: 'Apr 29', day7Date: 'May 3', day14Date: 'May 10' },
+    contacts: [
+      { id: 'c6', name: 'Maria Santos', title: 'Director of Product Development', company: 'SunShield Pro', step: 2, lastActivity: 'Replied 4h ago', status: 'replied', initials: 'MS', color: '#FF6347' },
+      { id: 'c7', name: 'Kevin Wright', title: 'CEO & Founder', company: 'SunShield Pro', step: 1, lastActivity: 'Email sent Apr 26', status: 'awaiting', initials: 'KW', color: '#FF6347' },
+      { id: 'c8', name: 'Priya Sharma', title: 'Head of Supply Chain', company: 'AquaVeil', step: 2, lastActivity: 'Email sent Apr 29', status: 'awaiting', initials: 'PS', color: '#1E90FF' },
+    ],
+  },
+  {
+    id: 'q2-neckcream', name: 'Q2 Neck Cream Intro', list: 'Neck Cream', status: 'active',
+    stats: '2 sent · 1 reply', progress: { day0: 2, day3: 2, day7: 0, day14: 0 },
+    totalContacts: 2, currentDay: 5, replyRate: 50,
+    schedule: { day0Date: 'Apr 25', day3Date: 'Apr 28', day7Date: 'May 2', day14Date: 'May 9' },
+    contacts: [
+      { id: 'c9', name: 'Lisa Wang', title: 'Business Development Manager', company: 'StriVectin', step: 2, lastActivity: 'Replied 1d ago', status: 'replied', initials: 'LW', color: '#8B008B' },
+      { id: 'c10', name: 'James Miller', title: 'Director of Retail', company: 'Olay', step: 2, lastActivity: 'Email sent Apr 28', status: 'awaiting', initials: 'JM', color: '#DC143C' },
+    ],
+  },
+  {
+    id: 'vitamin-spring', name: 'Vitamin C Spring 2026', list: 'Vitamin C Serum', status: 'draft',
+    stats: 'Not started', progress: { day0: 0, day3: 0, day7: 0, day14: 0 },
+    totalContacts: 1, currentDay: 0, replyRate: 0,
+    schedule: { day0Date: '—', day3Date: '—', day7Date: '—', day14Date: '—' },
+    contacts: [
+      { id: 'c11', name: 'Amy Foster', title: 'Co-Founder', company: 'TruSkin', step: 0, lastActivity: 'Added to list', status: 'pending', initials: 'AF', color: '#FF8C00' },
+    ],
+  },
 ];
+
+/* ── Campaign Detail Page ──────────────────────────────────────── */
+const CampaignDetailContent = ({ onNavigate, campaignId }) => {
+  const [campaign, setCampaign] = useState(CAMPAIGNS_LIST.find((c) => c.id === campaignId) || CAMPAIGNS_LIST[0]);
+  const [pauseConfirmOpen, setPauseConfirmOpen] = useState(false);
+  const [stopConfirmOpen, setStopConfirmOpen] = useState(false);
+
+  if (!campaign) return null;
+
+  const togglePause = () => {
+    setCampaign((prev) => ({ ...prev, status: prev.status === 'active' ? 'paused' : 'active' }));
+    setPauseConfirmOpen(false);
+  };
+  const stopCampaign = () => {
+    setCampaign((prev) => ({ ...prev, status: 'archived' }));
+    setStopConfirmOpen(false);
+  };
+
+  const totalSent = campaign.progress.day0 + campaign.progress.day3 + campaign.progress.day7 + campaign.progress.day14;
+  const replied = campaign.contacts.filter((c) => c.status === 'replied').length;
+  const awaiting = campaign.contacts.filter((c) => c.status === 'awaiting').length;
+  const pending = campaign.contacts.filter((c) => c.status === 'pending').length;
+
+  const STEP_LABELS = ['Day 0 — Intro', 'Day 3 — Follow-up #1', 'Day 7 — Follow-up #2', 'Day 14 — Final break-up'];
+  const STEP_DATES = [campaign.schedule.day0Date, campaign.schedule.day3Date, campaign.schedule.day7Date, campaign.schedule.day14Date];
+
+  return (
+    <div style={{ maxWidth: '1200px' }}>
+      {/* Back link */}
+      <button onClick={() => onNavigate?.('campaigns')} style={{ display: 'flex', alignItems: 'center', gap: '4px', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-secondary)', fontFamily: 'var(--font-family-sans)', fontSize: 'var(--font-size-sm)', padding: 0, marginBottom: 'var(--space-3)' }}>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6" /></svg>
+        Back to Campaigns
+      </button>
+
+      {/* Header */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 'var(--space-4)' }}>
+        <div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', marginBottom: '4px' }}>
+            <h1 style={{ margin: 0, fontSize: '24px', fontWeight: 400, color: 'var(--color-text-primary)', fontFamily: 'var(--font-family-sans)' }}>{campaign.name}</h1>
+            <Badge label={campaign.status === 'active' ? 'Active' : campaign.status === 'paused' ? 'Paused' : campaign.status === 'draft' ? 'Draft' : 'Archived'} variant={campaign.status === 'active' ? 'success' : campaign.status === 'paused' ? 'warning' : 'default'} size="small" />
+          </div>
+          <p style={{ margin: 0, fontFamily: 'var(--font-family-sans)', fontSize: '14px', color: 'var(--color-text-secondary)' }}>
+            Connected to <strong>{campaign.list}</strong> list &middot; Day {campaign.currentDay} of 14
+          </p>
+        </div>
+        <div style={{ display: 'flex', gap: 'var(--space-2)' }}>
+          {campaign.status === 'active' && (
+            <Button variant="ghost" size="medium" label="⏸ Pause" onClick={() => setPauseConfirmOpen(true)} />
+          )}
+          {campaign.status === 'paused' && (
+            <Button variant="primary" size="medium" label="▶ Resume" onClick={togglePause} />
+          )}
+          {(campaign.status === 'active' || campaign.status === 'paused') && (
+            <Button variant="ghost" size="medium" label="Stop" onClick={() => setStopConfirmOpen(true)} />
+          )}
+          <Button variant="ghost" size="medium" label="Edit" onClick={() => onNavigate?.('campaigns/new')} />
+        </div>
+      </div>
+
+      {/* Stats cards */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '16px', marginBottom: '24px' }}>
+        <StatsCard title="Total Sent" value={String(totalSent)} change={`Across ${campaign.totalContacts} contacts`} trend="up" icon={Icons.campaigns} />
+        <StatsCard title="Replied" value={String(replied)} change={`${campaign.replyRate}% reply rate`} trend="up" icon={Icons.bell} />
+        <StatsCard title="Awaiting Reply" value={String(awaiting)} change={`In sequence`} trend="neutral" icon={Icons.search} />
+        <StatsCard title="Pending" value={String(pending)} change="Not yet sent" trend="neutral" icon={Icons.contacts} />
+      </div>
+
+      {/* Sequence timeline */}
+      <div style={{ border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-lg)', background: 'var(--color-bg-card)', padding: 'var(--space-4)', marginBottom: 'var(--space-4)' }}>
+        <h2 style={{ margin: '0 0 var(--space-3)', fontSize: 'var(--font-size-md)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-primary)', fontFamily: 'var(--font-family-sans)' }}>Sequence progress</h2>
+        <div style={{ display: 'flex', gap: 'var(--space-2)' }}>
+          {[
+            { day: 0, count: campaign.progress.day0, label: STEP_LABELS[0], date: STEP_DATES[0] },
+            { day: 3, count: campaign.progress.day3, label: STEP_LABELS[1], date: STEP_DATES[1] },
+            { day: 7, count: campaign.progress.day7, label: STEP_LABELS[2], date: STEP_DATES[2] },
+            { day: 14, count: campaign.progress.day14, label: STEP_LABELS[3], date: STEP_DATES[3] },
+          ].map((s, i) => {
+            const pct = campaign.totalContacts > 0 ? (s.count / campaign.totalContacts) * 100 : 0;
+            const isCompleted = s.count === campaign.totalContacts && campaign.totalContacts > 0;
+            const isCurrent = pct > 0 && !isCompleted;
+            const isPending = pct === 0;
+            return (
+              <div key={s.day} style={{ flex: 1, padding: 'var(--space-3)', border: '1px solid', borderColor: isCurrent ? 'var(--color-primary-300)' : 'var(--color-border-default)', borderRadius: 'var(--radius-md)', background: isCurrent ? 'var(--color-primary-50)' : 'var(--color-bg-card)', fontFamily: 'var(--font-family-sans)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
+                  <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 22, height: 22, borderRadius: '50%', background: isCompleted ? 'var(--color-success)' : isCurrent ? 'var(--color-primary-600)' : 'var(--color-neutral-200)', color: isCompleted || isCurrent ? 'white' : 'var(--color-text-secondary)', fontSize: '11px', fontWeight: 600 }}>
+                    {isCompleted ? '✓' : i + 1}
+                  </span>
+                  <span style={{ fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-primary)' }}>{s.label}</span>
+                </div>
+                <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)', marginBottom: '6px' }}>{s.count}/{campaign.totalContacts} sent &middot; {s.date}</div>
+                <div style={{ height: '4px', borderRadius: '2px', background: 'var(--color-neutral-100)', overflow: 'hidden' }}>
+                  <div style={{ width: `${pct}%`, height: '100%', background: isCompleted ? 'var(--color-success)' : 'var(--color-primary-600)', transition: 'width 0.3s' }} />
+                </div>
+                <div style={{ marginTop: '4px', fontSize: '10px', color: isCompleted ? 'var(--color-success-700)' : isCurrent ? 'var(--color-primary-700)' : 'var(--color-text-muted)', fontWeight: 'var(--font-weight-medium)' }}>
+                  {isCompleted ? 'Completed' : isCurrent ? 'In progress' : isPending ? 'Scheduled' : ''}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Contacts in sequence */}
+      <div style={{ border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-lg)', background: 'var(--color-bg-card)', overflow: 'hidden' }}>
+        <div style={{ padding: 'var(--space-3) var(--space-4)', borderBottom: '1px solid var(--color-border-default)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <h2 style={{ margin: 0, fontSize: 'var(--font-size-md)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-primary)', fontFamily: 'var(--font-family-sans)' }}>Contacts in sequence</h2>
+          <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)', fontFamily: 'var(--font-family-sans)' }}>{campaign.contacts.length} contacts</span>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: '40px 2fr 1fr 100px 1fr 100px', gap: 'var(--space-3)', padding: 'var(--space-2) var(--space-4)', background: 'var(--color-neutral-50)', borderBottom: '1px solid var(--color-border-default)', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: 'var(--font-family-sans)' }}>
+          <span></span>
+          <span>Contact</span>
+          <span>Company</span>
+          <span>Current Step</span>
+          <span>Last Activity</span>
+          <span>Status</span>
+        </div>
+        {campaign.contacts.map((c) => (
+          <div key={c.id} style={{ display: 'grid', gridTemplateColumns: '40px 2fr 1fr 100px 1fr 100px', gap: 'var(--space-3)', padding: 'var(--space-3) var(--space-4)', borderBottom: '1px solid var(--color-border-default)', alignItems: 'center', fontSize: 'var(--font-size-sm)', fontFamily: 'var(--font-family-sans)' }}>
+            <span className="oai-sp-product-cell__avatar" style={{ background: c.color, width: 28, height: 28, fontSize: 10 }}>{c.initials}</span>
+            <div>
+              <div style={{ fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-primary)' }}>{c.name}</div>
+              <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)' }}>{c.title}</div>
+            </div>
+            <span style={{ color: 'var(--color-text-primary)' }}>{c.company}</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 20, height: 20, borderRadius: '50%', background: c.step > 0 ? 'var(--color-primary-600)' : 'var(--color-neutral-200)', color: c.step > 0 ? 'white' : 'var(--color-text-secondary)', fontSize: '10px', fontWeight: 600 }}>{c.step || '-'}</span>
+              <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-secondary)' }}>{c.step > 0 ? `Step ${c.step}` : 'Not started'}</span>
+            </div>
+            <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)' }}>{c.lastActivity}</span>
+            <Badge label={c.status === 'replied' ? 'Replied' : c.status === 'awaiting' ? 'Awaiting' : 'Pending'} variant={c.status === 'replied' ? 'success' : c.status === 'awaiting' ? 'info' : 'default'} size="small" />
+          </div>
+        ))}
+      </div>
+
+      {/* Pause Confirm Modal */}
+      {pauseConfirmOpen && (
+        <div onClick={() => setPauseConfirmOpen(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div onClick={(e) => e.stopPropagation()} style={{ width: '440px', background: 'var(--color-bg-card)', border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-5)', fontFamily: 'var(--font-family-sans)', boxShadow: 'var(--shadow-xl)' }}>
+            <h2 style={{ margin: '0 0 var(--space-2)', fontSize: 'var(--font-size-lg)', fontWeight: 'var(--font-weight-semibold)' }}>Pause campaign?</h2>
+            <p style={{ margin: '0 0 var(--space-4)', fontSize: 'var(--font-size-sm)', color: 'var(--color-text-secondary)', lineHeight: 1.5 }}>
+              Pausing will stop all scheduled follow-ups for <strong>{campaign.name}</strong>. {awaiting} contact{awaiting !== 1 ? 's' : ''} currently awaiting reply will not receive follow-ups until you resume.
+            </p>
+            <div style={{ display: 'flex', gap: 'var(--space-2)', justifyContent: 'flex-end' }}>
+              <Button variant="ghost" size="medium" label="Cancel" onClick={() => setPauseConfirmOpen(false)} />
+              <Button variant="primary" size="medium" label="Pause campaign" onClick={togglePause} />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Stop Confirm Modal */}
+      {stopConfirmOpen && (
+        <div onClick={() => setStopConfirmOpen(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div onClick={(e) => e.stopPropagation()} style={{ width: '440px', background: 'var(--color-bg-card)', border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-5)', fontFamily: 'var(--font-family-sans)', boxShadow: 'var(--shadow-xl)' }}>
+            <h2 style={{ margin: '0 0 var(--space-2)', fontSize: 'var(--font-size-lg)', fontWeight: 'var(--font-weight-semibold)' }}>Stop campaign permanently?</h2>
+            <p style={{ margin: '0 0 var(--space-4)', fontSize: 'var(--font-size-sm)', color: 'var(--color-text-secondary)', lineHeight: 1.5 }}>
+              Stopping will archive <strong>{campaign.name}</strong> permanently. No more emails will be sent. This cannot be undone — you'd need to create a new campaign.
+            </p>
+            <div style={{ display: 'flex', gap: 'var(--space-2)', justifyContent: 'flex-end' }}>
+              <Button variant="ghost" size="medium" label="Cancel" onClick={() => setStopConfirmOpen(false)} />
+              <Button variant="primary" size="medium" label="Stop campaign" onClick={stopCampaign} />
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
 
 const CampaignsContent = ({ onNavigate, pendingCampaignList, clearPendingCampaign, startInBuilder = false }) => {
   // Reuse all the campaign creation state locally
@@ -2530,7 +2737,7 @@ const CampaignsContent = ({ onNavigate, pendingCampaignList, clearPendingCampaig
           const replied = c.status === 'active' ? Math.round(sent * c.replyRate / 100) : 0;
           const isDraft = c.status === 'draft';
           return (
-            <div key={c.id} style={{ display: 'grid', gridTemplateColumns: '40px 2fr 100px 100px 80px 80px 80px 110px 40px', gap: 'var(--space-3)', padding: 'var(--space-3) var(--space-4)', borderBottom: '1px solid var(--color-border-default)', alignItems: 'center', fontSize: 'var(--font-size-sm)', color: 'var(--color-text-primary)', fontFamily: 'var(--font-family-sans)', cursor: 'pointer' }} onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--color-bg-hover)'; }} onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}>
+            <div key={c.id} onClick={() => onNavigate?.(`campaigns/${c.id}`)} style={{ display: 'grid', gridTemplateColumns: '40px 2fr 100px 100px 80px 80px 80px 110px 40px', gap: 'var(--space-3)', padding: 'var(--space-3) var(--space-4)', borderBottom: '1px solid var(--color-border-default)', alignItems: 'center', fontSize: 'var(--font-size-sm)', color: 'var(--color-text-primary)', fontFamily: 'var(--font-family-sans)', cursor: 'pointer' }} onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--color-bg-hover)'; }} onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}>
               <input type="checkbox" onClick={(e) => e.stopPropagation()} />
               <div>
                 <div style={{ fontWeight: 'var(--font-weight-semibold)' }}>{c.name}</div>
@@ -3395,7 +3602,12 @@ function AppMain() {
       case 'campaigns/new': return <CampaignsContent onNavigate={navigate} pendingCampaignList={pendingCampaignList} clearPendingCampaign={() => setPendingCampaignList(null)} startInBuilder={true} />;
       case 'emails': return <EmailsContent activeCampaign={activeCampaign} setActiveCampaign={setActiveCampaign} pendingCampaignList={null} clearPendingCampaign={() => {}} onNavigate={navigate} />;
       case 'templates': return <TemplatesContent />;
-      default: return <NotFound onBackClick={() => navigate('pipeline')} />;
+      default:
+        if (page.startsWith('campaigns/')) {
+          const id = page.replace('campaigns/', '');
+          return <CampaignDetailContent onNavigate={navigate} campaignId={id} />;
+        }
+        return <NotFound onBackClick={() => navigate('pipeline')} />;
     }
   };
 
