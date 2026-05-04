@@ -1137,17 +1137,37 @@ const EmailsContent = ({ activeCampaign, setActiveCampaign, pendingCampaignList,
   const [campaignForm, setCampaignForm] = useState({
     name: '',
     list: 'Sunscreen',
-    template1: 'Hi {{name}},\n\nI noticed {{company}} has been growing fast in the {{category}} category. We help brands at your stage scale manufacturing without compromising quality.\n\nWorth a 15-min call this week?\n\nBest,\nRyan',
-    template2: 'Hi {{name}},\n\nFollowing up on my note from earlier — would love to share how we\'ve helped similar brands. Free this week?\n\nBest,\nRyan',
-    template3: 'Hi {{name}},\n\nLast quick thought — happy to send a brief overview of our manufacturing capacity and case studies if helpful.\n\nBest,\nRyan',
-    template4: 'Hi {{name}},\n\nNo worries if not a fit right now. Closing the loop — feel free to reach out anytime in the future.\n\nBest,\nRyan',
     dailyCap: 10,
     businessHours: true,
     sentimentAuto: true,
     duplicateCheck: { campaigns: true, lists: true, workspace: false },
-    verifyLeads: true,
   });
   const updateCampaignForm = (field, value) => setCampaignForm((prev) => ({ ...prev, [field]: value }));
+
+  // Sequence steps — empty by default, user adds Step 1, 2, 3, max 4
+  const [sequenceSteps, setSequenceSteps] = useState([]);
+  const [activeSequenceIdx, setActiveSequenceIdx] = useState(0);
+  const addSequenceStep = () => {
+    if (sequenceSteps.length >= 4) return;
+    const isFirst = sequenceSteps.length === 0;
+    setSequenceSteps((prev) => [
+      ...prev,
+      {
+        subject: '',
+        body: '',
+        delayValue: isFirst ? 0 : 3,
+        delayUnit: isFirst ? 'immediately' : 'days',
+      },
+    ]);
+    setActiveSequenceIdx(sequenceSteps.length);
+  };
+  const updateSequenceStep = (idx, field, value) => {
+    setSequenceSteps((prev) => prev.map((s, i) => i === idx ? { ...s, [field]: value } : s));
+  };
+  const removeSequenceStep = (idx) => {
+    setSequenceSteps((prev) => prev.filter((_, i) => i !== idx));
+    setActiveSequenceIdx((prev) => Math.max(0, prev > idx ? prev - 1 : prev));
+  };
 
   // CSV column mapping state — 14 mock columns from Apollo-style import
   const initialColumnMappings = [
@@ -1175,6 +1195,8 @@ const EmailsContent = ({ activeCampaign, setActiveCampaign, pendingCampaignList,
     setCampaignTab('leads');
     setLeadsSubstep('empty');
     setUploadSource(null);
+    setSequenceSteps([]);
+    setActiveSequenceIdx(0);
     clearPendingCampaign?.();
   };
 
@@ -1786,7 +1808,7 @@ const EmailsContent = ({ activeCampaign, setActiveCampaign, pendingCampaignList,
       {/* ── Create Campaign Modal (multi-tab flow) ─────────────────── */}
       {createCampaignOpen && (
         <div onClick={closeCreateCampaign} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <div onClick={(e) => e.stopPropagation()} style={{ width: '720px', maxHeight: '85vh', background: 'var(--color-bg-card)', border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-lg)', fontFamily: 'var(--font-family-sans)', boxShadow: 'var(--shadow-xl)', display: 'flex', flexDirection: 'column' }}>
+          <div onClick={(e) => e.stopPropagation()} style={{ width: '960px', maxWidth: '95vw', maxHeight: '90vh', background: 'var(--color-bg-card)', border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-lg)', fontFamily: 'var(--font-family-sans)', boxShadow: 'var(--shadow-xl)', display: 'flex', flexDirection: 'column' }}>
 
             {/* ─── Initial Naming Screen ─── */}
             {!campaignNamingDone && (
@@ -1869,7 +1891,7 @@ const EmailsContent = ({ activeCampaign, setActiveCampaign, pendingCampaignList,
                   {campaignTab === 'leads' && leadsSubstep === 'empty' && (
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 'var(--space-10) var(--space-4)', textAlign: 'center' }}>
                       <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-muted)" strokeWidth="1.5" style={{ marginBottom: 'var(--space-3)' }}><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>
-                      <h3 style={{ margin: '0 0 var(--space-1)', fontSize: 'var(--font-size-md)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-primary)' }}>No leads yet</h3>
+                      <h3 style={{ margin: '0 0 var(--space-1)', fontSize: 'var(--font-size-md)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-primary)', fontFamily: 'var(--font-family-sans)' }}>No leads yet</h3>
                       <p style={{ margin: '0 0 var(--space-4)', fontSize: 'var(--font-size-sm)', color: 'var(--color-text-secondary)' }}>Add leads to start your campaign</p>
                       <Button variant="primary" size="medium" label="+ Add Leads" onClick={() => setLeadsSubstep('choose-source')} />
                     </div>
@@ -1877,7 +1899,7 @@ const EmailsContent = ({ activeCampaign, setActiveCampaign, pendingCampaignList,
 
                   {campaignTab === 'leads' && leadsSubstep === 'choose-source' && (
                     <div>
-                      <h3 style={{ margin: '0 0 var(--space-1)', fontSize: 'var(--font-size-md)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-primary)' }}>Add leads</h3>
+                      <h3 style={{ margin: '0 0 var(--space-1)', fontSize: 'var(--font-size-md)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-primary)', fontFamily: 'var(--font-family-sans)' }}>Add leads</h3>
                       <p style={{ margin: '0 0 var(--space-4)', fontSize: 'var(--font-size-sm)', color: 'var(--color-text-secondary)' }}>Choose where to import from</p>
                       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 'var(--space-3)' }}>
                         {[
@@ -1907,7 +1929,7 @@ const EmailsContent = ({ activeCampaign, setActiveCampaign, pendingCampaignList,
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6" /></svg>
                         Back to source selection
                       </button>
-                      <h3 style={{ margin: '0 0 var(--space-1)', fontSize: 'var(--font-size-md)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-primary)' }}>{uploadSource === 'csv' ? 'Upload CSV file' : uploadSource === 'gsheets' ? 'Connect Google Sheet' : 'Add emails manually'}</h3>
+                      <h3 style={{ margin: '0 0 var(--space-1)', fontSize: 'var(--font-size-md)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-primary)', fontFamily: 'var(--font-family-sans)' }}>{uploadSource === 'csv' ? 'Upload CSV file' : uploadSource === 'gsheets' ? 'Connect Google Sheet' : 'Add emails manually'}</h3>
                       <p style={{ margin: '0 0 var(--space-4)', fontSize: 'var(--font-size-sm)', color: 'var(--color-text-secondary)' }}>Drop your file or click to browse</p>
                       <div
                         onClick={() => setLeadsSubstep('processed')}
@@ -1991,45 +2013,153 @@ const EmailsContent = ({ activeCampaign, setActiveCampaign, pendingCampaignList,
                         </div>
                       </div>
 
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: 'var(--space-3)', background: 'var(--color-primary-50)', border: '1px solid var(--color-primary-200)', borderRadius: 'var(--radius-md)' }}>
-                        <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: 'var(--font-size-sm)', cursor: 'pointer' }}>
-                          <input type="checkbox" checked={campaignForm.verifyLeads} onChange={(e) => updateCampaignForm('verifyLeads', e.target.checked)} />
-                          <span style={{ fontWeight: 'var(--font-weight-medium)' }}>Verify leads</span>
-                        </label>
-                        <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-secondary)' }}>0.25 credits / row · 35 rows = ~9 credits</span>
-                      </div>
                     </div>
                   )}
 
                   {/* ─── SEQUENCES TAB ─── */}
                   {campaignTab === 'sequences' && (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
-                      <div>
-                        <h3 style={{ margin: '0 0 var(--space-1)', fontSize: 'var(--font-size-md)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-primary)' }}>Email sequence</h3>
-                        <p style={{ margin: '0 0 var(--space-2)', fontSize: 'var(--font-size-sm)', color: 'var(--color-text-secondary)' }}>4 follow-up steps. Use {`{{name}}`}, {`{{company}}`} as variables. Sequence stops automatically when contact replies.</p>
-                      </div>
-                      {[
-                        { step: 1, label: 'Day 0 — Intro', field: 'template1' },
-                        { step: 2, label: 'Day 3 — Follow-up #1', field: 'template2' },
-                        { step: 3, label: 'Day 7 — Follow-up #2', field: 'template3' },
-                        { step: 4, label: 'Day 14 — Final break-up', field: 'template4' },
-                      ].map((s) => (
-                        <div key={s.step} style={{ border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-md)', overflow: 'hidden' }}>
-                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 'var(--space-2) var(--space-3)', background: 'var(--color-neutral-50)', borderBottom: '1px solid var(--color-border-default)' }}>
-                            <span style={{ fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-primary)' }}>{s.label}</span>
-                            <button style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '2px 8px', border: '1px solid var(--color-primary-300)', borderRadius: 'var(--radius-sm)', background: 'var(--color-primary-50)', color: 'var(--color-primary-700)', cursor: 'pointer', fontSize: '11px', fontFamily: 'var(--font-family-sans)' }}>
-                              <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3l1.5 5.5L19 10l-5.5 1.5L12 17l-1.5-5.5L5 10l5.5-1.5L12 3z" /></svg>
-                              AI rewrite
-                            </button>
-                          </div>
-                          <textarea
-                            value={campaignForm[s.field]}
-                            onChange={(e) => updateCampaignForm(s.field, e.target.value)}
-                            rows={4}
-                            style={{ width: '100%', padding: 'var(--space-2) var(--space-3)', border: 'none', outline: 'none', fontFamily: 'var(--font-family-sans)', fontSize: 'var(--font-size-xs)', resize: 'vertical', boxSizing: 'border-box', lineHeight: 1.5 }}
-                          />
+                    <div style={{ display: 'flex', gap: 'var(--space-4)', minHeight: '480px' }}>
+                      {/* Left: step list */}
+                      <div style={{ width: '280px', flexShrink: 0, display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
+                        <div>
+                          <h3 style={{ margin: '0 0 var(--space-1)', fontSize: 'var(--font-size-md)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-primary)', fontFamily: 'var(--font-family-sans)' }}>Email sequence</h3>
+                          <p style={{ margin: 0, fontSize: 'var(--font-size-xs)', color: 'var(--color-text-secondary)' }}>Add up to 4 steps. Use {`{{name}}`}, {`{{company}}`} as variables.</p>
                         </div>
-                      ))}
+
+                        {sequenceSteps.length === 0 && (
+                          <div style={{ padding: 'var(--space-5) var(--space-3)', textAlign: 'center', border: '1px dashed var(--color-border-strong)', borderRadius: 'var(--radius-md)', background: 'var(--color-neutral-50)' }}>
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-muted)" strokeWidth="1.5" style={{ marginBottom: 'var(--space-2)' }}><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" /><polyline points="22,6 12,13 2,6" /></svg>
+                            <div style={{ fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-text-primary)', marginBottom: '2px' }}>No steps yet</div>
+                            <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)' }}>Add your first email below</div>
+                          </div>
+                        )}
+
+                        {sequenceSteps.map((s, idx) => (
+                          <div key={idx}>
+                            <button
+                              onClick={() => setActiveSequenceIdx(idx)}
+                              style={{
+                                display: 'flex', alignItems: 'center', gap: 'var(--space-2)', width: '100%',
+                                padding: 'var(--space-3)', border: '1px solid',
+                                borderColor: activeSequenceIdx === idx ? 'var(--color-primary-500)' : 'var(--color-border-default)',
+                                borderRadius: 'var(--radius-md)',
+                                background: activeSequenceIdx === idx ? 'var(--color-primary-50)' : 'var(--color-bg-card)',
+                                cursor: 'pointer', textAlign: 'left', fontFamily: 'var(--font-family-sans)',
+                              }}
+                            >
+                              <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 24, height: 24, borderRadius: '50%', background: activeSequenceIdx === idx ? 'var(--color-primary-600)' : 'var(--color-neutral-200)', color: activeSequenceIdx === idx ? 'white' : 'var(--color-text-secondary)', fontSize: '11px', fontWeight: 600, flexShrink: 0 }}>{idx + 1}</span>
+                              <div style={{ flex: 1, minWidth: 0 }}>
+                                <div style={{ fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-primary)' }}>Step {idx + 1}</div>
+                                <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.subject || '<empty subject>'}</div>
+                              </div>
+                              <button onClick={(e) => { e.stopPropagation(); removeSequenceStep(idx); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)', padding: '2px', display: 'flex' }} aria-label="Remove step">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="3 6 5 6 21 6" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /></svg>
+                              </button>
+                            </button>
+
+                            {/* Send next message in (between steps) */}
+                            {idx < sequenceSteps.length - 1 && (
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', padding: 'var(--space-2) var(--space-2) var(--space-2) var(--space-4)', margin: '0 var(--space-2)', fontSize: 'var(--font-size-xs)', color: 'var(--color-text-secondary)' }}>
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
+                                <span>Send next in</span>
+                                <select
+                                  value={`${sequenceSteps[idx + 1].delayValue}-${sequenceSteps[idx + 1].delayUnit}`}
+                                  onChange={(e) => {
+                                    const [val, unit] = e.target.value.split('-');
+                                    updateSequenceStep(idx + 1, 'delayValue', Number(val));
+                                    updateSequenceStep(idx + 1, 'delayUnit', unit);
+                                  }}
+                                  style={{ padding: '2px 6px', border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-sm)', fontFamily: 'var(--font-family-sans)', fontSize: 'var(--font-size-xs)', background: 'var(--color-bg-card)', cursor: 'pointer', outline: 'none' }}
+                                >
+                                  <option value="0-immediately">Immediately</option>
+                                  <option value="1-days">1 day</option>
+                                  <option value="3-days">3 days</option>
+                                  <option value="7-days">1 week</option>
+                                  <option value="14-days">2 weeks</option>
+                                </select>
+                              </div>
+                            )}
+                          </div>
+                        ))}
+
+                        {sequenceSteps.length < 4 && (
+                          <button
+                            onClick={addSequenceStep}
+                            style={{
+                              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', width: '100%',
+                              padding: 'var(--space-3)', border: '1px dashed var(--color-primary-400)',
+                              borderRadius: 'var(--radius-md)', background: 'transparent',
+                              color: 'var(--color-primary-700)', cursor: 'pointer',
+                              fontFamily: 'var(--font-family-sans)', fontSize: 'var(--font-size-sm)',
+                              fontWeight: 'var(--font-weight-semibold)',
+                            }}
+                          >
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
+                            Add sequence ({sequenceSteps.length}/4)
+                          </button>
+                        )}
+                      </div>
+
+                      {/* Right: editor */}
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        {sequenceSteps.length === 0 ? (
+                          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', minHeight: '400px', textAlign: 'center', border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-md)', background: 'var(--color-neutral-50)' }}>
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-muted)" strokeWidth="1.5" style={{ marginBottom: 'var(--space-2)' }}><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" /><polyline points="22,6 12,13 2,6" /></svg>
+                            <div style={{ fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-text-secondary)', fontFamily: 'var(--font-family-sans)' }}>Add a step to start writing</div>
+                          </div>
+                        ) : (
+                          <div style={{ border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-md)', display: 'flex', flexDirection: 'column', minHeight: '480px' }}>
+                            {/* Subject row */}
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 'var(--space-3) var(--space-3) var(--space-3)', borderBottom: '1px solid var(--color-border-default)', gap: 'var(--space-2)' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', flex: 1 }}>
+                                <span style={{ fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-primary)', fontFamily: 'var(--font-family-sans)' }}>Subject</span>
+                                <input
+                                  type="text"
+                                  placeholder="Your subject"
+                                  value={sequenceSteps[activeSequenceIdx]?.subject || ''}
+                                  onChange={(e) => updateSequenceStep(activeSequenceIdx, 'subject', e.target.value)}
+                                  style={{ flex: 1, padding: '4px 8px', border: 'none', outline: 'none', fontFamily: 'var(--font-family-sans)', fontSize: 'var(--font-size-sm)', color: 'var(--color-text-primary)', background: 'transparent' }}
+                                />
+                              </div>
+                              <div style={{ display: 'flex', gap: '4px' }}>
+                                <button style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '4px 10px', border: '1px solid var(--color-primary-300)', borderRadius: 'var(--radius-sm)', background: 'var(--color-bg-card)', color: 'var(--color-primary-700)', cursor: 'pointer', fontSize: 'var(--font-size-xs)', fontFamily: 'var(--font-family-sans)' }}>
+                                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" /></svg>
+                                  Preview
+                                </button>
+                                <button style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '4px 8px', border: '1px solid var(--color-primary-300)', borderRadius: 'var(--radius-sm)', background: 'var(--color-primary-50)', color: 'var(--color-primary-700)', cursor: 'pointer' }} title="AI rewrite">
+                                  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3l1.5 5.5L19 10l-5.5 1.5L12 17l-1.5-5.5L5 10l5.5-1.5L12 3z" /></svg>
+                                </button>
+                              </div>
+                            </div>
+
+                            {/* Body */}
+                            <textarea
+                              placeholder="Start typing here..."
+                              value={sequenceSteps[activeSequenceIdx]?.body || ''}
+                              onChange={(e) => updateSequenceStep(activeSequenceIdx, 'body', e.target.value)}
+                              rows={12}
+                              style={{ flex: 1, width: '100%', padding: 'var(--space-3)', border: 'none', outline: 'none', fontFamily: 'var(--font-family-sans)', fontSize: 'var(--font-size-sm)', resize: 'none', boxSizing: 'border-box', lineHeight: 1.6, color: 'var(--color-text-primary)' }}
+                            />
+
+                            {/* Toolbar */}
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 'var(--space-2) var(--space-3)', borderTop: '1px solid var(--color-border-default)', background: 'var(--color-neutral-50)' }}>
+                              <Button variant="primary" size="small" label="Save" onClick={() => {}} />
+                              <div style={{ display: 'flex', gap: 'var(--space-2)', color: 'var(--color-text-muted)' }}>
+                                {[
+                                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><path d="M8 14s1.5 2 4 2 4-2 4-2" /><line x1="9" y1="9" x2="9.01" y2="9" /><line x1="15" y1="9" x2="15.01" y2="9" /></svg>,
+                                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="3" y="14" width="7" height="7" /><rect x="14" y="14" width="7" height="7" /></svg>,
+                                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" /></svg>,
+                                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="4 7 4 4 20 4 20 7" /><line x1="9" y1="20" x2="15" y2="20" /><line x1="12" y1="4" x2="12" y2="20" /></svg>,
+                                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" /><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" /></svg>,
+                                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="16 18 22 12 16 6" /><polyline points="8 6 2 12 8 18" /></svg>,
+                                ].map((icon, i) => (
+                                  <button key={i} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)', padding: '4px', display: 'flex' }}>{icon}</button>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   )}
 
@@ -2037,7 +2167,7 @@ const EmailsContent = ({ activeCampaign, setActiveCampaign, pendingCampaignList,
                   {campaignTab === 'schedule' && (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
                       <div>
-                        <h3 style={{ margin: '0 0 var(--space-1)', fontSize: 'var(--font-size-md)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-primary)' }}>Schedule</h3>
+                        <h3 style={{ margin: '0 0 var(--space-1)', fontSize: 'var(--font-size-md)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-primary)', fontFamily: 'var(--font-family-sans)' }}>Schedule</h3>
                         <p style={{ margin: '0 0 var(--space-3)', fontSize: 'var(--font-size-sm)', color: 'var(--color-text-secondary)' }}>Pace your sends to protect your domain reputation.</p>
                       </div>
                       <div>
@@ -2069,7 +2199,7 @@ const EmailsContent = ({ activeCampaign, setActiveCampaign, pendingCampaignList,
                   {campaignTab === 'options' && (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
                       <div>
-                        <h3 style={{ margin: '0 0 var(--space-1)', fontSize: 'var(--font-size-md)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-primary)' }}>Options</h3>
+                        <h3 style={{ margin: '0 0 var(--space-1)', fontSize: 'var(--font-size-md)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-primary)', fontFamily: 'var(--font-family-sans)' }}>Options</h3>
                         <p style={{ margin: '0 0 var(--space-3)', fontSize: 'var(--font-size-sm)', color: 'var(--color-text-secondary)' }}>Advanced campaign settings.</p>
                       </div>
                       <label style={{ display: 'flex', alignItems: 'flex-start', gap: 'var(--space-3)', padding: 'var(--space-3)', border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-md)', cursor: 'pointer' }}>
@@ -2100,7 +2230,7 @@ const EmailsContent = ({ activeCampaign, setActiveCampaign, pendingCampaignList,
                 {/* Footer */}
                 <div style={{ padding: 'var(--space-3) var(--space-5)', borderTop: '1px solid var(--color-border-default)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)' }}>
-                    {leadsSubstep === 'processed' ? '35 leads ready · 4-step sequence · ' + campaignForm.dailyCap + ' emails/day' : 'Add leads to activate'}
+                    {leadsSubstep === 'processed' ? `35 leads ready · ${sequenceSteps.length || 'no'} sequence step${sequenceSteps.length === 1 ? '' : 's'} · ${campaignForm.dailyCap} emails/day` : 'Add leads to activate'}
                   </span>
                   <div style={{ display: 'flex', gap: 'var(--space-2)' }}>
                     <Button variant="ghost" size="medium" label="Cancel" onClick={closeCreateCampaign} />
