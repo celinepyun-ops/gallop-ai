@@ -947,7 +947,7 @@ export const SearchPage = ({ products = MOCK_PRODUCTS, savedLists = [], onAddNew
         {/* Active filter chips */}
         {activeFilterEntries.length > 0 && (
           <div className="oai-sp-chips">
-            <span className="oai-sp-chips__label">Active:</span>
+            <span className="oai-sp-chips__label">Applied Filters</span>
             {activeFilterEntries.map((entry) => (
               <span key={entry.id} className="oai-sp-chips__chip">
                 {entry.label}
