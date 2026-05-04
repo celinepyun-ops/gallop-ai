@@ -2404,6 +2404,20 @@ const CampaignsContent = ({ onNavigate, pendingCampaignList, clearPendingCampaig
   // Template picker + preview state
   const [templatePickerOpen, setTemplatePickerOpen] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
+
+  // Multi-schedule + calendar state
+  const [schedules, setSchedules] = useState([
+    { id: 's1', name: 'New schedule', fromTime: '9:00 AM', toTime: '6:00 PM', timezone: 'Eastern Time (US & Canada) (UTC-04:00)', days: { Mon: true, Tue: true, Wed: true, Thu: true, Fri: true, Sat: false, Sun: false } },
+  ]);
+  const [scheduleStartDate, setScheduleStartDate] = useState(null); // null = Now
+  const [scheduleEndDate, setScheduleEndDate] = useState(null); // null = No end date
+  const [calendarOpen, setCalendarOpen] = useState(null); // 'start' | 'end' | null
+  const [calendarMonth, setCalendarMonth] = useState(new Date(2026, 4, 1));
+  const updateSchedule = (idx, field, value) => setSchedules((prev) => prev.map((s, i) => i === idx ? { ...s, [field]: value } : s));
+  const addSchedule = () => setSchedules((prev) => [...prev, { id: `s${Date.now()}`, name: 'New schedule', fromTime: '9:00 AM', toTime: '6:00 PM', timezone: 'Eastern Time (US & Canada) (UTC-04:00)', days: { Mon: true, Tue: true, Wed: true, Thu: true, Fri: true, Sat: false, Sun: false } }]);
+  const removeSchedule = (idx) => setSchedules((prev) => prev.filter((_, i) => i !== idx));
+
+  const formatDate = (d) => d ? d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : null;
   const [templateCategory, setTemplateCategory] = useState('custom');
   const TEMPLATE_CATEGORIES = [
     { id: 'custom', label: 'Custom Templates' },
@@ -2803,72 +2817,146 @@ const CampaignsContent = ({ onNavigate, pendingCampaignList, clearPendingCampaig
                         <h3 style={{ margin: '0 0 var(--space-1)', fontSize: 'var(--font-size-md)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-primary)', fontFamily: 'var(--font-family-sans)' }}>Schedule</h3>
                         <p style={{ margin: '0 0 var(--space-3)', fontSize: 'var(--font-size-sm)', color: 'var(--color-text-secondary)' }}>Set when this campaign starts, ends, and runs.</p>
                       </div>
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-3)' }}>
-                        <div style={{ border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-md)', padding: 'var(--space-3)' }}>
-                          <div style={{ fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 'var(--space-2)' }}>Start</div>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
-                            <span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: '50%', background: 'var(--color-primary-600)' }} />
-                            <select value={campaignForm.startWhen} onChange={(e) => updateCampaignForm('startWhen', e.target.value)} style={{ flex: 1, padding: '6px 8px', border: 'none', background: 'transparent', fontFamily: 'var(--font-family-sans)', fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-text-primary)', cursor: 'pointer', outline: 'none' }}>
-                              <option value="now">Now</option>
-                              <option value="scheduled">Scheduled date</option>
-                            </select>
-                          </div>
+
+                      {/* Start / End row with calendar popovers */}
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)', position: 'relative' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
+                          <button onClick={() => { setCalendarOpen(calendarOpen === 'start' ? null : 'start'); }} style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', padding: 'var(--space-2)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-family-sans)' }}>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-secondary)" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" /></svg>
+                            <span style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-text-secondary)', fontWeight: 'var(--font-weight-medium)' }}>Start</span>
+                            <span style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-text-muted)' }}>|</span>
+                            <span style={{ fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-primary-700)' }}>{scheduleStartDate ? formatDate(scheduleStartDate) : 'Now'}</span>
+                          </button>
                         </div>
-                        <div style={{ border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-md)', padding: 'var(--space-3)' }}>
-                          <div style={{ fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 'var(--space-2)' }}>End</div>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
-                            <span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: '50%', background: 'var(--color-neutral-300)' }} />
-                            <select value={campaignForm.endWhen} onChange={(e) => updateCampaignForm('endWhen', e.target.value)} style={{ flex: 1, padding: '6px 8px', border: 'none', background: 'transparent', fontFamily: 'var(--font-family-sans)', fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-text-primary)', cursor: 'pointer', outline: 'none' }}>
-                              <option value="no_end">No end date</option>
-                              <option value="scheduled">Scheduled end date</option>
-                            </select>
-                          </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
+                          <button onClick={() => { setCalendarOpen(calendarOpen === 'end' ? null : 'end'); }} style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', padding: 'var(--space-2)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-family-sans)' }}>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-secondary)" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" /></svg>
+                            <span style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-text-secondary)', fontWeight: 'var(--font-weight-medium)' }}>End</span>
+                            <span style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-text-muted)' }}>|</span>
+                            <span style={{ fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-semibold)', color: scheduleEndDate ? 'var(--color-primary-700)' : 'var(--color-text-muted)' }}>{scheduleEndDate ? formatDate(scheduleEndDate) : 'No end date'}</span>
+                          </button>
                         </div>
+
+                        {/* Calendar Popover */}
+                        {calendarOpen && (() => {
+                          const year = calendarMonth.getFullYear();
+                          const month = calendarMonth.getMonth();
+                          const firstDayOfMonth = new Date(year, month, 1).getDay();
+                          const daysInMonth = new Date(year, month + 1, 0).getDate();
+                          const today = new Date(2026, 4, 3); // mock today: May 3
+                          const cells = [];
+                          for (let i = 0; i < firstDayOfMonth; i++) cells.push(null);
+                          for (let d = 1; d <= daysInMonth; d++) cells.push(d);
+                          const selected = calendarOpen === 'start' ? scheduleStartDate : scheduleEndDate;
+                          return (
+                            <div style={{ position: 'absolute', top: 'var(--space-10)', left: 0, width: '320px', background: 'var(--color-bg-card)', border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-lg)', padding: 'var(--space-3)', fontFamily: 'var(--font-family-sans)', zIndex: 200 }}>
+                              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--space-2)' }}>
+                                <span style={{ fontSize: 'var(--font-size-md)', fontWeight: 'var(--font-weight-semibold)' }}>{calendarMonth.toLocaleString('en-US', { month: 'long' })} {year}</span>
+                                <div style={{ display: 'flex', gap: '2px' }}>
+                                  <button onClick={() => setCalendarMonth(new Date(year, month - 1, 1))} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', display: 'flex', color: 'var(--color-text-secondary)' }}>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6" /></svg>
+                                  </button>
+                                  <button onClick={() => setCalendarMonth(new Date(year, month + 1, 1))} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', display: 'flex', color: 'var(--color-text-secondary)' }}>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6" /></svg>
+                                  </button>
+                                </div>
+                              </div>
+                              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '2px', marginBottom: 'var(--space-2)' }}>
+                                {['SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA'].map((dn) => (
+                                  <div key={dn} style={{ textAlign: 'center', fontSize: '11px', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-secondary)', padding: '6px 0' }}>{dn}</div>
+                                ))}
+                                {cells.map((d, i) => {
+                                  if (d === null) return <div key={`empty-${i}`} />;
+                                  const cellDate = new Date(year, month, d);
+                                  const isPast = cellDate < today;
+                                  const isSelected = selected && selected.getTime() === cellDate.getTime();
+                                  return (
+                                    <button
+                                      key={d}
+                                      disabled={isPast}
+                                      onClick={() => {
+                                        if (calendarOpen === 'start') setScheduleStartDate(cellDate);
+                                        else setScheduleEndDate(cellDate);
+                                      }}
+                                      style={{
+                                        padding: '8px 0', border: 'none',
+                                        background: isSelected ? 'var(--color-primary-600)' : 'transparent',
+                                        color: isPast ? 'var(--color-neutral-300)' : isSelected ? 'white' : 'var(--color-text-primary)',
+                                        borderRadius: 'var(--radius-sm)', cursor: isPast ? 'default' : 'pointer',
+                                        fontFamily: 'var(--font-family-sans)', fontSize: 'var(--font-size-sm)',
+                                        fontWeight: isSelected ? 'var(--font-weight-bold)' : 'var(--font-weight-medium)',
+                                      }}
+                                    >{d}</button>
+                                  );
+                                })}
+                              </div>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--color-border-default)', paddingTop: 'var(--space-2)' }}>
+                                <button onClick={() => { if (calendarOpen === 'start') setScheduleStartDate(null); else setScheduleEndDate(null); }} style={{ padding: '6px 12px', background: 'none', border: 'none', color: 'var(--color-text-secondary)', cursor: 'pointer', fontFamily: 'var(--font-family-sans)', fontSize: 'var(--font-size-sm)' }}>Clear</button>
+                                <Button variant="primary" size="small" label="Apply" onClick={() => setCalendarOpen(null)} />
+                              </div>
+                            </div>
+                          );
+                        })()}
                       </div>
-                      <div style={{ border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-md)', padding: 'var(--space-4)', display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
-                        <div style={{ fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-primary)' }}>New schedule</div>
-                        <div>
-                          <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-text-secondary)', marginBottom: '6px' }}>Schedule Name</label>
-                          <input type="text" value={campaignForm.scheduleName} onChange={(e) => updateCampaignForm('scheduleName', e.target.value)} style={{ width: '100%', padding: '8px 10px', border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-md)', fontFamily: 'var(--font-family-sans)', fontSize: 'var(--font-size-sm)', outline: 'none', boxSizing: 'border-box' }} />
-                        </div>
-                        <div>
-                          <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-text-secondary)', marginBottom: '6px' }}>Timing</label>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
-                            <span style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-text-secondary)' }}>From</span>
-                            <select value={campaignForm.fromTime} onChange={(e) => updateCampaignForm('fromTime', e.target.value)} style={{ padding: '8px 10px', border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-md)', fontFamily: 'var(--font-family-sans)', fontSize: 'var(--font-size-sm)', cursor: 'pointer', outline: 'none', background: 'var(--color-bg-card)' }}>
-                              {['7:00 AM','8:00 AM','9:00 AM','10:00 AM','11:00 AM','12:00 PM','1:00 PM','2:00 PM'].map((t) => <option key={t} value={t}>{t}</option>)}
-                            </select>
-                            <span style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-text-secondary)' }}>To</span>
-                            <select value={campaignForm.toTime} onChange={(e) => updateCampaignForm('toTime', e.target.value)} style={{ padding: '8px 10px', border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-md)', fontFamily: 'var(--font-family-sans)', fontSize: 'var(--font-size-sm)', cursor: 'pointer', outline: 'none', background: 'var(--color-bg-card)' }}>
-                              {['3:00 PM','4:00 PM','5:00 PM','6:00 PM','7:00 PM','8:00 PM','9:00 PM','10:00 PM'].map((t) => <option key={t} value={t}>{t}</option>)}
-                            </select>
+
+                      {/* Schedules list (multiple) */}
+                      {schedules.map((sched, sIdx) => (
+                        <div key={sched.id} style={{ border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-md)', padding: 'var(--space-4)', display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                            <div style={{ fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-primary)' }}>Schedule {sIdx + 1}</div>
+                            {schedules.length > 1 && (
+                              <button onClick={() => removeSchedule(sIdx)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)', display: 'flex', padding: '4px' }} aria-label="Remove schedule">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="3 6 5 6 21 6" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /></svg>
+                              </button>
+                            )}
+                          </div>
+                          <div>
+                            <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-text-secondary)', marginBottom: '6px' }}>Schedule Name</label>
+                            <input type="text" value={sched.name} onChange={(e) => updateSchedule(sIdx, 'name', e.target.value)} style={{ width: '100%', padding: '8px 10px', border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-md)', fontFamily: 'var(--font-family-sans)', fontSize: 'var(--font-size-sm)', outline: 'none', boxSizing: 'border-box' }} />
+                          </div>
+                          <div>
+                            <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-text-secondary)', marginBottom: '6px' }}>Timing</label>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', flexWrap: 'wrap' }}>
+                              <span style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-text-secondary)' }}>From</span>
+                              <select value={sched.fromTime} onChange={(e) => updateSchedule(sIdx, 'fromTime', e.target.value)} style={{ padding: '8px 10px', border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-md)', fontFamily: 'var(--font-family-sans)', fontSize: 'var(--font-size-sm)', cursor: 'pointer', outline: 'none', background: 'var(--color-bg-card)' }}>
+                                {['7:00 AM','8:00 AM','9:00 AM','10:00 AM','11:00 AM','12:00 PM','1:00 PM','2:00 PM'].map((t) => <option key={t} value={t}>{t}</option>)}
+                              </select>
+                              <span style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-text-secondary)' }}>To</span>
+                              <select value={sched.toTime} onChange={(e) => updateSchedule(sIdx, 'toTime', e.target.value)} style={{ padding: '8px 10px', border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-md)', fontFamily: 'var(--font-family-sans)', fontSize: 'var(--font-size-sm)', cursor: 'pointer', outline: 'none', background: 'var(--color-bg-card)' }}>
+                                {['3:00 PM','4:00 PM','5:00 PM','6:00 PM','7:00 PM','8:00 PM','9:00 PM','10:00 PM'].map((t) => <option key={t} value={t}>{t}</option>)}
+                              </select>
+                              <span style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-text-secondary)', marginLeft: 'var(--space-3)' }}>Timezone</span>
+                              <select value={sched.timezone} onChange={(e) => updateSchedule(sIdx, 'timezone', e.target.value)} style={{ flex: 1, minWidth: '200px', padding: '8px 10px', border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-md)', fontFamily: 'var(--font-family-sans)', fontSize: 'var(--font-size-sm)', cursor: 'pointer', outline: 'none', background: 'var(--color-bg-card)' }}>
+                                <option value="Eastern Time (US & Canada) (UTC-04:00)">Eastern Time (US & Canada) (UTC-04:00)</option>
+                                <option value="Central Time (US & Canada) (UTC-05:00)">Central Time (US & Canada) (UTC-05:00)</option>
+                                <option value="Mountain Time (US & Canada) (UTC-06:00)">Mountain Time (US & Canada) (UTC-06:00)</option>
+                                <option value="Pacific Time (US & Canada) (UTC-07:00)">Pacific Time (US & Canada) (UTC-07:00)</option>
+                                <option value="London (UTC+01:00)">London (UTC+01:00)</option>
+                                <option value="Seoul (UTC+09:00)">Seoul (UTC+09:00)</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div>
+                            <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-text-secondary)', marginBottom: '6px' }}>Days</label>
+                            <div style={{ display: 'flex', gap: 'var(--space-4)', flexWrap: 'wrap' }}>
+                              {[{key:'Mon',label:'Monday'},{key:'Tue',label:'Tuesday'},{key:'Wed',label:'Wednesday'},{key:'Thu',label:'Thursday'},{key:'Fri',label:'Friday'},{key:'Sat',label:'Saturday'},{key:'Sun',label:'Sunday'}].map((d) => (
+                                <label key={d.key} style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontFamily: 'var(--font-family-sans)', fontSize: 'var(--font-size-sm)', color: 'var(--color-text-primary)' }}>
+                                  <input type="checkbox" checked={sched.days[d.key]} onChange={(e) => updateSchedule(sIdx, 'days', { ...sched.days, [d.key]: e.target.checked })} style={{ accentColor: 'var(--color-primary-600)', width: 16, height: 16 }} />
+                                  {d.label}
+                                </label>
+                              ))}
+                            </div>
                           </div>
                         </div>
-                        <div>
-                          <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-text-secondary)', marginBottom: '6px' }}>Timezone</label>
-                          <select value={campaignForm.timezone} onChange={(e) => updateCampaignForm('timezone', e.target.value)} style={{ width: '100%', padding: '8px 10px', border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-md)', fontFamily: 'var(--font-family-sans)', fontSize: 'var(--font-size-sm)', cursor: 'pointer', outline: 'none', background: 'var(--color-bg-card)', boxSizing: 'border-box' }}>
-                            <option value="Eastern Time (US & Canada) (UTC-04:00)">Eastern Time (US & Canada) (UTC-04:00)</option>
-                            <option value="Central Time (US & Canada) (UTC-05:00)">Central Time (US & Canada) (UTC-05:00)</option>
-                            <option value="Mountain Time (US & Canada) (UTC-06:00)">Mountain Time (US & Canada) (UTC-06:00)</option>
-                            <option value="Pacific Time (US & Canada) (UTC-07:00)">Pacific Time (US & Canada) (UTC-07:00)</option>
-                            <option value="London (UTC+01:00)">London (UTC+01:00)</option>
-                            <option value="Seoul (UTC+09:00)">Seoul (UTC+09:00)</option>
-                          </select>
-                        </div>
-                        <div>
-                          <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-text-secondary)', marginBottom: '6px' }}>Days</label>
-                          <div style={{ display: 'flex', gap: 'var(--space-1)', flexWrap: 'wrap' }}>
-                            {['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map((d) => {
-                              const isOn = campaignForm.days[d];
-                              return (
-                                <button key={d} onClick={() => updateCampaignForm('days', { ...campaignForm.days, [d]: !isOn })} style={{ padding: '8px 14px', border: '1px solid', borderColor: isOn ? 'var(--color-primary-600)' : 'var(--color-border-default)', borderRadius: 'var(--radius-md)', background: isOn ? 'var(--color-primary-600)' : 'var(--color-bg-card)', color: isOn ? 'white' : 'var(--color-text-primary)', fontFamily: 'var(--font-family-sans)', fontSize: 'var(--font-size-sm)', fontWeight: isOn ? 'var(--font-weight-semibold)' : 'var(--font-weight-medium)', cursor: 'pointer' }}>
-                                  {d === 'Mon' ? 'Monday' : d === 'Tue' ? 'Tuesday' : d === 'Wed' ? 'Wednesday' : d === 'Thu' ? 'Thursday' : d === 'Fri' ? 'Friday' : d === 'Sat' ? 'Saturday' : 'Sunday'}
-                                </button>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      </div>
+                      ))}
+
+                      {/* Add another schedule */}
+                      <button onClick={addSchedule} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', width: '100%', padding: 'var(--space-3)', border: '1px dashed var(--color-primary-400)', borderRadius: 'var(--radius-md)', background: 'transparent', color: 'var(--color-primary-700)', cursor: 'pointer', fontFamily: 'var(--font-family-sans)', fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-semibold)' }}>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
+                        Add another schedule
+                      </button>
+
+                      {/* Daily send limit */}
                       <div style={{ border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-md)', padding: 'var(--space-4)' }}>
                         <label style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-medium)', marginBottom: 'var(--space-2)' }}>
                           <span>Daily send limit</span>
@@ -2882,7 +2970,7 @@ const CampaignsContent = ({ onNavigate, pendingCampaignList, clearPendingCampaig
                     </div>
                   )}
 
-                  {/* Options */}
+                                    {/* Options */}
                   {campaignTab === 'options' && (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
                       <div>
