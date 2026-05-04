@@ -717,11 +717,9 @@ export const SearchPage = ({ products = MOCK_PRODUCTS, savedLists = [], onAddNew
       {filtersVisible && (
         <aside className="oai-sp-filters">
           <div className="oai-sp-filters__header">
-            <span className="oai-sp-filters__title">Filters</span>
-            <button className="oai-sp-filters__hide-btn" onClick={() => setFiltersVisible(false)}>
-              {FilterIcons.filter}
-              <span>Hide</span>
-              {activeFilterCount > 0 && <Badge label={String(activeFilterCount)} variant="info" size="small" />}
+            <span className="oai-sp-filters__title">Filters {activeFilterCount > 0 && <Badge label={String(activeFilterCount)} variant="info" size="small" />}</span>
+            <button className="oai-sp-filters__collapse-btn" onClick={() => setFiltersVisible(false)} aria-label="Collapse filters" title="Collapse filters">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6" /></svg>
             </button>
           </div>
           <div className="oai-sp-filters__counts">
@@ -894,9 +892,8 @@ export const SearchPage = ({ products = MOCK_PRODUCTS, savedLists = [], onAddNew
 
         {/* Show filters button (when sidebar hidden) */}
         {!filtersVisible && (
-          <button className="oai-sp-show-filters" onClick={() => setFiltersVisible(true)}>
-            {FilterIcons.filter}
-            <span>Show Filters</span>
+          <button className="oai-sp-expand-btn" onClick={() => setFiltersVisible(true)} aria-label="Show filters" title="Show filters">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6" /></svg>
             {activeFilterCount > 0 && <Badge label={String(activeFilterCount)} variant="info" size="small" />}
           </button>
         )}
