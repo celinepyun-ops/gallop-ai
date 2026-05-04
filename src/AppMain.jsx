@@ -1157,15 +1157,9 @@ const EmailsContent = ({ activeCampaign, setActiveCampaign, pendingCampaignList,
   const [activeSequenceIdx, setActiveSequenceIdx] = useState(0);
   const addSequenceStep = () => {
     if (sequenceSteps.length >= 4) return;
-    const isFirst = sequenceSteps.length === 0;
     setSequenceSteps((prev) => [
       ...prev,
-      {
-        subject: '',
-        body: '',
-        delayValue: isFirst ? 0 : 3,
-        delayUnit: isFirst ? 'immediately' : 'days',
-      },
+      { subject: '', body: '', delayValue: 3, delayUnit: 'days' },
     ]);
     setActiveSequenceIdx(sequenceSteps.length);
   };
@@ -2043,17 +2037,21 @@ const EmailsContent = ({ activeCampaign, setActiveCampaign, pendingCampaignList,
                         )}
 
                         {sequenceSteps.map((s, idx) => (
-                          <div key={idx}>
-                            <button
+                          <div
+                            key={idx}
+                            style={{
+                              border: '1px solid',
+                              borderColor: activeSequenceIdx === idx ? 'var(--color-primary-500)' : 'var(--color-border-default)',
+                              borderRadius: 'var(--radius-md)',
+                              background: activeSequenceIdx === idx ? 'var(--color-primary-50)' : 'var(--color-bg-card)',
+                              fontFamily: 'var(--font-family-sans)',
+                              overflow: 'hidden',
+                            }}
+                          >
+                            {/* Top: clickable header */}
+                            <div
                               onClick={() => setActiveSequenceIdx(idx)}
-                              style={{
-                                display: 'flex', alignItems: 'center', gap: 'var(--space-2)', width: '100%',
-                                padding: 'var(--space-3)', border: '1px solid',
-                                borderColor: activeSequenceIdx === idx ? 'var(--color-primary-500)' : 'var(--color-border-default)',
-                                borderRadius: 'var(--radius-md)',
-                                background: activeSequenceIdx === idx ? 'var(--color-primary-50)' : 'var(--color-bg-card)',
-                                cursor: 'pointer', textAlign: 'left', fontFamily: 'var(--font-family-sans)',
-                              }}
+                              style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', padding: 'var(--space-3)', cursor: 'pointer' }}
                             >
                               <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 24, height: 24, borderRadius: '50%', background: activeSequenceIdx === idx ? 'var(--color-primary-600)' : 'var(--color-neutral-200)', color: activeSequenceIdx === idx ? 'white' : 'var(--color-text-secondary)', fontSize: '11px', fontWeight: 600, flexShrink: 0 }}>{idx + 1}</span>
                               <div style={{ flex: 1, minWidth: 0 }}>
@@ -2063,30 +2061,28 @@ const EmailsContent = ({ activeCampaign, setActiveCampaign, pendingCampaignList,
                               <button onClick={(e) => { e.stopPropagation(); removeSequenceStep(idx); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)', padding: '2px', display: 'flex' }} aria-label="Remove step">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="3 6 5 6 21 6" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /></svg>
                               </button>
-                            </button>
+                            </div>
 
-                            {/* Send next message in (between steps) */}
-                            {idx < sequenceSteps.length - 1 && (
-                              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', padding: 'var(--space-2) var(--space-2) var(--space-2) var(--space-4)', margin: '0 var(--space-2)', fontSize: 'var(--font-size-xs)', color: 'var(--color-text-secondary)' }}>
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
-                                <span>Send next in</span>
-                                <select
-                                  value={`${sequenceSteps[idx + 1].delayValue}-${sequenceSteps[idx + 1].delayUnit}`}
-                                  onChange={(e) => {
-                                    const [val, unit] = e.target.value.split('-');
-                                    updateSequenceStep(idx + 1, 'delayValue', Number(val));
-                                    updateSequenceStep(idx + 1, 'delayUnit', unit);
-                                  }}
-                                  style={{ padding: '2px 6px', border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-sm)', fontFamily: 'var(--font-family-sans)', fontSize: 'var(--font-size-xs)', background: 'var(--color-bg-card)', cursor: 'pointer', outline: 'none' }}
-                                >
-                                  <option value="0-immediately">Immediately</option>
-                                  <option value="1-days">1 day</option>
-                                  <option value="3-days">3 days</option>
-                                  <option value="7-days">1 week</option>
-                                  <option value="14-days">2 weeks</option>
-                                </select>
-                              </div>
-                            )}
+                            {/* Bottom: Send next in — always visible */}
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', padding: 'var(--space-2) var(--space-3)', borderTop: '1px solid var(--color-border-default)', fontSize: 'var(--font-size-xs)', color: 'var(--color-text-secondary)', background: activeSequenceIdx === idx ? 'rgba(255,255,255,0.5)' : 'var(--color-neutral-50)' }}>
+                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
+                              <span>Send next in</span>
+                              <select
+                                value={`${s.delayValue}-${s.delayUnit}`}
+                                onChange={(e) => {
+                                  const [val, unit] = e.target.value.split('-');
+                                  updateSequenceStep(idx, 'delayValue', Number(val));
+                                  updateSequenceStep(idx, 'delayUnit', unit);
+                                }}
+                                style={{ padding: '2px 6px', border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-sm)', fontFamily: 'var(--font-family-sans)', fontSize: 'var(--font-size-xs)', background: 'var(--color-bg-card)', cursor: 'pointer', outline: 'none', marginLeft: 'auto' }}
+                              >
+                                <option value="0-immediately">Immediately</option>
+                                <option value="1-days">1 day</option>
+                                <option value="3-days">3 days</option>
+                                <option value="7-days">1 week</option>
+                                <option value="14-days">2 weeks</option>
+                              </select>
+                            </div>
                           </div>
                         ))}
 
