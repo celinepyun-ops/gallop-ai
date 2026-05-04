@@ -2400,6 +2400,56 @@ const CampaignsContent = ({ onNavigate, pendingCampaignList, clearPendingCampaig
   ];
   const [columnMappings, setColumnMappings] = useState(initialColumnMappings);
   const updateColumnType = (idx, type) => setColumnMappings((prev) => prev.map((c, i) => i === idx ? { ...c, type } : c));
+
+  // Template picker + preview state
+  const [templatePickerOpen, setTemplatePickerOpen] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [templateCategory, setTemplateCategory] = useState('custom');
+  const TEMPLATE_CATEGORIES = [
+    { id: 'custom', label: 'Custom Templates' },
+    { id: 'lead-gen', label: 'Lead Generation' },
+    { id: 'leadgen-agency', label: 'LeadGen Agency' },
+    { id: 'video', label: 'Video Production' },
+    { id: 'marketing', label: 'Marketing & Advertising' },
+    { id: 'coaching', label: 'Coaching' },
+    { id: 'appt', label: 'Appointment Setting Agency' },
+  ];
+  const SAMPLE_TEMPLATES = {
+    'lead-gen': [
+      { id: 'lg1', name: '{{firstName}} - quick question', subject: '{{firstName}} - quick question', body: 'Hey {{firstName}},\n\nYour LinkedIn was impressive and I wanted to reach out directly:)\n\nSo we\'re helping (target group) from (location) to fill their cal with 5-12 calls with (their ideal customer) daily. If you let me have a call with you about how we can do the same for you,\nI will send you a burger with UberEats:D\n\nAre you free any time this week for a quick chat?\n\nCheers,\nNAME\n\nReply "No thanks" if you wish to no longer receive messages from me.' },
+      { id: 'lg2', name: 'Did this end up on your radar?', subject: 'Did this end up on your radar?', body: 'Hi {{firstName}},\n\nJust circling back — did this end up on your radar?\n\nQuick recap of what we offer...\n\nHappy to send a one-pager if useful.\n\nBest,\nNAME' },
+    ],
+    'leadgen-agency': [
+      { id: 'la1', name: 'Booking calls with {{firstName}}', subject: 'Booking 5-12 calls/week for {{company}}', body: 'Hey {{firstName}},\n\nWe book 5-12 sales calls per week for B2B agencies on a pay-per-call basis.\n\nWorth a chat?\n\nNAME' },
+    ],
+    'video': [
+      { id: 'v1', name: 'Video content for {{company}}', subject: 'Video content for {{company}}', body: 'Hi {{firstName}},\n\nWe produce ad-ready short-form video for brands like {{company}}.\n\nCurious to hear if it\'s a fit.\n\nNAME' },
+    ],
+    'marketing': [
+      { id: 'm1', name: 'Quick growth idea for {{company}}', subject: 'Quick growth idea for {{company}}', body: 'Hi {{firstName}},\n\nNoticed {{company}} just launched a new product. Quick idea on how to amplify reach...\n\nCurious?\n\nNAME' },
+    ],
+    'coaching': [
+      { id: 'c1', name: 'Coaching offer for {{firstName}}', subject: 'Coaching offer for {{firstName}}', body: 'Hi {{firstName}},\n\nI run a small coaching program for founders at your stage. Open to a quick intro?\n\nNAME' },
+    ],
+    'appt': [
+      { id: 'ap1', name: 'Appointments booked for you', subject: '5 appointments booked for you, {{firstName}}', body: 'Hey {{firstName}},\n\nWe set 5 qualified meetings/week, no upfront cost.\n\nWorth exploring?\n\nNAME' },
+    ],
+    'custom': [],
+  };
+  const [selectedTemplateId, setSelectedTemplateId] = useState('lg1');
+  const allTemplates = Object.values(SAMPLE_TEMPLATES).flat();
+  const selectedTemplate = allTemplates.find((t) => t.id === selectedTemplateId) || allTemplates[0];
+
+  const applyTemplate = () => {
+    if (!selectedTemplate || sequenceSteps.length === 0) {
+      setTemplatePickerOpen(false);
+      return;
+    }
+    updateSequenceStep(activeSequenceIdx, 'subject', selectedTemplate.subject);
+    updateSequenceStep(activeSequenceIdx, 'body', selectedTemplate.body);
+    setTemplatePickerOpen(false);
+  };
+
   const closeCreateCampaign = () => {
     setCreateCampaignOpen(false);
     setCampaignNamingDone(false);
@@ -2718,14 +2768,39 @@ const CampaignsContent = ({ onNavigate, pendingCampaignList, clearPendingCampaig
                                 <span style={{ fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-primary)' }}>Subject</span>
                                 <input type="text" placeholder="Your subject" value={sequenceSteps[activeSequenceIdx]?.subject || ''} onChange={(e) => updateSequenceStep(activeSequenceIdx, 'subject', e.target.value)} style={{ flex: 1, padding: '4px 8px', border: 'none', outline: 'none', fontFamily: 'var(--font-family-sans)', fontSize: 'var(--font-size-sm)', color: 'var(--color-text-primary)', background: 'transparent' }} />
                               </div>
-                              <button onClick={() => {}} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 12px', border: '1px solid var(--color-primary-300)', borderRadius: 'var(--radius-md)', background: 'linear-gradient(135deg, var(--color-primary-50), var(--color-primary-100))', color: 'var(--color-primary-700)', cursor: 'pointer', fontSize: 'var(--font-size-xs)', fontFamily: 'var(--font-family-sans)', fontWeight: 'var(--font-weight-semibold)', whiteSpace: 'nowrap' }}>
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3l1.5 5.5L19 10l-5.5 1.5L12 17l-1.5-5.5L5 10l5.5-1.5L12 3z" /></svg>
-                                AI Write
-                              </button>
+                              <div style={{ display: 'flex', gap: '6px' }}>
+                                <button onClick={() => setTemplatePickerOpen(true)} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 10px', border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-md)', background: 'var(--color-bg-card)', color: 'var(--color-text-secondary)', cursor: 'pointer', fontSize: 'var(--font-size-xs)', fontFamily: 'var(--font-family-sans)', whiteSpace: 'nowrap' }}>
+                                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="3" y="14" width="7" height="7" /><rect x="14" y="14" width="7" height="7" /></svg>
+                                  Templates
+                                </button>
+                                <button onClick={() => setPreviewOpen(true)} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 10px', border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-md)', background: 'var(--color-bg-card)', color: 'var(--color-text-secondary)', cursor: 'pointer', fontSize: 'var(--font-size-xs)', fontFamily: 'var(--font-family-sans)', whiteSpace: 'nowrap' }}>
+                                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" /></svg>
+                                  Preview
+                                </button>
+                                <button onClick={() => {}} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 12px', border: '1px solid var(--color-primary-300)', borderRadius: 'var(--radius-md)', background: 'linear-gradient(135deg, var(--color-primary-50), var(--color-primary-100))', color: 'var(--color-primary-700)', cursor: 'pointer', fontSize: 'var(--font-size-xs)', fontFamily: 'var(--font-family-sans)', fontWeight: 'var(--font-weight-semibold)', whiteSpace: 'nowrap' }}>
+                                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3l1.5 5.5L19 10l-5.5 1.5L12 17l-1.5-5.5L5 10l5.5-1.5L12 3z" /></svg>
+                                  AI Write
+                                </button>
+                              </div>
                             </div>
                             <textarea placeholder="Start typing here..." value={sequenceSteps[activeSequenceIdx]?.body || ''} onChange={(e) => updateSequenceStep(activeSequenceIdx, 'body', e.target.value)} rows={12} style={{ flex: 1, width: '100%', padding: 'var(--space-3)', border: 'none', outline: 'none', fontFamily: 'var(--font-family-sans)', fontSize: 'var(--font-size-sm)', resize: 'none', boxSizing: 'border-box', lineHeight: 1.6, color: 'var(--color-text-primary)' }} />
-                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', padding: 'var(--space-2) var(--space-3)', borderTop: '1px solid var(--color-border-default)', background: 'var(--color-neutral-50)' }}>
+                            {/* Bottom traditional email toolbar */}
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 'var(--space-2) var(--space-3)', borderTop: '1px solid var(--color-border-default)', background: 'var(--color-neutral-50)' }}>
                               <Button variant="primary" size="small" label="Save" onClick={() => {}} />
+                              <div style={{ display: 'flex', gap: 'var(--space-2)', color: 'var(--color-text-muted)' }}>
+                                {[
+                                  { title: 'Emoji', svg: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><path d="M8 14s1.5 2 4 2 4-2 4-2" /><line x1="9" y1="9" x2="9.01" y2="9" /><line x1="15" y1="9" x2="15.01" y2="9" /></svg> },
+                                  { title: 'Layout', svg: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="3" y="14" width="7" height="7" /><rect x="14" y="14" width="7" height="7" /></svg> },
+                                  { title: 'Variables', svg: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" /></svg> },
+                                  { title: 'Font', svg: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="4 7 4 4 20 4 20 7" /><line x1="9" y1="20" x2="15" y2="20" /><line x1="12" y1="4" x2="12" y2="20" /></svg> },
+                                  { title: 'Clear formatting', svg: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 3l18 18" /><path d="M16 4h-3a2 2 0 0 0-2 2v6" /><line x1="8" y1="20" x2="14" y2="20" /></svg> },
+                                  { title: 'Link', svg: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" /><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" /></svg> },
+                                  { title: 'Insert', svg: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg> },
+                                  { title: 'HTML', svg: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="16 18 22 12 16 6" /><polyline points="8 6 2 12 8 18" /></svg> },
+                                ].map((it, i) => (
+                                  <button key={i} title={it.title} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)', padding: '4px', display: 'flex' }}>{it.svg}</button>
+                                ))}
+                              </div>
                             </div>
                           </div>
                         )}
@@ -2862,6 +2937,99 @@ const CampaignsContent = ({ onNavigate, pendingCampaignList, clearPendingCampaig
                 </div>
               </>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Templates Picker Modal */}
+      {templatePickerOpen && (
+        <div onClick={() => setTemplatePickerOpen(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 1100, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div onClick={(e) => e.stopPropagation()} style={{ width: '880px', maxWidth: '95vw', maxHeight: '85vh', background: 'var(--color-bg-card)', border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-lg)', fontFamily: 'var(--font-family-sans)', boxShadow: 'var(--shadow-xl)', display: 'flex', flexDirection: 'column' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 'var(--space-3) var(--space-4)', borderBottom: '1px solid var(--color-border-default)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary-600)" strokeWidth="2"><rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="3" y="14" width="7" height="7" /><rect x="14" y="14" width="7" height="7" /></svg>
+                <h2 style={{ margin: 0, fontSize: 'var(--font-size-md)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-primary)' }}>Templates</h2>
+              </div>
+              <button onClick={() => setTemplatePickerOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)', display: 'flex', padding: 'var(--space-1)' }}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+              </button>
+            </div>
+            <div style={{ display: 'flex', flex: 1, minHeight: 0 }}>
+              {/* Categories */}
+              <div style={{ width: '260px', borderRight: '1px solid var(--color-border-default)', padding: 'var(--space-3)', overflowY: 'auto' }}>
+                <div style={{ marginBottom: 'var(--space-3)' }}>
+                  <input placeholder="Search..." style={{ width: '100%', padding: '8px 10px', border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-md)', fontFamily: 'var(--font-family-sans)', fontSize: 'var(--font-size-sm)', outline: 'none', boxSizing: 'border-box' }} />
+                </div>
+                {TEMPLATE_CATEGORIES.map((cat) => {
+                  const items = SAMPLE_TEMPLATES[cat.id] || [];
+                  const isOpen = templateCategory === cat.id;
+                  return (
+                    <div key={cat.id} style={{ marginBottom: '4px' }}>
+                      <button onClick={() => setTemplateCategory(isOpen ? null : cat.id)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', padding: '8px 10px', border: 'none', background: isOpen ? 'var(--color-primary-50)' : 'transparent', borderRadius: 'var(--radius-sm)', cursor: 'pointer', fontFamily: 'var(--font-family-sans)', fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-text-primary)' }}>
+                        <span>{cat.label}</span>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ transform: isOpen ? 'rotate(180deg)' : 'rotate(0)', transition: 'transform 0.15s' }}><polyline points="6 9 12 15 18 9" /></svg>
+                      </button>
+                      {isOpen && (
+                        <div style={{ paddingLeft: 'var(--space-3)', display: 'flex', flexDirection: 'column', gap: '2px', marginTop: '4px' }}>
+                          {items.length === 0 ? (
+                            <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)', padding: '4px 8px' }}>No templates found</span>
+                          ) : (
+                            items.map((t) => (
+                              <button key={t.id} onClick={() => setSelectedTemplateId(t.id)} style={{ textAlign: 'left', padding: '6px 8px', border: 'none', background: selectedTemplateId === t.id ? 'var(--color-primary-100)' : 'transparent', borderRadius: 'var(--radius-sm)', cursor: 'pointer', fontFamily: 'var(--font-family-sans)', fontSize: 'var(--font-size-xs)', color: 'var(--color-text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.name}</button>
+                            ))
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+              {/* Preview */}
+              <div style={{ flex: 1, padding: 'var(--space-4)', overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
+                {selectedTemplate ? (
+                  <>
+                    <div style={{ fontSize: 'var(--font-size-md)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-secondary)', marginBottom: 'var(--space-2)' }}>Subject: <span style={{ color: 'var(--color-text-primary)' }}>{selectedTemplate.subject}</span></div>
+                    <div style={{ flex: 1, padding: 'var(--space-3)', background: 'var(--color-neutral-50)', borderRadius: 'var(--radius-md)', whiteSpace: 'pre-wrap', fontSize: 'var(--font-size-sm)', color: 'var(--color-text-primary)', lineHeight: 1.6 }}>{selectedTemplate.body}</div>
+                    <div style={{ display: 'flex', gap: 'var(--space-2)', justifyContent: 'flex-end', marginTop: 'var(--space-3)' }}>
+                      <Button variant="ghost" size="medium" label="Copy" onClick={() => {}} />
+                      <Button variant="primary" size="medium" label="Use template" onClick={applyTemplate} />
+                    </div>
+                  </>
+                ) : (
+                  <div style={{ textAlign: 'center', color: 'var(--color-text-muted)', padding: 'var(--space-10)' }}>Select a template to preview</div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Email Preview Modal */}
+      {previewOpen && (
+        <div onClick={() => setPreviewOpen(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 1100, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div onClick={(e) => e.stopPropagation()} style={{ width: '720px', maxWidth: '95vw', maxHeight: '85vh', background: 'var(--color-bg-card)', border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-lg)', fontFamily: 'var(--font-family-sans)', boxShadow: 'var(--shadow-xl)', display: 'flex', flexDirection: 'column' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 'var(--space-3) var(--space-4)', borderBottom: '1px solid var(--color-border-default)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary-600)" strokeWidth="2"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
+                <h2 style={{ margin: 0, fontSize: 'var(--font-size-md)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-primary)' }}>Email Preview</h2>
+              </div>
+              <button onClick={() => setPreviewOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)', display: 'flex', padding: 'var(--space-1)' }}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+              </button>
+            </div>
+            <div style={{ padding: 'var(--space-4)', overflowY: 'auto', flex: 1 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', marginBottom: 'var(--space-3)', fontSize: 'var(--font-size-sm)' }}>
+                <span style={{ color: 'var(--color-text-muted)' }}>Send to:</span>
+                <span>{`{{firstName}}@example.com`}</span>
+              </div>
+              <div style={{ padding: 'var(--space-3)', background: 'var(--color-neutral-50)', borderRadius: 'var(--radius-md)', whiteSpace: 'pre-wrap', fontSize: 'var(--font-size-sm)', color: 'var(--color-text-primary)', lineHeight: 1.6 }}>
+                <div style={{ fontWeight: 'var(--font-weight-semibold)', marginBottom: 'var(--space-2)' }}>{sequenceSteps[activeSequenceIdx]?.subject || '<no subject>'}</div>
+                <div>{sequenceSteps[activeSequenceIdx]?.body || '<empty body>'}</div>
+              </div>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', padding: 'var(--space-3) var(--space-4)', borderTop: '1px solid var(--color-border-default)' }}>
+              <Button variant="primary" size="medium" label="Confirm" onClick={() => setPreviewOpen(false)} />
+            </div>
           </div>
         </div>
       )}
