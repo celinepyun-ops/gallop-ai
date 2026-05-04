@@ -2409,10 +2409,7 @@ const CampaignsContent = ({ onNavigate, pendingCampaignList, clearPendingCampaig
     { id: 'custom', label: 'Custom Templates' },
     { id: 'lead-gen', label: 'Lead Generation' },
     { id: 'leadgen-agency', label: 'LeadGen Agency' },
-    { id: 'video', label: 'Video Production' },
     { id: 'marketing', label: 'Marketing & Advertising' },
-    { id: 'coaching', label: 'Coaching' },
-    { id: 'appt', label: 'Appointment Setting Agency' },
   ];
   const SAMPLE_TEMPLATES = {
     'lead-gen': [
@@ -2422,17 +2419,8 @@ const CampaignsContent = ({ onNavigate, pendingCampaignList, clearPendingCampaig
     'leadgen-agency': [
       { id: 'la1', name: 'Booking calls with {{firstName}}', subject: 'Booking 5-12 calls/week for {{company}}', body: 'Hey {{firstName}},\n\nWe book 5-12 sales calls per week for B2B agencies on a pay-per-call basis.\n\nWorth a chat?\n\nNAME' },
     ],
-    'video': [
-      { id: 'v1', name: 'Video content for {{company}}', subject: 'Video content for {{company}}', body: 'Hi {{firstName}},\n\nWe produce ad-ready short-form video for brands like {{company}}.\n\nCurious to hear if it\'s a fit.\n\nNAME' },
-    ],
     'marketing': [
       { id: 'm1', name: 'Quick growth idea for {{company}}', subject: 'Quick growth idea for {{company}}', body: 'Hi {{firstName}},\n\nNoticed {{company}} just launched a new product. Quick idea on how to amplify reach...\n\nCurious?\n\nNAME' },
-    ],
-    'coaching': [
-      { id: 'c1', name: 'Coaching offer for {{firstName}}', subject: 'Coaching offer for {{firstName}}', body: 'Hi {{firstName}},\n\nI run a small coaching program for founders at your stage. Open to a quick intro?\n\nNAME' },
-    ],
-    'appt': [
-      { id: 'ap1', name: 'Appointments booked for you', subject: '5 appointments booked for you, {{firstName}}', body: 'Hey {{firstName}},\n\nWe set 5 qualified meetings/week, no upfront cost.\n\nWorth exploring?\n\nNAME' },
     ],
     'custom': [],
   };
