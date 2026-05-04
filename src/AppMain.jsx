@@ -2397,17 +2397,12 @@ const CAMPAIGNS_LIST = [
 const CampaignDetailContent = ({ onNavigate, campaignId }) => {
   const [campaign, setCampaign] = useState(CAMPAIGNS_LIST.find((c) => c.id === campaignId) || CAMPAIGNS_LIST[0]);
   const [pauseConfirmOpen, setPauseConfirmOpen] = useState(false);
-  const [stopConfirmOpen, setStopConfirmOpen] = useState(false);
 
   if (!campaign) return null;
 
   const togglePause = () => {
     setCampaign((prev) => ({ ...prev, status: prev.status === 'active' ? 'paused' : 'active' }));
     setPauseConfirmOpen(false);
-  };
-  const stopCampaign = () => {
-    setCampaign((prev) => ({ ...prev, status: 'archived' }));
-    setStopConfirmOpen(false);
   };
 
   const totalSent = campaign.progress.day0 + campaign.progress.day3 + campaign.progress.day7 + campaign.progress.day14;
@@ -2444,9 +2439,6 @@ const CampaignDetailContent = ({ onNavigate, campaignId }) => {
           {campaign.status === 'paused' && (
             <Button variant="primary" size="medium" label="▶ Resume" onClick={togglePause} />
           )}
-          {(campaign.status === 'active' || campaign.status === 'paused') && (
-            <Button variant="ghost" size="medium" label="Stop" onClick={() => setStopConfirmOpen(true)} />
-          )}
           <Button variant="ghost" size="medium" label="Edit" onClick={() => onNavigate?.('campaigns/new')} />
         </div>
       </div>
@@ -2459,39 +2451,88 @@ const CampaignDetailContent = ({ onNavigate, campaignId }) => {
         <StatsCard title="Pending" value={String(pending)} change="Not yet sent" trend="neutral" icon={Icons.contacts} />
       </div>
 
-      {/* Sequence timeline */}
-      <div style={{ border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-lg)', background: 'var(--color-bg-card)', padding: 'var(--space-4)', marginBottom: 'var(--space-4)' }}>
-        <h2 style={{ margin: '0 0 var(--space-3)', fontSize: 'var(--font-size-md)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-primary)', fontFamily: 'var(--font-family-sans)' }}>Sequence progress</h2>
-        <div style={{ display: 'flex', gap: 'var(--space-2)' }}>
-          {[
-            { day: 0, count: campaign.progress.day0, label: STEP_LABELS[0], date: STEP_DATES[0] },
-            { day: 3, count: campaign.progress.day3, label: STEP_LABELS[1], date: STEP_DATES[1] },
-            { day: 7, count: campaign.progress.day7, label: STEP_LABELS[2], date: STEP_DATES[2] },
-            { day: 14, count: campaign.progress.day14, label: STEP_LABELS[3], date: STEP_DATES[3] },
-          ].map((s, i) => {
-            const pct = campaign.totalContacts > 0 ? (s.count / campaign.totalContacts) * 100 : 0;
-            const isCompleted = s.count === campaign.totalContacts && campaign.totalContacts > 0;
-            const isCurrent = pct > 0 && !isCompleted;
-            const isPending = pct === 0;
-            return (
-              <div key={s.day} style={{ flex: 1, padding: 'var(--space-3)', border: '1px solid', borderColor: isCurrent ? 'var(--color-primary-300)' : 'var(--color-border-default)', borderRadius: 'var(--radius-md)', background: isCurrent ? 'var(--color-primary-50)' : 'var(--color-bg-card)', fontFamily: 'var(--font-family-sans)' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
-                  <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 22, height: 22, borderRadius: '50%', background: isCompleted ? 'var(--color-success)' : isCurrent ? 'var(--color-primary-600)' : 'var(--color-neutral-200)', color: isCompleted || isCurrent ? 'white' : 'var(--color-text-secondary)', fontSize: '11px', fontWeight: 600 }}>
-                    {isCompleted ? '✓' : i + 1}
-                  </span>
-                  <span style={{ fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-primary)' }}>{s.label}</span>
-                </div>
-                <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)', marginBottom: '6px' }}>{s.count}/{campaign.totalContacts} sent &middot; {s.date}</div>
-                <div style={{ height: '4px', borderRadius: '2px', background: 'var(--color-neutral-100)', overflow: 'hidden' }}>
-                  <div style={{ width: `${pct}%`, height: '100%', background: isCompleted ? 'var(--color-success)' : 'var(--color-primary-600)', transition: 'width 0.3s' }} />
-                </div>
-                <div style={{ marginTop: '4px', fontSize: '10px', color: isCompleted ? 'var(--color-success-700)' : isCurrent ? 'var(--color-primary-700)' : 'var(--color-text-muted)', fontWeight: 'var(--font-weight-medium)' }}>
-                  {isCompleted ? 'Completed' : isCurrent ? 'In progress' : isPending ? 'Scheduled' : ''}
-                </div>
+      {/* Sequence progress — horizontal step indicator */}
+      <div style={{ border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-lg)', background: 'var(--color-bg-card)', padding: 'var(--space-5) var(--space-6)', marginBottom: 'var(--space-4)' }}>
+        {(() => {
+          const steps = [
+            { day: 0, count: campaign.progress.day0, label: 'Intro', date: STEP_DATES[0] },
+            { day: 3, count: campaign.progress.day3, label: 'Follow-up #1', date: STEP_DATES[1] },
+            { day: 7, count: campaign.progress.day7, label: 'Follow-up #2', date: STEP_DATES[2] },
+            { day: 14, count: campaign.progress.day14, label: 'Break-up', date: STEP_DATES[3] },
+          ];
+          // Determine current step (first incomplete step with count > 0, OR first step with count > 0 if all complete, OR first if none)
+          const total = campaign.totalContacts;
+          const completedFlags = steps.map((s) => total > 0 && s.count === total);
+          const currentIdx = (() => {
+            // The active step is the latest one with any sent (>0) but not yet completed
+            for (let i = steps.length - 1; i >= 0; i--) {
+              if (steps[i].count > 0 && !completedFlags[i]) return i;
+            }
+            // If all completed or none started: first incomplete
+            const firstIncomplete = completedFlags.findIndex((c) => !c);
+            return firstIncomplete === -1 ? steps.length - 1 : firstIncomplete;
+          })();
+
+          return (
+            <div style={{ position: 'relative', padding: '8px 0' }}>
+              {/* Steps row */}
+              <div style={{ display: 'flex', alignItems: 'center', position: 'relative' }}>
+                {steps.map((s, i) => {
+                  const isCompleted = completedFlags[i];
+                  const isCurrent = i === currentIdx && !isCompleted;
+                  const reachedOrCurrent = isCompleted || isCurrent;
+                  const nextReached = i < steps.length - 1 && (completedFlags[i + 1] || (i + 1) === currentIdx);
+                  return (
+                    <div key={s.day} style={{ display: 'contents' }}>
+                      {/* Step node */}
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', minWidth: 0 }}>
+                        {/* Down arrow above current */}
+                        <div style={{ height: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '2px' }}>
+                          {isCurrent && (
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary-700)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9" /></svg>
+                          )}
+                        </div>
+                        {/* Circle */}
+                        <div style={{
+                          width: 32, height: 32, borderRadius: '50%',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          background: reachedOrCurrent ? 'var(--color-primary-600)' : 'var(--color-bg-card)',
+                          border: '2px solid', borderColor: reachedOrCurrent ? 'var(--color-primary-600)' : 'var(--color-neutral-200)',
+                          color: reachedOrCurrent ? 'white' : 'var(--color-text-muted)',
+                          fontFamily: 'var(--font-family-sans)', fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-semibold)',
+                          zIndex: 2, position: 'relative',
+                          boxShadow: isCurrent ? '0 0 0 4px var(--color-primary-100)' : 'none',
+                          transition: 'all 0.2s',
+                        }}>
+                          {isCompleted
+                            ? <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+                            : (i + 1)
+                          }
+                        </div>
+                        {/* Label below */}
+                        <div style={{ marginTop: 'var(--space-2)', textAlign: 'center', fontFamily: 'var(--font-family-sans)' }}>
+                          <div style={{ fontSize: 'var(--font-size-sm)', fontWeight: isCurrent ? 'var(--font-weight-semibold)' : 'var(--font-weight-medium)', color: reachedOrCurrent ? 'var(--color-text-primary)' : 'var(--color-text-muted)' }}>{s.label}</div>
+                          <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)', marginTop: '2px' }}>Day {s.day} &middot; {s.date}</div>
+                          <div style={{ fontSize: '10px', color: 'var(--color-text-muted)', marginTop: '2px' }}>{s.count}/{total} sent</div>
+                        </div>
+                      </div>
+                      {/* Connecting line */}
+                      {i < steps.length - 1 && (
+                        <div style={{
+                          flex: 1, height: 2,
+                          background: nextReached ? 'var(--color-primary-600)' : 'var(--color-neutral-200)',
+                          marginTop: '14px', // align with center of circle (top arrow space + half of 32px circle)
+                          alignSelf: 'flex-start',
+                          transition: 'background 0.3s',
+                        }} />
+                      )}
+                    </div>
+                  );
+                })}
               </div>
-            );
-          })}
-        </div>
+            </div>
+          );
+        })()}
       </div>
 
       {/* Contacts in sequence */}
@@ -2542,21 +2583,6 @@ const CampaignDetailContent = ({ onNavigate, campaignId }) => {
         </div>
       )}
 
-      {/* Stop Confirm Modal */}
-      {stopConfirmOpen && (
-        <div onClick={() => setStopConfirmOpen(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <div onClick={(e) => e.stopPropagation()} style={{ width: '440px', background: 'var(--color-bg-card)', border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-5)', fontFamily: 'var(--font-family-sans)', boxShadow: 'var(--shadow-xl)' }}>
-            <h2 style={{ margin: '0 0 var(--space-2)', fontSize: 'var(--font-size-lg)', fontWeight: 'var(--font-weight-semibold)' }}>Stop campaign permanently?</h2>
-            <p style={{ margin: '0 0 var(--space-4)', fontSize: 'var(--font-size-sm)', color: 'var(--color-text-secondary)', lineHeight: 1.5 }}>
-              Stopping will archive <strong>{campaign.name}</strong> permanently. No more emails will be sent. This cannot be undone — you'd need to create a new campaign.
-            </p>
-            <div style={{ display: 'flex', gap: 'var(--space-2)', justifyContent: 'flex-end' }}>
-              <Button variant="ghost" size="medium" label="Cancel" onClick={() => setStopConfirmOpen(false)} />
-              <Button variant="primary" size="medium" label="Stop campaign" onClick={stopCampaign} />
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
