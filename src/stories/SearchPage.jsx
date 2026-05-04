@@ -719,7 +719,7 @@ export const SearchPage = ({ products = MOCK_PRODUCTS, savedLists = [], onAddNew
         <aside className="oai-sp-filters oai-sp-filters--collapsed">
           <div className="oai-sp-filters__mini-header">
             <button className="oai-sp-filters__collapse-btn" onClick={() => setFiltersVisible(true)} aria-label="Expand filters" title="Expand filters">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6" /></svg>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6" /></svg>
             </button>
           </div>
           <div className="oai-sp-filters__mini-icons">
