@@ -1245,73 +1245,6 @@ const EmailsContent = ({ activeCampaign, setActiveCampaign, pendingCampaignList,
           )}
         </div>
 
-        {/* Campaigns — collapsible */}
-        <div style={{ borderBottom: '1px solid var(--color-border-default)' }}>
-          <button onClick={() => toggleFold('campaigns')} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', padding: 'var(--space-3) var(--space-3) var(--space-2)', background: 'none', border: 'none', cursor: 'pointer', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: 'var(--font-family-sans)' }}>
-            <span>Campaigns</span>
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ transform: sidebarFolded.campaigns ? 'rotate(-90deg)' : 'rotate(0)', transition: 'transform 0.15s' }}><polyline points="6 9 12 15 18 9" /></svg>
-          </button>
-          {!sidebarFolded.campaigns && (
-            <div style={{ padding: '0 var(--space-3) var(--space-3)', display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
-              <button
-                onClick={() => onNavigate?.('campaigns')}
-                style={{
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
-                  padding: 'var(--space-2)', border: '1px dashed var(--color-primary-400)',
-                  borderRadius: 'var(--radius-md)', background: 'transparent',
-                  color: 'var(--color-primary-700)', cursor: 'pointer',
-                  fontFamily: 'var(--font-family-sans)', fontSize: 'var(--font-size-xs)',
-                  fontWeight: 'var(--font-weight-semibold)',
-                }}
-              >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
-                New Campaign
-              </button>
-              {EMAIL_CAMPAIGNS.map((c) => (
-                <button
-                  key={c.id}
-                  onClick={() => setActiveCampaign(c.list)}
-                  style={{
-                    display: 'flex', flexDirection: 'column', gap: '2px',
-                    padding: 'var(--space-2)', border: '1px solid var(--color-border-default)',
-                    borderRadius: 'var(--radius-md)', background: activeCampaign === c.list ? 'var(--color-primary-50)' : 'var(--color-bg-card)',
-                    cursor: 'pointer', textAlign: 'left', fontFamily: 'var(--font-family-sans)',
-                    transition: 'background 0.15s, border-color 0.15s',
-                    borderColor: activeCampaign === c.list ? 'var(--color-primary-500)' : 'var(--color-border-default)',
-                  }}
-                >
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 'var(--space-1)' }}>
-                    <span style={{ fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.name}</span>
-                    <Badge label={c.status === 'active' ? 'Active' : 'Draft'} variant={c.status === 'active' ? 'success' : 'default'} size="small" />
-                  </div>
-                  <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)', marginBottom: c.status === 'active' ? '6px' : 0 }}>{c.list} &middot; {c.stats}</div>
-                  {c.status === 'active' && (
-                    <div style={{ display: 'flex', gap: '2px', marginTop: '4px' }}>
-                      {[
-                        { day: 0, count: c.progress.day0, label: 'D0' },
-                        { day: 3, count: c.progress.day3, label: 'D3' },
-                        { day: 7, count: c.progress.day7, label: 'D7' },
-                        { day: 14, count: c.progress.day14, label: 'D14' },
-                      ].map((s) => {
-                        const pct = c.totalContacts > 0 ? (s.count / c.totalContacts) * 100 : 0;
-                        const isCurrent = s.day <= c.currentDay && (s.day === 0 || c.currentDay > [0, 3, 7, 14][[0, 3, 7, 14].indexOf(s.day) - 1]);
-                        return (
-                          <div key={s.day} title={`${s.label}: ${s.count}/${c.totalContacts} sent`} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
-                            <div style={{ width: '100%', height: '3px', borderRadius: '1px', background: 'var(--color-neutral-100)', overflow: 'hidden' }}>
-                              <div style={{ width: `${pct}%`, height: '100%', background: isCurrent ? 'var(--color-primary-600)' : pct > 0 ? 'var(--color-success)' : 'transparent', transition: 'width 0.3s' }} />
-                            </div>
-                            <span style={{ fontSize: '9px', color: 'var(--color-text-muted)', fontWeight: pct > 0 ? 'var(--font-weight-semibold)' : 'normal' }}>{s.label}</span>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-
         {/* Today — collapsible */}
         <div>
           <button onClick={() => toggleFold('today')} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', padding: 'var(--space-3) var(--space-3) var(--space-2)', background: 'none', border: 'none', cursor: 'pointer', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: 'var(--font-family-sans)' }}>
@@ -1362,6 +1295,14 @@ const EmailsContent = ({ activeCampaign, setActiveCampaign, pendingCampaignList,
             <CampaignSwitcher active={activeCampaign} onChange={setActiveCampaign} />
             <Button variant="primary" size="small" label="Connect Email" onClick={noop} />
           </div>
+        </div>
+
+        {/* Email-wide stats (moved from Campaigns) */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 'var(--space-3)', marginBottom: 'var(--space-3)' }}>
+          <StatsCard title="Total Sent" value="42" change="+12 this month" trend="up" icon={Icons.campaigns} />
+          <StatsCard title="Replied" value="12" change="+5 from last month" trend="up" icon={Icons.bell} />
+          <StatsCard title="Reply Rate" value="28.6%" change="+3.2% MoM" trend="up" icon={Icons.analytics} />
+          <StatsCard title="Drafts" value="1" change="Not started" trend="neutral" icon={Icons.templates} />
         </div>
 
         {/* Tabs + Search in one row */}
@@ -2412,7 +2353,7 @@ const CAMPAIGNS_LIST = [
   { id: 'vitamin-spring', name: 'Vitamin C Spring 2026', list: 'Vitamin C Serum', status: 'draft', stats: 'Not started', progress: { day0: 0, day3: 0, day7: 0, day14: 0 }, totalContacts: 1, currentDay: 0, replyRate: 0 },
 ];
 
-const CampaignsContent = ({ onNavigate, pendingCampaignList, clearPendingCampaign }) => {
+const CampaignsContent = ({ onNavigate, pendingCampaignList, clearPendingCampaign, startInBuilder = false }) => {
   // Reuse all the campaign creation state locally
   const [createCampaignOpen, setCreateCampaignOpen] = useState(false);
   const [campaignNamingDone, setCampaignNamingDone] = useState(false);
@@ -2467,6 +2408,7 @@ const CampaignsContent = ({ onNavigate, pendingCampaignList, clearPendingCampaig
     setSequenceSteps([]);
     setActiveSequenceIdx(0);
     clearPendingCampaign?.();
+    if (startInBuilder) onNavigate?.('campaigns');
   };
 
   useEffect(() => {
@@ -2474,8 +2416,10 @@ const CampaignsContent = ({ onNavigate, pendingCampaignList, clearPendingCampaig
       setCampaignForm((prev) => ({ ...prev, list: pendingCampaignList, name: `${pendingCampaignList} Outreach` }));
       setCreateCampaignOpen(true);
       setCampaignNamingDone(true);
+    } else if (startInBuilder) {
+      setCreateCampaignOpen(true);
     }
-  }, [pendingCampaignList]);
+  }, [pendingCampaignList, startInBuilder]);
 
   const activeCampaigns = CAMPAIGNS_LIST.filter((c) => c.status === 'active');
   const draftCampaigns = CAMPAIGNS_LIST.filter((c) => c.status === 'draft');
@@ -2486,91 +2430,94 @@ const CampaignsContent = ({ onNavigate, pendingCampaignList, clearPendingCampaig
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
         <div>
           <h1 style={{ margin: '0 0 4px', fontSize: '24px', fontWeight: 400, color: 'var(--color-text-primary)', fontFamily: 'var(--font-family-sans)' }}>Campaigns</h1>
-          <p style={{ margin: 0, fontFamily: 'var(--font-family-sans)', fontSize: '14px', color: 'var(--color-text-secondary)' }}>{activeCampaigns.length} active &middot; {draftCampaigns.length} draft &middot; Manage outreach campaigns per product segment</p>
         </div>
-        <Button variant="primary" size="medium" label="+ New Campaign" onClick={() => setCreateCampaignOpen(true)} />
       </div>
 
-      {/* Stats */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '16px', marginBottom: '24px' }}>
-        <StatsCard title="Active Campaigns" value={String(activeCampaigns.length)} change={`${activeCampaigns.length} running`} trend="up" icon={Icons.campaigns} />
-        <StatsCard title="Total Sent" value={String(CAMPAIGNS_LIST.reduce((sum, c) => sum + c.progress.day0 + c.progress.day3 + c.progress.day7 + c.progress.day14, 0))} change="+8 this week" trend="up" icon={Icons.analytics} />
-        <StatsCard title="Avg Reply Rate" value={`${Math.round(activeCampaigns.reduce((s, c) => s + c.replyRate, 0) / Math.max(1, activeCampaigns.length))}%`} change="Across active campaigns" trend="up" icon={Icons.contacts} />
-        <StatsCard title="Drafts" value={String(draftCampaigns.length)} change="Not started" trend="neutral" icon={Icons.templates} />
+      {/* Toolbar — search + filters + add */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', marginBottom: 'var(--space-3)' }}>
+        <div style={{ flex: 1, maxWidth: '320px' }}>
+          <Search placeholder="Search..." onChange={() => {}} />
+        </div>
+        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
+          <button style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: 'var(--space-2) var(--space-3)', border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-md)', background: 'var(--color-bg-card)', fontFamily: 'var(--font-family-sans)', fontSize: 'var(--font-size-sm)', color: 'var(--color-text-primary)', cursor: 'pointer', outline: 'none' }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary-600)" strokeWidth="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" /></svg>
+            All statuses
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 12 15 18 9" /></svg>
+          </button>
+          <button style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: 'var(--space-2) var(--space-3)', border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-md)', background: 'var(--color-bg-card)', fontFamily: 'var(--font-family-sans)', fontSize: 'var(--font-size-sm)', color: 'var(--color-text-primary)', cursor: 'pointer', outline: 'none' }}>
+            Newest first
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 12 15 18 9" /></svg>
+          </button>
+          <Button variant="primary" size="medium" label="+ Add New" onClick={() => onNavigate?.('campaigns/new')} />
+        </div>
       </div>
 
-      {/* Active campaigns section */}
-      <div style={{ marginBottom: 'var(--space-5)' }}>
-        <h2 style={{ margin: '0 0 var(--space-3)', fontSize: 'var(--font-size-md)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-primary)', fontFamily: 'var(--font-family-sans)' }}>Active</h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))', gap: 'var(--space-3)' }}>
-          {activeCampaigns.map((c) => (
-            <div key={c.id} style={{ border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-lg)', background: 'var(--color-bg-card)', padding: 'var(--space-4)', fontFamily: 'var(--font-family-sans)' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 'var(--space-2)' }}>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: 'var(--font-size-md)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.name}</div>
-                  <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-secondary)', marginTop: '2px' }}>{c.list} &middot; {c.stats}</div>
-                </div>
-                <Badge label="Active" variant="success" size="small" />
+      {/* Campaigns table */}
+      <div style={{ border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-lg)', overflow: 'hidden', background: 'var(--color-bg-card)' }}>
+        {/* Header row */}
+        <div style={{ display: 'grid', gridTemplateColumns: '40px 2fr 100px 100px 80px 80px 80px 110px 40px', gap: 'var(--space-3)', padding: 'var(--space-2) var(--space-4)', borderBottom: '1px solid var(--color-border-default)', background: 'var(--color-neutral-50)', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', alignItems: 'center', fontFamily: 'var(--font-family-sans)' }}>
+          <input type="checkbox" />
+          <span>Name</span>
+          <span>Status</span>
+          <span>Progress</span>
+          <span>Sent</span>
+          <span>Click</span>
+          <span>Replied</span>
+          <span>Opportunities</span>
+          <span></span>
+        </div>
+
+        {/* Rows */}
+        {CAMPAIGNS_LIST.map((c) => {
+          const sent = c.progress.day0 + c.progress.day3 + c.progress.day7 + c.progress.day14;
+          const replied = c.status === 'active' ? Math.round(sent * c.replyRate / 100) : 0;
+          const isDraft = c.status === 'draft';
+          return (
+            <div key={c.id} style={{ display: 'grid', gridTemplateColumns: '40px 2fr 100px 100px 80px 80px 80px 110px 40px', gap: 'var(--space-3)', padding: 'var(--space-3) var(--space-4)', borderBottom: '1px solid var(--color-border-default)', alignItems: 'center', fontSize: 'var(--font-size-sm)', color: 'var(--color-text-primary)', fontFamily: 'var(--font-family-sans)', cursor: 'pointer' }} onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--color-bg-hover)'; }} onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}>
+              <input type="checkbox" onClick={(e) => e.stopPropagation()} />
+              <div>
+                <div style={{ fontWeight: 'var(--font-weight-semibold)' }}>{c.name}</div>
+                <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)' }}>{c.list}</div>
               </div>
-
-              {/* Progress bars */}
-              <div style={{ display: 'flex', gap: '4px', marginTop: 'var(--space-3)', marginBottom: 'var(--space-3)' }}>
-                {[
-                  { day: 0, count: c.progress.day0, label: 'Day 0' },
-                  { day: 3, count: c.progress.day3, label: 'Day 3' },
-                  { day: 7, count: c.progress.day7, label: 'Day 7' },
-                  { day: 14, count: c.progress.day14, label: 'Day 14' },
-                ].map((s) => {
-                  const pct = c.totalContacts > 0 ? (s.count / c.totalContacts) * 100 : 0;
-                  return (
-                    <div key={s.day} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
-                      <div style={{ width: '100%', height: '6px', borderRadius: '3px', background: 'var(--color-neutral-100)', overflow: 'hidden' }}>
-                        <div style={{ width: `${pct}%`, height: '100%', background: pct > 0 ? 'var(--color-success)' : 'transparent', transition: 'width 0.3s' }} />
-                      </div>
-                      <span style={{ fontSize: '10px', color: 'var(--color-text-muted)', fontWeight: pct > 0 ? 'var(--font-weight-semibold)' : 'normal' }}>{s.label} · {s.count}/{c.totalContacts}</span>
+              <Badge label={isDraft ? 'Draft' : 'Active'} variant={isDraft ? 'default' : 'success'} size="small" />
+              <div style={{ fontSize: 'var(--font-size-xs)' }}>
+                {isDraft ? <span style={{ color: 'var(--color-text-muted)' }}>—</span> : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                    <div style={{ width: '60px', height: '4px', borderRadius: '2px', background: 'var(--color-neutral-100)', overflow: 'hidden' }}>
+                      <div style={{ width: `${(sent / (c.totalContacts * 4)) * 100}%`, height: '100%', background: 'var(--color-success)' }} />
                     </div>
-                  );
-                })}
+                    <span style={{ color: 'var(--color-text-muted)', fontSize: '10px' }}>{sent}/{c.totalContacts * 4}</span>
+                  </div>
+                )}
               </div>
-
-              {/* Actions */}
-              <div style={{ display: 'flex', gap: 'var(--space-2)', justifyContent: 'flex-end', marginTop: 'var(--space-2)', paddingTop: 'var(--space-3)', borderTop: '1px solid var(--color-border-default)' }}>
-                <Button variant="ghost" size="small" label="Pause" onClick={() => {}} />
-                <Button variant="ghost" size="small" label="View details" onClick={() => onNavigate?.('emails')} />
-              </div>
+              <span style={{ color: isDraft ? 'var(--color-text-muted)' : 'var(--color-text-primary)' }}>{isDraft ? '—' : sent}</span>
+              <span style={{ color: 'var(--color-text-muted)' }}>—</span>
+              <span style={{ color: isDraft ? 'var(--color-text-muted)' : 'var(--color-success-700)', fontWeight: replied > 0 ? 'var(--font-weight-semibold)' : 'normal' }}>{isDraft ? '—' : replied}</span>
+              <span style={{ color: isDraft ? 'var(--color-text-muted)' : 'var(--color-text-primary)' }}>{isDraft ? '—' : c.totalContacts}</span>
+              <button onClick={(e) => e.stopPropagation()} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)', padding: '4px', display: 'flex', justifyContent: 'center' }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="6" r="1.5" /><circle cx="12" cy="12" r="1.5" /><circle cx="12" cy="18" r="1.5" /></svg>
+              </button>
             </div>
-          ))}
-        </div>
+          );
+        })}
       </div>
 
-      {/* Drafts section */}
-      {draftCampaigns.length > 0 && (
-        <div>
-          <h2 style={{ margin: '0 0 var(--space-3)', fontSize: 'var(--font-size-md)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-primary)', fontFamily: 'var(--font-family-sans)' }}>Drafts</h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))', gap: 'var(--space-3)' }}>
-            {draftCampaigns.map((c) => (
-              <div key={c.id} style={{ border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-lg)', background: 'var(--color-neutral-50)', padding: 'var(--space-4)', fontFamily: 'var(--font-family-sans)' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 'var(--space-2)' }}>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 'var(--font-size-md)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-primary)' }}>{c.name}</div>
-                    <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-secondary)', marginTop: '2px' }}>{c.list} &middot; Not started</div>
-                  </div>
-                  <Badge label="Draft" variant="default" size="small" />
-                </div>
-                <div style={{ display: 'flex', gap: 'var(--space-2)', justifyContent: 'flex-end', marginTop: 'var(--space-3)', paddingTop: 'var(--space-3)', borderTop: '1px solid var(--color-border-default)' }}>
-                  <Button variant="ghost" size="small" label="Edit" onClick={() => setCreateCampaignOpen(true)} />
-                  <Button variant="primary" size="small" label="Activate" onClick={() => {}} />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* ─── Create Campaign Modal (same as in EmailsContent) ─── */}
+            {/* ─── Create Campaign Modal (or full-page builder) ─── */}
       {createCampaignOpen && (
-        <div onClick={closeCreateCampaign} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <div onClick={(e) => e.stopPropagation()} style={{ width: '960px', maxWidth: '95vw', maxHeight: '90vh', background: 'var(--color-bg-card)', border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-lg)', fontFamily: 'var(--font-family-sans)', boxShadow: 'var(--shadow-xl)', display: 'flex', flexDirection: 'column' }}>
+        <div
+          onClick={startInBuilder ? undefined : closeCreateCampaign}
+          style={startInBuilder
+            ? { position: 'fixed', inset: 0, background: 'var(--color-bg-page)', zIndex: 100, display: 'flex' }
+            : { position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }
+          }
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={startInBuilder
+              ? { flex: 1, background: 'var(--color-bg-card)', fontFamily: 'var(--font-family-sans)', display: 'flex', flexDirection: 'column' }
+              : { width: '960px', maxWidth: '95vw', maxHeight: '90vh', background: 'var(--color-bg-card)', border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-lg)', fontFamily: 'var(--font-family-sans)', boxShadow: 'var(--shadow-xl)', display: 'flex', flexDirection: 'column' }
+            }
+          >
             {!campaignNamingDone && (
               <div style={{ padding: 'var(--space-6) var(--space-6) var(--space-5)' }}>
                 <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 'var(--space-2)' }}>
@@ -3189,7 +3136,8 @@ function AppMain() {
       case 'lists': return <SavedListsPage savedLists={savedLists} onAddNewList={addNewList} activeCampaign={activeCampaign} setActiveCampaign={setActiveCampaign} onCreateCampaign={startCampaignCreation} />;
       case 'tasks': return <TasksPage />;
       case 'people': return <PeopleContent onNavigate={navigate} />;
-      case 'campaigns': return <CampaignsContent onNavigate={navigate} pendingCampaignList={pendingCampaignList} clearPendingCampaign={() => setPendingCampaignList(null)} />;
+      case 'campaigns': return <CampaignsContent onNavigate={navigate} />;
+      case 'campaigns/new': return <CampaignsContent onNavigate={navigate} pendingCampaignList={pendingCampaignList} clearPendingCampaign={() => setPendingCampaignList(null)} startInBuilder={true} />;
       case 'emails': return <EmailsContent activeCampaign={activeCampaign} setActiveCampaign={setActiveCampaign} pendingCampaignList={null} clearPendingCampaign={() => {}} onNavigate={navigate} />;
       case 'templates': return <TemplatesContent />;
       default: return <NotFound onBackClick={() => navigate('pipeline')} />;
