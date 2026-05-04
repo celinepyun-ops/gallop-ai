@@ -521,33 +521,62 @@
   color: var(--color-text-primary);
 }
 
-/* Filter expand button (when collapsed) — sticky chevron pinned to left edge */
-.oai-sp-expand-btn {
+/* Collapsed mini sidebar — icons only */
+.oai-sp-filters--collapsed {
+  width: 56px;
+  min-width: 56px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--space-2) 0;
+}
+
+.oai-sp-filters__mini-header {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-2) 0;
+  width: 100%;
+  border-bottom: 1px solid var(--color-border-default);
+  margin-bottom: var(--space-2);
+}
+
+.oai-sp-filters__mini-icons {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  width: 100%;
+  align-items: center;
+}
+
+.oai-sp-filters__mini-icon-btn {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--space-1);
-  width: 28px;
-  height: 28px;
-  border: 1px solid var(--color-border-default);
+  width: 36px;
+  height: 36px;
+  border: 1px solid transparent;
   border-radius: var(--radius-md);
-  background: var(--color-bg-card);
+  background: transparent;
   color: var(--color-text-secondary);
   cursor: pointer;
-  margin-bottom: var(--space-3);
-  transition: background var(--transition-fast), color var(--transition-fast);
-  flex-shrink: 0;
+  transition: background var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
 }
 
-.oai-sp-expand-btn:hover {
+.oai-sp-filters__mini-icon-btn:hover {
   background: var(--color-bg-hover);
   color: var(--color-text-primary);
+  border-color: var(--color-border-default);
 }
 
-/* When badge present, expand to fit */
-.oai-sp-expand-btn:has(.oai-badge) {
-  width: auto;
-  padding: 0 var(--space-2);
+.oai-sp-filters__mini-dot {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-primary-600);
 }
 
 /* ══════════════════════════════════════════════════════════════════════════

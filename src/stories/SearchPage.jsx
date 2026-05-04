@@ -714,6 +714,35 @@ export const SearchPage = ({ products = MOCK_PRODUCTS, savedLists = [], onAddNew
   return (
     <div className="oai-sp">
       {/* ── LEFT SIDEBAR — Filters or Progress Tree ────── */}
+      {/* Collapsed mini sidebar — icons only */}
+      {!filtersVisible && (
+        <aside className="oai-sp-filters oai-sp-filters--collapsed">
+          <div className="oai-sp-filters__mini-header">
+            <button className="oai-sp-filters__collapse-btn" onClick={() => setFiltersVisible(true)} aria-label="Expand filters" title="Expand filters">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6" /></svg>
+            </button>
+          </div>
+          <div className="oai-sp-filters__mini-icons">
+            {(activeTab === 'people' ? PEOPLE_FILTER_SECTIONS : FILTER_SECTIONS).map((section) => {
+              const sectionCheckedCount = section.options.filter((o) => checkedFilters[o.id]).length;
+              return (
+                <button
+                  key={section.id}
+                  className="oai-sp-filters__mini-icon-btn"
+                  onClick={() => setFiltersVisible(true)}
+                  title={section.label}
+                >
+                  {FilterIcons[section.icon]}
+                  {sectionCheckedCount > 0 && (
+                    <span className="oai-sp-filters__mini-dot" />
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </aside>
+      )}
+
       {filtersVisible && (
         <aside className="oai-sp-filters">
           <div className="oai-sp-filters__header">
@@ -890,13 +919,6 @@ export const SearchPage = ({ products = MOCK_PRODUCTS, savedLists = [], onAddNew
           </div>
         )}
 
-        {/* Show filters button (when sidebar hidden) */}
-        {!filtersVisible && (
-          <button className="oai-sp-expand-btn" onClick={() => setFiltersVisible(true)} aria-label="Show filters" title="Show filters">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6" /></svg>
-            {activeFilterCount > 0 && <Badge label={String(activeFilterCount)} variant="info" size="small" />}
-          </button>
-        )}
 
         {/* Active filter chips */}
         {activeFilterEntries.length > 0 && (
