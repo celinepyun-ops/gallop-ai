@@ -44,6 +44,60 @@
   margin-right: auto;
 }
 
+/* ── Plans / PayG Toggle ─────────────────────────────────────────── */
+.oai-pricing__toggle {
+  display: inline-flex;
+  margin-top: var(--space-6);
+  padding: var(--space-1);
+  background: var(--color-neutral-100);
+  border-radius: var(--radius-full);
+  gap: var(--space-1);
+}
+
+.oai-pricing__toggle-btn {
+  padding: var(--space-2) var(--space-6);
+  border: none;
+  border-radius: var(--radius-full);
+  background: transparent;
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.oai-pricing__toggle-btn:hover {
+  color: var(--color-text-primary);
+}
+
+.oai-pricing__toggle-btn--active {
+  background: #FFFFFF;
+  color: var(--color-text-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ── Price period label ──────────────────────────────────────────── */
+.oai-pricing__price-period {
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-md);
+  color: var(--color-text-muted);
+  font-weight: var(--font-weight-normal);
+}
+
+/* ── Per-token rate ──────────────────────────────────────────────── */
+.oai-pricing__per-token {
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-4);
+}
+
+.oai-pricing__per-token-save {
+  color: var(--color-success-text);
+  font-weight: var(--font-weight-semibold);
+}
+
 /* ── Cards Grid — 2 columns ──────────────────────────────────────── */
 .oai-pricing__grid {
   display: grid;
@@ -315,6 +369,199 @@
   color: var(--color-text-secondary);
   margin: 0;
   line-height: var(--leading-relaxed);
+}
+
+/* ==========================================================================
+   Pay As You Go — token slider + presets
+   ========================================================================== */
+.oai-pricing__payg-container {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: var(--space-8) var(--space-8) var(--space-10);
+}
+
+.oai-pricing__payg {
+  background: #FFFFFF;
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+}
+
+.oai-pricing__payg-header {
+  padding: var(--space-6) var(--space-8) var(--space-4);
+}
+
+.oai-pricing__payg-title {
+  font-family: var(--font-family-serif);
+  font-weight: var(--font-weight-normal);
+  font-size: var(--font-size-xl);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--space-2);
+}
+
+.oai-pricing__payg-desc {
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin: 0;
+  line-height: var(--leading-relaxed);
+}
+
+.oai-pricing__payg-body {
+  padding: var(--space-4) var(--space-8) var(--space-8);
+}
+
+/* ── Preset buttons ──────────────────────────────────────────────── */
+.oai-pricing__payg-presets {
+  display: flex;
+  gap: var(--space-2);
+  margin-bottom: var(--space-5);
+}
+
+.oai-pricing__payg-preset {
+  flex: 1;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  background: #FFFFFF;
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  text-align: center;
+  transition: border-color var(--transition-fast), color var(--transition-fast), background var(--transition-fast);
+}
+
+.oai-pricing__payg-preset:hover {
+  border-color: var(--color-primary-400);
+  color: var(--color-text-primary);
+}
+
+.oai-pricing__payg-preset--active {
+  border-color: var(--color-primary-600);
+  background: var(--color-primary-50);
+  color: var(--color-primary-700);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* ── Slider + input row ──────────────────────────────────────────── */
+.oai-pricing__payg-slider-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin-bottom: var(--space-5);
+}
+
+.oai-pricing__payg-slider {
+  flex: 1;
+  height: 6px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: var(--color-neutral-200);
+  border-radius: var(--radius-full);
+  outline: none;
+}
+
+.oai-pricing__payg-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--color-primary-600);
+  cursor: pointer;
+  border: 2px solid #FFFFFF;
+  box-shadow: var(--shadow-sm);
+}
+
+.oai-pricing__payg-slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--color-primary-600);
+  cursor: pointer;
+  border: 2px solid #FFFFFF;
+  box-shadow: var(--shadow-sm);
+}
+
+.oai-pricing__payg-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+.oai-pricing__payg-input {
+  width: 80px;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  text-align: center;
+  outline: none;
+  -moz-appearance: textfield;
+}
+
+.oai-pricing__payg-input::-webkit-outer-spin-button,
+.oai-pricing__payg-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.oai-pricing__payg-input:focus {
+  border-color: var(--color-primary-500);
+  box-shadow: var(--shadow-focus);
+}
+
+.oai-pricing__payg-input-label {
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+/* ── Total row ───────────────────────────────────────────────────── */
+.oai-pricing__payg-total-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4) 0;
+  border-top: 1px solid var(--color-border-default);
+  margin-bottom: var(--space-5);
+}
+
+.oai-pricing__payg-total {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+}
+
+.oai-pricing__payg-total-label {
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  font-weight: var(--font-weight-medium);
+}
+
+.oai-pricing__payg-total-price {
+  font-family: var(--font-family-serif);
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-normal);
+  color: var(--color-text-primary);
+}
+
+.oai-pricing__payg-rate {
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.oai-pricing__card-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 /* ── Footer ──────────────────────────────────────────────────────── */

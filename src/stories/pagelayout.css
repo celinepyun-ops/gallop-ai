@@ -14,7 +14,25 @@
 
 .oai-page-layout__content {
   flex: 1;
-  overflow-y: auto;
+  overflow: auto;
   padding: var(--space-6);
   background-color: var(--color-bg-page);
+  min-width: 0;
+}
+
+/* ── Responsive ──────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .oai-page-layout__content {
+    padding: var(--space-4);
+  }
+}
+
+@media (max-width: 768px) {
+  .oai-page-layout {
+    margin-left: var(--sidebar-collapsed);
+  }
+
+  .oai-page-layout__content {
+    padding: var(--space-3);
+  }
 }

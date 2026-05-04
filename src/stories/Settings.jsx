@@ -6,9 +6,9 @@ import './settings.css';
 
 const navItems = [
   { id: 'account', label: 'Account', icon: Icons.profile },
-  { id: 'tokens', label: 'Token Balance', icon: Icons.pricing },
+  { id: 'tokens', label: 'Token History', icon: Icons.pricing },
   { id: 'subscription', label: 'Subscription', icon: Icons.settings },
-  { id: 'preferences', label: 'Preferences', icon: Icons.settings },
+  { id: 'preferences', label: 'Preferences', icon: Icons.dashboard },
 ];
 
 /* ── Account Tab ──────────────────────────────────────────────────── */
@@ -84,7 +84,7 @@ const AccountTab = ({ user, onSave }) => {
   );
 };
 
-/* ── Token Balance Tab ───────────────────────────────────────────── */
+/* ── Token History Tab ───────────────────────────────────────────── */
 const tokenHistory = [
   { date: 'Mar 15, 2026', action: 'Email reveal — Sarah Chen', used: -2, balance: 48 },
   { date: 'Mar 14, 2026', action: 'LinkedIn reveal — Marcus Johnson', used: -3, balance: 50 },
@@ -100,7 +100,7 @@ const TokensTab = ({ onBuyTokens }) => {
 
   return (
     <div>
-      <h2 className="oai-settings__section-title">Token Balance</h2>
+      <h2 className="oai-settings__section-title">Token History</h2>
       <p className="oai-settings__section-desc">Track your token usage and purchase more tokens.</p>
 
       {/* Balance Card */}

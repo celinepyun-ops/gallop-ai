@@ -420,3 +420,164 @@
   outline: none;
   box-shadow: var(--shadow-focus);
 }
+
+.oai-lists__save-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ==========================================================================
+   Split Layout — sidebar + content for multi-tab list view
+   ========================================================================== */
+.oai-lists__split {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: var(--space-5);
+  min-height: 500px;
+}
+
+@media (max-width: 768px) {
+  .oai-lists__split {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── List Sidebar ────────────────────────────────────────────────────── */
+.oai-lists__sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-card);
+  padding: var(--space-3);
+  align-self: start;
+}
+
+.oai-lists__sidebar-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: var(--space-3) var(--space-3);
+  border: none;
+  background: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-family: var(--font-family-sans);
+  text-align: left;
+  transition: background var(--transition-fast);
+}
+
+.oai-lists__sidebar-item:hover {
+  background: var(--color-bg-secondary);
+}
+
+.oai-lists__sidebar-item--active {
+  background: var(--color-primary-50);
+  color: var(--color-primary-700);
+}
+
+.oai-lists__sidebar-item--active:hover {
+  background: var(--color-primary-100);
+}
+
+.oai-lists__sidebar-item-info {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.oai-lists__sidebar-item-name {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.oai-lists__sidebar-item--active .oai-lists__sidebar-item-name {
+  color: var(--color-primary-700);
+}
+
+/* ── Content Area ────────────────────────────────────────────────────── */
+.oai-lists__content {
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-card);
+  padding: var(--space-5);
+  min-height: 400px;
+}
+
+.oai-lists__content-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+}
+
+.oai-lists__content-title {
+  margin: 0;
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* ==========================================================================
+   AddToListModal — list picker
+   ========================================================================== */
+.oai-atl__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin-bottom: var(--space-3);
+}
+
+.oai-atl__list-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: var(--space-3);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-card);
+  cursor: pointer;
+  font-family: var(--font-family-sans);
+  text-align: left;
+  transition: border-color var(--transition-fast), background var(--transition-fast);
+}
+
+.oai-atl__list-item:hover {
+  background: var(--color-bg-secondary);
+}
+
+.oai-atl__list-item--selected {
+  border-color: var(--color-primary-500);
+  background: var(--color-primary-50);
+}
+
+.oai-atl__list-item-name {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}
+
+.oai-atl__create-link {
+  display: inline-block;
+  padding: 0;
+  border: none;
+  background: none;
+  font-size: var(--font-size-sm);
+  font-family: var(--font-family-sans);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-primary-600);
+  cursor: pointer;
+  transition: color var(--transition-fast);
+}
+
+.oai-atl__create-link:hover {
+  color: var(--color-primary-700);
+  text-decoration: underline;
+}

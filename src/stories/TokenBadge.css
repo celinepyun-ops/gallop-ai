@@ -154,7 +154,8 @@
   padding: var(--space-2) var(--space-3);
   margin: var(--space-2) var(--space-3);
   border-radius: var(--radius-md);
-  background: rgba(0, 100, 0, 0.08);
+  background: var(--color-primary-50);
+  border: 1px solid var(--color-primary-200);
   font-family: var(--font-family-sans);
   font-size: var(--font-size-xs);
   color: var(--color-primary-200);
@@ -165,16 +166,16 @@
   display: flex;
   align-items: center;
   flex-shrink: 0;
-  color: var(--color-primary-400);
+  color: var(--color-primary-700);
 }
 
 .oai-token-balance__count {
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-primary-100);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
 }
 
 .oai-token-balance__label {
-  color: var(--color-primary-300);
+  color: var(--color-text-secondary);
 }
 
 /* ── Confirm reveal dialog (within drawer) ───────────────────────── */
@@ -289,4 +290,20 @@
 
 [data-theme="dark"] .oai-reveal-confirm__cost {
   color: var(--color-secondary-300);
+}
+
+/* ── Blur effect for unrevealed text ─────────────────────────────── */
+.oai-reveal__blur {
+  filter: blur(5px);
+  user-select: none;
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+/* ── Partial email display ───────────────────────────────────────── */
+.oai-contact-field__partial {
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  letter-spacing: 0.02em;
 }

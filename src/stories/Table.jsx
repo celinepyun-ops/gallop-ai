@@ -2,6 +2,7 @@ import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { LoadingSkeleton } from './LoadingSkeleton';
 import { EmptyState } from './EmptyState';
+import { Icons } from './icons';
 import './table.css';
 
 /** Data table with sorting, selection, and loading states */
@@ -13,6 +14,7 @@ export const Table = ({
   striped = false,
   loading = false,
   emptyMessage = 'No data available',
+  onSelectionChange,
 }) => {
   const [sortKey, setSortKey] = useState(null);
   const [sortDir, setSortDir] = useState('asc');
@@ -39,14 +41,18 @@ export const Table = ({
 
   const allSelected = data.length > 0 && selected.length === data.length;
 
+  const updateSelected = (next) => {
+    setSelected(next);
+    onSelectionChange?.(next.map((i) => data[i]).filter(Boolean));
+  };
+
   const toggleAll = () => {
-    setSelected(allSelected ? [] : data.map((_, i) => i));
+    updateSelected(allSelected ? [] : data.map((_, i) => i));
   };
 
   const toggleRow = (index) => {
-    setSelected((prev) =>
-      prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index]
-    );
+    const next = selected.includes(index) ? selected.filter((i) => i !== index) : [...selected, index];
+    updateSelected(next);
   };
 
   if (loading) {
@@ -79,7 +85,7 @@ export const Table = ({
   if (data.length === 0) {
     return (
       <div className="oai-table-wrapper">
-        <EmptyState title={emptyMessage} icon="📋" />
+        <EmptyState title={emptyMessage} icon={Icons.templates} />
       </div>
     );
   }

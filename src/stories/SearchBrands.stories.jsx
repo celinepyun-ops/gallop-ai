@@ -9,6 +9,7 @@ import { Select } from './Select';
 import { Avatar } from './Avatar';
 import { HelpButton } from './HelpButton';
 import { Icons } from './icons';
+import { LeadContactCard } from './TokenReveal';
 import { DOMAIN_LABELS, PRODUCT_CATEGORIES } from '../services/keepaApi';
 import './searchpage.css';
 
@@ -155,51 +156,52 @@ const mockResults = [
   },
 ];
 
-/* ── Mock leads per brand ──────────────────────────────────────── */
+/* ── Mock leads per brand (with hasEmail/hasLinkedin for gated reveal) ── */
 const mockLeads = {
   'EcoGlow Naturals': [
-    { id: 'l1', name: 'Sarah Chen', role: 'Founder & CEO', email: 'sarah@ecoglownaturals.com', linkedin: 'linkedin.com/in/sarahchen', confidence: 'high' },
-    { id: 'l2', name: 'David Park', role: 'Head of Supply Chain', email: 'david@ecoglownaturals.com', linkedin: 'linkedin.com/in/davidpark', confidence: 'high' },
-    { id: 'l3', name: 'Lisa Nguyen', role: 'Product Manager', email: 'lisa@ecoglownaturals.com', linkedin: '', confidence: 'medium' },
+    { id: 'l1', name: 'Sarah Chen', role: 'Founder & CEO', hasEmail: true, email: 'sarah@ecoglownaturals.com', hasLinkedin: true, linkedin: 'linkedin.com/in/sarahchen', confidence: 'high' },
+    { id: 'l2', name: 'David Park', role: 'Head of Supply Chain', hasEmail: true, email: 'david@ecoglownaturals.com', hasLinkedin: true, linkedin: 'linkedin.com/in/davidpark', confidence: 'high' },
+    { id: 'l3', name: 'Lisa Nguyen', role: 'Product Manager', hasEmail: true, email: 'lisa@ecoglownaturals.com', hasLinkedin: false, linkedin: '', confidence: 'medium' },
   ],
   'SunShield Pro': [
-    { id: 'l4', name: 'Maria Santos', role: 'Co-Founder', email: 'maria@sunshieldpro.com', linkedin: 'linkedin.com/in/mariasantos', confidence: 'high' },
-    { id: 'l5', name: 'James Liu', role: 'Operations Director', email: 'james@sunshieldpro.com', linkedin: 'linkedin.com/in/jamesliu', confidence: 'medium' },
+    { id: 'l4', name: 'Maria Santos', role: 'Co-Founder', hasEmail: true, email: 'maria@sunshieldpro.com', hasLinkedin: true, linkedin: 'linkedin.com/in/mariasantos', confidence: 'high' },
+    { id: 'l5', name: 'James Liu', role: 'Operations Director', hasEmail: true, email: 'james@sunshieldpro.com', hasLinkedin: true, linkedin: 'linkedin.com/in/jamesliu', confidence: 'medium' },
   ],
   'AquaVeil': [
-    { id: 'l6', name: 'Priya Sharma', role: 'Founder', email: 'priya@aquaveil.com', linkedin: 'linkedin.com/in/priyasharma', confidence: 'high' },
-    { id: 'l7', name: 'Tom Bradley', role: 'VP of Manufacturing', email: 'tom@aquaveil.com', linkedin: '', confidence: 'medium' },
+    { id: 'l6', name: 'Priya Sharma', role: 'Founder', hasEmail: true, email: 'priya@aquaveil.com', hasLinkedin: true, linkedin: 'linkedin.com/in/priyasharma', confidence: 'high' },
+    { id: 'l7', name: 'Tom Bradley', role: 'VP of Manufacturing', hasEmail: true, email: 'tom@aquaveil.com', hasLinkedin: false, linkedin: '', confidence: 'medium' },
   ],
   'PureRadiance': [
-    { id: 'l8', name: 'Kevin Wright', role: 'CEO', email: 'kevin@pureradiance.com', linkedin: 'linkedin.com/in/kevinwright', confidence: 'high' },
-    { id: 'l9', name: 'Nina Patel', role: 'Procurement Lead', email: 'nina@pureradiance.com', linkedin: 'linkedin.com/in/ninapatel', confidence: 'high' },
+    { id: 'l8', name: 'Kevin Wright', role: 'CEO', hasEmail: true, email: 'kevin@pureradiance.com', hasLinkedin: true, linkedin: 'linkedin.com/in/kevinwright', confidence: 'high' },
+    { id: 'l9', name: 'Nina Patel', role: 'Procurement Lead', hasEmail: true, email: 'nina@pureradiance.com', hasLinkedin: true, linkedin: 'linkedin.com/in/ninapatel', confidence: 'high' },
   ],
   'BotaniShield': [
-    { id: 'l10', name: 'Rachel Kim', role: 'Founder', email: 'rachel@botanishield.com', linkedin: 'linkedin.com/in/rachelkim', confidence: 'high' },
+    { id: 'l10', name: 'Rachel Kim', role: 'Founder', hasEmail: true, email: 'rachel@botanishield.com', hasLinkedin: true, linkedin: 'linkedin.com/in/rachelkim', confidence: 'high' },
   ],
   'GlowUp Skin': [
-    { id: 'l11', name: 'Alex Rivera', role: 'Co-Founder & COO', email: 'alex@glowupskin.com', linkedin: 'linkedin.com/in/alexrivera', confidence: 'high' },
-    { id: 'l12', name: 'Jenny Zhao', role: 'Brand Manager', email: 'jenny@glowupskin.com', linkedin: '', confidence: 'medium' },
+    { id: 'l11', name: 'Alex Rivera', role: 'Co-Founder & COO', hasEmail: true, email: 'alex@glowupskin.com', hasLinkedin: true, linkedin: 'linkedin.com/in/alexrivera', confidence: 'high' },
+    { id: 'l12', name: 'Jenny Zhao', role: 'Brand Manager', hasEmail: true, email: 'jenny@glowupskin.com', hasLinkedin: false, linkedin: '', confidence: 'medium' },
   ],
   'Derma Botanics': [
-    { id: 'l13', name: 'Emma Liu', role: 'Head of Product', email: 'emma@dermabotanics.com', linkedin: 'linkedin.com/in/emmaliu', confidence: 'high' },
-    { id: 'l14', name: 'Carlos Mendez', role: 'Supply Chain Manager', email: 'carlos@dermabotanics.com', linkedin: 'linkedin.com/in/carlosmendez', confidence: 'medium' },
+    { id: 'l13', name: 'Emma Liu', role: 'Head of Product', hasEmail: true, email: 'emma@dermabotanics.com', hasLinkedin: true, linkedin: 'linkedin.com/in/emmaliu', confidence: 'high' },
+    { id: 'l14', name: 'Carlos Mendez', role: 'Supply Chain Manager', hasEmail: true, email: 'carlos@dermabotanics.com', hasLinkedin: true, linkedin: 'linkedin.com/in/carlosmendez', confidence: 'medium' },
   ],
   'FreshFace Co': [
-    { id: 'l15', name: 'Amanda Brooks', role: 'Founder', email: 'amanda@freshfaceco.com', linkedin: 'linkedin.com/in/amandabrooks', confidence: 'medium' },
+    { id: 'l15', name: 'Amanda Brooks', role: 'Founder', hasEmail: true, email: 'amanda@freshfaceco.com', hasLinkedin: true, linkedin: 'linkedin.com/in/amandabrooks', confidence: 'medium' },
   ],
   'Neutrogena': [
-    { id: 'l16', name: 'Corporate Partnerships', role: 'Johnson & Johnson', email: 'partnerships@jnj.com', linkedin: '', confidence: 'medium' },
+    { id: 'l16', name: 'Corporate Partnerships', role: 'Johnson & Johnson', hasEmail: true, email: 'partnerships@jnj.com', hasLinkedin: false, linkedin: '', confidence: 'medium' },
   ],
   'CeraVe': [
-    { id: 'l17', name: 'Corporate Partnerships', role: 'L\'Oréal Group', email: 'partnerships@loreal.com', linkedin: '', confidence: 'medium' },
+    { id: 'l17', name: 'Corporate Partnerships', role: 'L\'Oréal Group', hasEmail: true, email: 'partnerships@loreal.com', hasLinkedin: false, linkedin: '', confidence: 'medium' },
   ],
 };
 
-/* ── Lead Drawer Component ────────────────────────────────────── */
+/* ── Lead Drawer Component (with progressive reveal) ─────────── */
 const LeadDrawer = ({ brand, product, onClose, onAddToContacts }) => {
   const leads = mockLeads[brand] || [];
   const [selectedLeads, setSelectedLeads] = useState([]);
+  const [tokenBalance, setTokenBalance] = useState(48);
 
   const toggleLead = (id) => {
     setSelectedLeads((prev) =>
@@ -215,12 +217,17 @@ const LeadDrawer = ({ brand, product, onClose, onAddToContacts }) => {
     }
   };
 
+  const handleTokenSpend = (cost) => {
+    setTokenBalance((prev) => Math.max(0, prev - cost));
+  };
+
   return (
     <>
       <div className="oai-lead-drawer__overlay" onClick={onClose} />
       <aside className="oai-lead-drawer" role="dialog" aria-label={`Leads for ${brand}`}>
         <div className="oai-lead-drawer__header">
           <h2 className="oai-lead-drawer__title">Product Leads</h2>
+          <TokenBalancePill balance={tokenBalance} />
           <button className="oai-lead-drawer__close" onClick={onClose} aria-label="Close panel">✕</button>
         </div>
 
@@ -252,30 +259,14 @@ const LeadDrawer = ({ brand, product, onClose, onAddToContacts }) => {
             </div>
           ) : (
             leads.map((lead) => (
-              <div
+              <LeadContactCard
                 key={lead.id}
-                className={`oai-lead-drawer__contact ${selectedLeads.includes(lead.id) ? 'oai-lead-drawer__contact--selected' : ''}`}
-              >
-                <input
-                  type="checkbox"
-                  className="oai-lead-drawer__contact-check"
-                  checked={selectedLeads.includes(lead.id)}
-                  onChange={() => toggleLead(lead.id)}
-                  aria-label={`Select ${lead.name}`}
-                />
-                <div className="oai-lead-drawer__contact-body">
-                  <div className="oai-lead-drawer__contact-name">{lead.name}</div>
-                  <div className="oai-lead-drawer__contact-role">{lead.role}</div>
-                  <div className="oai-lead-drawer__contact-details">
-                    <span>{lead.email}</span>
-                    {lead.linkedin && <a href={`https://${lead.linkedin}`} target="_blank" rel="noopener noreferrer">LinkedIn</a>}
-                  </div>
-                  <div className="oai-lead-drawer__contact-confidence">
-                    <span className={`oai-lead-drawer__confidence-dot oai-lead-drawer__confidence-dot--${lead.confidence}`} />
-                    {lead.confidence === 'high' ? 'High' : 'Medium'} confidence
-                  </div>
-                </div>
-              </div>
+                lead={lead}
+                tokenBalance={tokenBalance}
+                onTokenSpend={handleTokenSpend}
+                selected={selectedLeads.includes(lead.id)}
+                onSelect={toggleLead}
+              />
             ))
           )}
         </div>
@@ -300,6 +291,14 @@ const LeadDrawer = ({ brand, product, onClose, onAddToContacts }) => {
     </>
   );
 };
+
+/* ── Token balance pill for header ─────────────────────────────── */
+const TokenBalancePill = ({ balance }) => (
+  <span className="oai-credits-badge">
+    <span className="oai-credits-badge__icon">{Icons.credits}</span>
+    <span className="oai-credits-badge__count">{balance}</span> tokens
+  </span>
+);
 
 /* ── Helpers ────────────────────────────────────────────────────── */
 const TrendArrow = ({ value, suffix = '%' }) => {
@@ -735,7 +734,7 @@ const SearchPage = () => {
 };
 
 export default {
-  title: 'Pages/Search',
+  title: 'Pages/Search Brands',
   tags: ['autodocs'],
   parameters: { layout: 'fullscreen' },
 };

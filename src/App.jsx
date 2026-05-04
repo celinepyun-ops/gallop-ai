@@ -26,6 +26,8 @@ import { Settings } from './stories/Settings';
 import { LandingPage } from './stories/LandingPage';
 import { PricingPage } from './stories/PricingPage';
 import { ProductPage } from './stories/ProductPage';
+import { ListsPage } from './stories/ListsPage';
+import { SearchPage } from './stories/SearchPage';
 import { Icons } from './stories/icons';
 
 /* ── Page-specific CSS ───────────────────────────────────────────── */
@@ -149,102 +151,8 @@ const DashboardContent = () => {
 };
 
 /* ══════════════════════════════════════════════════════════════════
-   Page: Search
+   Page: Search — now uses the standalone SearchPage component
    ══════════════════════════════════════════════════════════════════ */
-const SearchContent = () => (
-  <div style={{ maxWidth: '1100px' }}>
-    <div className="oai-search-page__header">
-      <h1 className="oai-search-page__title">Search Products</h1>
-      <p className="oai-search-page__subtitle">
-        Discover growing Amazon products and identify real brands ready for manufacturing partnerships.
-      </p>
-    </div>
-
-    <div className="oai-search-card">
-      <div className="oai-search-card__row">
-        <div className="oai-search-card__input-wrapper">
-          <span className="oai-search-card__input-icon">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
-            </svg>
-          </span>
-          <input
-            className="oai-search-card__input"
-            type="text"
-            placeholder="Enter a keyword (ex. sunscreen, serum, vitamins)..."
-            aria-label="Search keywords"
-          />
-        </div>
-        <Button variant="primary" size="large" label="Search" onClick={noop} />
-      </div>
-
-      <div className="oai-search-card__feature">
-        <div className="oai-search-card__feature-content">
-          <div className="oai-search-card__feature-title">
-            {Icons.sparkle}
-            AI-Powered Recommendations
-            <Badge label="PRD Feature" variant="info" size="small" />
-          </div>
-          <div className="oai-search-card__feature-desc">
-            Let AI analyze 50 products and recommend the top 20 most likely to need your services (uses your company profile)
-          </div>
-        </div>
-        <label className="oai-search-card__feature-toggle">
-          <input type="checkbox" />
-          Disabled
-        </label>
-      </div>
-
-      <div className="oai-search-card__field">
-        <Select
-          label="Search Provider"
-          options={[
-            { value: 'auto', label: 'Auto (Default)' },
-            { value: 'us', label: 'Amazon US' },
-            { value: 'uk', label: 'Amazon UK' },
-            { value: 'de', label: 'Amazon DE' },
-            { value: 'jp', label: 'Amazon JP' },
-          ]}
-          value="auto"
-          onChange={noop}
-        />
-      </div>
-
-      <div className="oai-search-card__filters">
-        <div className="oai-search-card__field">
-          <Select
-            label="Category (Filter Results)"
-            options={[
-              { value: 'all', label: 'All Categories' },
-              { value: 'beauty', label: 'Beauty & Personal Care' },
-              { value: 'health', label: 'Health & Household' },
-              { value: 'home', label: 'Home & Kitchen' },
-              { value: 'sports', label: 'Sports & Outdoors' },
-              { value: 'electronics', label: 'Electronics' },
-              { value: 'grocery', label: 'Grocery & Gourmet Food' },
-            ]}
-            value="all"
-            onChange={noop}
-          />
-        </div>
-        <div className="oai-search-card__field">
-          <Select
-            label="Min Rating (Filter Results)"
-            options={[
-              { value: 'any', label: 'Any Rating' },
-              { value: '4.5', label: '4.5+ Stars' },
-              { value: '4.0', label: '4.0+ Stars' },
-              { value: '3.5', label: '3.5+ Stars' },
-              { value: '3.0', label: '3.0+ Stars' },
-            ]}
-            value="any"
-            onChange={noop}
-          />
-        </div>
-      </div>
-    </div>
-  </div>
-);
 
 /* ══════════════════════════════════════════════════════════════════
    App — root with page routing
@@ -322,7 +230,8 @@ function App() {
       items: [
         { id: 'dashboard', label: 'Dashboard', icon: Icons.dashboard, onClick: () => setPage('dashboard') },
         { id: 'search', label: 'Search', icon: Icons.search, onClick: () => setPage('search') },
-        { id: 'brands', label: 'Products', icon: Icons.brands, onClick: () => setPage('brands') },
+        { id: 'people', label: 'People', icon: Icons.contacts, onClick: () => setPage('people') },
+        { id: 'lists', label: 'Lists', icon: Icons.brands, onClick: () => setPage('lists') },
         { id: 'campaigns', label: 'Campaigns', icon: Icons.campaigns, onClick: () => setPage('campaigns') },
         { id: 'analytics', label: 'Analytics', icon: Icons.analytics, onClick: () => setPage('analytics') },
       ],
@@ -340,7 +249,9 @@ function App() {
       case 'dashboard':
         return <DashboardContent />;
       case 'search':
-        return <SearchContent />;
+        return <SearchPage />;
+      case 'lists':
+        return <ListsPage />;
       default:
         return <NotFound onBackClick={() => setPage('dashboard')} />;
     }

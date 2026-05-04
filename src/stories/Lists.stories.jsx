@@ -378,7 +378,7 @@ const ListViewPage = () => {
 
 /* ── Storybook Exports ────────────────────────────────────────────────── */
 export default {
-  title: 'Pages/Lists',
+  title: 'Pages/Lists (Legacy)',
   tags: ['autodocs'],
   parameters: { layout: 'fullscreen' },
 };

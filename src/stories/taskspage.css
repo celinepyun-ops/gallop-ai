@@ -1,0 +1,608 @@
+/* ==========================================================================
+   Tasks Page — Apollo Deals-style Kanban + Table
+   ========================================================================== */
+
+.oai-tasks {
+  font-family: var(--font-family-sans);
+  height: calc(100vh - var(--navbar-height));
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  /* Break out of PageLayout content padding */
+  margin: calc(-1 * var(--space-6));
+}
+
+@media (max-width: 1024px) {
+  .oai-tasks {
+    margin: calc(-1 * var(--space-4));
+  }
+}
+
+@media (max-width: 768px) {
+  .oai-tasks {
+    margin: calc(-1 * var(--space-3));
+  }
+}
+
+/* ── Header ──────────────────────────────────────────────────────────── */
+.oai-tasks__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-5) var(--space-6) var(--space-3);
+}
+
+.oai-tasks__title {
+  margin: 0;
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  font-family: var(--font-family-sans);
+  color: var(--color-text-primary);
+}
+
+/* ── Toolbar ─────────────────────────────────────────────────────────── */
+.oai-tasks__toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-6) var(--space-3);
+  border-bottom: 1px solid var(--color-border-default);
+  flex-wrap: wrap;
+}
+
+.oai-tasks__toolbar-left,
+.oai-tasks__toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.oai-tasks__toolbar-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-card);
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background var(--transition-fast);
+}
+
+.oai-tasks__toolbar-btn:hover {
+  background: var(--color-bg-hover);
+}
+
+.oai-tasks__toolbar-btn--pipeline {
+  background: var(--color-primary-50);
+  border-color: var(--color-primary-200);
+  color: var(--color-primary-700);
+  font-weight: var(--font-weight-medium);
+}
+
+.oai-tasks__toolbar-btn--pipeline:hover {
+  background: var(--color-primary-100);
+}
+
+.oai-tasks__toolbar-search {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-card);
+  color: var(--color-text-muted);
+}
+
+.oai-tasks__toolbar-search-input {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+  width: 140px;
+}
+
+.oai-tasks__toolbar-search-input::placeholder {
+  color: var(--color-text-muted);
+}
+
+/* Sort dropdown */
+.oai-tasks__sort-wrapper {
+  position: relative;
+}
+
+.oai-tasks__sort-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: var(--space-1);
+  width: 200px;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  z-index: var(--z-dropdown);
+  padding: var(--space-2) 0;
+}
+
+.oai-tasks__sort-title {
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+}
+
+.oai-tasks__sort-option {
+  display: block;
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  border: none;
+  background: none;
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+  text-align: left;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.oai-tasks__sort-option:hover {
+  background: var(--color-bg-hover);
+}
+
+.oai-tasks__sort-option--active {
+  background: var(--color-primary-50);
+  color: var(--color-primary-700);
+  font-weight: var(--font-weight-medium);
+}
+
+/* View toggle */
+.oai-tasks__view-toggle {
+  display: flex;
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.oai-tasks__view-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-3);
+  border: none;
+  background: var(--color-bg-card);
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.oai-tasks__view-btn:not(:last-child) {
+  border-right: 1px solid var(--color-border-default);
+}
+
+.oai-tasks__view-btn--active {
+  background: var(--color-primary-50);
+  color: var(--color-primary-700);
+  font-weight: var(--font-weight-medium);
+}
+
+.oai-tasks__view-btn:hover:not(.oai-tasks__view-btn--active) {
+  background: var(--color-bg-hover);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   Board (Kanban)
+   ══════════════════════════════════════════════════════════════════════════ */
+.oai-tasks__board {
+  display: flex;
+  gap: 0;
+  flex: 1;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0;
+}
+
+.oai-tasks__column {
+  min-width: 240px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--color-border-default);
+  height: 100%;
+  overflow: hidden;
+}
+
+.oai-tasks__column:last-child {
+  border-right: none;
+}
+
+/* Column header */
+.oai-tasks__column-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-3);
+  border-bottom: 1px solid var(--color-border-default);
+}
+
+.oai-tasks__column-badge {
+  display: inline-block;
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: #FFFFFF;
+  white-space: nowrap;
+}
+
+.oai-tasks__column-count {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.oai-tasks__column-actions {
+  margin-left: auto;
+  display: flex;
+  gap: var(--space-1);
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.oai-tasks__column-header:hover .oai-tasks__column-actions {
+  opacity: 1;
+}
+
+.oai-tasks__column-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: none;
+  border-radius: var(--radius-sm);
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.oai-tasks__column-action:hover {
+  background: var(--color-bg-hover);
+  color: var(--color-text-primary);
+}
+
+/* Column body */
+.oai-tasks__column-body {
+  flex: 1;
+  padding: var(--space-2) var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  overflow-y: auto;
+}
+
+/* Card */
+.oai-tasks__card {
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-card);
+  padding: var(--space-3);
+  cursor: pointer;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.oai-tasks__card:hover {
+  border-color: var(--color-border-strong);
+  box-shadow: var(--shadow-sm);
+}
+
+.oai-tasks__card-top {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
+}
+
+.oai-tasks__card-title {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  line-height: var(--leading-snug);
+}
+
+/* Priority badge row */
+.oai-tasks__card-priority-row {
+  margin-bottom: var(--space-2);
+}
+
+.oai-tasks__priority-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+/* Priority badge (pill) */
+.oai-tasks__priority-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px var(--space-2);
+  border: 1px solid transparent;
+  border-radius: var(--radius-full);
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: filter var(--transition-fast), box-shadow var(--transition-fast);
+  line-height: 1.5;
+}
+
+.oai-tasks__priority-badge:hover {
+  filter: brightness(0.95);
+  box-shadow: var(--shadow-sm);
+}
+
+.oai-tasks__priority-badge-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* High */
+.oai-tasks__priority-badge--high {
+  background: var(--color-error-bg, #FEF2F2);
+  border-color: var(--color-error-border, #FECACA);
+  color: var(--color-error-text, #991B1B);
+}
+.oai-tasks__priority-badge--high .oai-tasks__priority-badge-dot {
+  background: var(--color-error);
+}
+
+/* Medium */
+.oai-tasks__priority-badge--medium {
+  background: var(--color-warning-bg, #FFFBEB);
+  border-color: var(--color-warning-border, #FDE68A);
+  color: var(--color-warning-text, #92400E);
+}
+.oai-tasks__priority-badge--medium .oai-tasks__priority-badge-dot {
+  background: var(--color-warning);
+}
+
+/* Low */
+.oai-tasks__priority-badge--low {
+  background: var(--color-info-bg, #EFF6FF);
+  border-color: var(--color-info-border, #BFDBFE);
+  color: var(--color-info-text, #1E40AF);
+}
+.oai-tasks__priority-badge--low .oai-tasks__priority-badge-dot {
+  background: var(--color-info);
+}
+
+.oai-tasks__priority-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: var(--space-1);
+  width: 160px;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  z-index: var(--z-dropdown);
+  padding: var(--space-1) 0;
+}
+
+.oai-tasks__priority-menu-title {
+  padding: var(--space-1) var(--space-3) var(--space-2);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+  border-bottom: 1px solid var(--color-border-default);
+  margin-bottom: var(--space-1);
+}
+
+.oai-tasks__priority-option {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  border: none;
+  background: none;
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  text-align: left;
+  transition: background var(--transition-fast);
+}
+
+.oai-tasks__priority-option:hover {
+  background: var(--color-bg-hover);
+}
+
+.oai-tasks__priority-option--active {
+  background: var(--color-neutral-100);
+  font-weight: var(--font-weight-medium);
+}
+
+.oai-tasks__priority-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.oai-tasks__card-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
+}
+
+.oai-tasks__card-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: var(--radius-sm);
+  color: #FFFFFF;
+  font-size: 8px;
+  font-weight: var(--font-weight-bold);
+  flex-shrink: 0;
+}
+
+.oai-tasks__card-brand {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.oai-tasks__card-footer {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.oai-tasks__card-list {
+  color: var(--color-text-link);
+}
+
+.oai-tasks__card-date {
+  margin-left: auto;
+}
+
+.oai-tasks__card-assignee {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--color-neutral-200);
+  color: var(--color-text-secondary);
+  font-size: 8px;
+  font-weight: var(--font-weight-bold);
+}
+
+/* Add task button */
+.oai-tasks__add-btn {
+  border: none;
+  background: none;
+  padding: var(--space-2) var(--space-3);
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  text-align: left;
+  border-radius: var(--radius-md);
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.oai-tasks__add-btn:hover {
+  background: var(--color-bg-hover);
+  color: var(--color-text-secondary);
+}
+
+/* Stage dot (table view) */
+.oai-tasks-stage-dot {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--font-size-sm);
+}
+
+.oai-tasks-stage-dot::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--dot-color);
+  flex-shrink: 0;
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────── */
+@media (max-width: 1280px) {
+  .oai-tasks__column {
+    min-width: 180px;
+  }
+
+  .oai-tasks__column-badge {
+    font-size: 10px;
+    padding: 2px var(--space-1);
+  }
+
+  .oai-tasks__card {
+    padding: var(--space-2);
+  }
+
+  .oai-tasks__card-title {
+    font-size: var(--font-size-xs);
+  }
+}
+
+@media (max-width: 1024px) {
+  .oai-tasks__toolbar {
+    padding: var(--space-2) var(--space-4);
+  }
+
+  .oai-tasks__header {
+    padding: var(--space-4) var(--space-4) var(--space-2);
+  }
+
+  .oai-tasks__column {
+    min-width: 160px;
+  }
+
+  .oai-tasks__toolbar-left,
+  .oai-tasks__toolbar-right {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 768px) {
+  .oai-tasks__toolbar {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: var(--space-2) var(--space-3);
+  }
+
+  .oai-tasks__toolbar-right {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .oai-tasks__header {
+    padding: var(--space-3) var(--space-3) var(--space-2);
+  }
+
+  .oai-tasks__column {
+    min-width: 140px;
+  }
+
+  .oai-tasks__board {
+    padding: 0;
+  }
+
+  .oai-tasks__card-meta {
+    gap: var(--space-1);
+  }
+}
